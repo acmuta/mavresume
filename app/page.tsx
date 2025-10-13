@@ -1,6 +1,7 @@
 "use client"
 import { useRef } from 'react';
 import { HeroSection } from '@/components/sections/hero';
+import { PersonalInfoSection } from '../components/sections/personalInfo';
 
 export default function Home() {
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -17,6 +18,7 @@ export default function Home() {
 
   const sections = [
     { Component: HeroSection, id: 'hero' },
+    { Component: PersonalInfoSection, id: 'personal-info' },
   ]
 
   return (

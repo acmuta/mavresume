@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Fade } from "react-awesome-reveal";
+import { FeatureDisplay } from "../elements/featuredisplay";
 
 interface SectionProps {
   onContinue: () => void;
@@ -21,8 +22,12 @@ export function HeroSection({ onContinue }: SectionProps) {
             </p>
           </section>
         </Fade>
+        {/* Icons */}
+        <Fade direction="up" delay={200} duration={1000}>
+          {/* <FeatureDisplay /> */}
+        </Fade>
         {/* Action Buttons */}
-        <Fade direction="up" delay={400} duration={1000}>
+        <Fade direction="up" delay={600} duration={1000}>
           <section className="flex gap-5 mt-3 justify-center md:justify-start">
             <button
               onClick={onContinue}
