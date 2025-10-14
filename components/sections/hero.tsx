@@ -11,7 +11,7 @@ export function HeroSection({ onContinue }: SectionProps) {
     <div className="flex flex-col md:flex-row items-center md:justify-center h-full w-full">
       <div className="md:flex flex-col md:w-4/10">
         {/* Title and Description */}
-        <Fade direction="up" duration={1000}>
+        <Fade direction="up" duration={800}>
           <section className="h-fit mt-20 flex flex-col text-center md:text-start">
             <h1 className="text-4xl md:text-7xl font-bold mb-2">
               MAV<span className="font-extralight">RESUME</span>
@@ -23,11 +23,11 @@ export function HeroSection({ onContinue }: SectionProps) {
           </section>
         </Fade>
         {/* Icons */}
-        <Fade direction="up" delay={200} duration={1000}>
+        <Fade direction="up" duration={800}>
           {/* <FeatureDisplay /> */}
         </Fade>
         {/* Action Buttons */}
-        <Fade direction="up" delay={600} duration={1000}>
+        <Fade direction="up" delay={600} duration={800}>
           <section className="flex gap-5 mt-3 justify-center md:justify-start">
             <button
               onClick={onContinue}
@@ -43,7 +43,7 @@ export function HeroSection({ onContinue }: SectionProps) {
       </div>
 
       {/* Placeholder image of resume mockup */}
-      <Fade direction="up" delay={200} duration={1000}>
+      <Fade direction="up" duration={1000}>
         <section className="mt-8 relative w-[30rem] h-[30rem] md:w-[30rem] md:h-[40rem]">
           <Image
             src="/MavResumePlaceholder.png"
