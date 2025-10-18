@@ -1,23 +1,13 @@
-"use client"
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { HeroSection } from "@/components/sections/hero";
 import { PersonalInfoSection } from "../components/sections/personalInfo";
-import { HeaderBar } from "../components/elements/headerbar";
+import { HomeHeaderBar } from "../components/elements/HomeHeaderBar";
 
 export default function Home() {
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [showHeader, setShowHeader] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-
-  const scrollToNextSection = (currentIndex: number) => {
-    const nextSection = sectionRefs.current[currentIndex + 1];
-    if (nextSection) {
-      nextSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,16 +27,13 @@ export default function Home() {
     if (showHeader) {
       setIsVisible(true);
     } else {
-      
       const timeout = setTimeout(() => setIsVisible(false), 300);
       return () => clearTimeout(timeout);
     }
   }, [showHeader]);
+  
 
-  const sections = [
-    { Component: HeroSection, id: "hero" },
-    { Component: PersonalInfoSection, id: "personal-info" },
-  ];
+  const sections = [{ Component: HeroSection, id: "hero" }];
 
   return (
     <div className="bg-[#101113] text-white relative">
@@ -56,7 +43,7 @@ export default function Home() {
             showHeader ? "opacity-100" : "opacity-0"
           }`}
         >
-          <HeaderBar />
+          <HomeHeaderBar />
         </div>
       )}
 
@@ -69,7 +56,7 @@ export default function Home() {
           id={id}
           className="w-full h-screen"
         >
-          <Component onContinue={() => scrollToNextSection(index)} />
+          <Component />
         </div>
       ))}
     </div>

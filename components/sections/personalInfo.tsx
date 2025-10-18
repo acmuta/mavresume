@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { Fade } from "react-awesome-reveal";
-import { HeaderBar } from "../elements/headerbar";
-import { CustomTextField } from "../elements/customtextfield";
+import { CustomTextField } from "../elements/CustomTextField";
 
 interface SectionProps {
   onContinue: () => void;
@@ -35,7 +33,11 @@ export function PersonalInfoSection({ onContinue }: SectionProps) {
               <CustomTextField id="text" label="Email" />
             </div>
             <div className="flex flex-col md:flex-row gap-4">
-              <CustomTextField id="text" label="LinkedIn URL" />
+              <CustomTextField
+                id="text"
+                label="LinkedIn URL"
+                description="Optional, But Recommended"
+              />
               <CustomTextField id="text" label="Github URL" />
             </div>
           </section>

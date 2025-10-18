@@ -2,11 +2,10 @@ import { ChevronRight } from "lucide-react";
 import React from "react";
 import { Fade } from "react-awesome-reveal";
 
-export const HeaderBar = () => {
+export const HomeHeaderBar = () => {
   return (
     <Fade
       direction="down"
-      delay={200}
       duration={500}
       className="relative w-full overflow-hidden"
     >
@@ -19,19 +18,7 @@ export const HeaderBar = () => {
           MAV<span className="font-extralight">RESUME</span>
         </h1>
 
-        <nav className="hidden md:flex w-fit font-semibold justify-center items-center gap-2">
-          <h2>Personal Info</h2>
-          <ChevronRight />
-          <h2 className="text-gray-500">Education</h2>
-          <ChevronRight />
-          <h2 className="text-gray-500">Experience</h2>
-          <ChevronRight />
-          <h2 className="text-gray-500">Skills</h2>
-          <ChevronRight />
-          <h2 className="text-gray-500">Projects</h2>
-          <ChevronRight />
-          <h2 className="text-gray-500">Finish</h2>
-        </nav>
+        <div className="w-1/4">Placeholder</div>
 
         <div className="w-1/4 ">Placeholder of Hints, Github, etc</div>
       </section>

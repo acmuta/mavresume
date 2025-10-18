@@ -1,12 +1,9 @@
 import Image from "next/image";
 import { Fade } from "react-awesome-reveal";
-import { FeatureDisplay } from "../elements/featuredisplay";
+import { FeatureDisplay } from "../elements/FeatureDisplay";
+import Link from "next/link";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function HeroSection({ onContinue }: SectionProps) {
+export function HeroSection() {
   return (
     <div className="flex flex-col md:flex-row items-center md:justify-center h-full w-full">
       <div className="md:flex flex-col md:w-4/10">
@@ -29,12 +26,12 @@ export function HeroSection({ onContinue }: SectionProps) {
         {/* Action Buttons */}
         <Fade direction="up" delay={600} duration={800}>
           <section className="flex gap-5 mt-3 justify-center md:justify-start">
-            <button
-              onClick={onContinue}
+            <Link
+              href="/builder"
               className="btn font-bold bg-[#274CBC] rounded-xl "
             >
               Get Started
-            </button>
+            </Link>
             <button className="hidden md:block btn font-bold bg-[#2A2C31] rounded-xl">
               Find Preexisting Resume
             </button>
