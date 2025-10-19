@@ -4,6 +4,7 @@ import { PersonalInfoSection } from "../../components/sections/personalInfo";
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { Fade } from "react-awesome-reveal";
 
+
 export default function BuilderPage() {
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -24,7 +25,7 @@ export default function BuilderPage() {
 
   return (
     <div className="bg-[#101113] text-white relative">
-      <div className="fixed top-0 left-0 w-full z-50">
+      {/* <div className="fixed top-0 left-0 w-full z-50">
         <BuilderHeaderBar />
       </div>
 
@@ -47,6 +48,9 @@ export default function BuilderPage() {
           </Fade>
         </div>
       ))}
+
+      */}
+      <img src="" alt="" />
     </div>
   );
 }

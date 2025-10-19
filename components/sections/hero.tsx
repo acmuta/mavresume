@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Fade } from "react-awesome-reveal";
 import { FeatureDisplay } from "../elements/FeatureDisplay";
 import Link from "next/link";
+import { ResumeDoc } from "../elements/ResumeDoc";
 
 export function HeroSection() {
   return (
@@ -40,7 +41,7 @@ export function HeroSection() {
       </div>
 
       {/* Placeholder image of resume mockup */}
-      <Fade direction="up" duration={1000}>
+      {/* <Fade direction="up" duration={1000}>
         <section className="mt-8 relative w-[30rem] h-[30rem] md:w-[30rem] md:h-[40rem]">
           <Image
             src="/MavResumePlaceholder.png"
@@ -49,7 +50,8 @@ export function HeroSection() {
             className="object-contain"
           />
         </section>
-      </Fade>
+      </Fade> */}
+      
     </div>
   );
 }
