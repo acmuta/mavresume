@@ -128,7 +128,15 @@ const styles = StyleSheet.create({
 
 export const ResumeDoc = () => (
   <Document>
-    
+    <Page size="A4" style={styles.page}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}></Text>
+        </View>
+        <Text style={styles.contact}></Text>
+      </View>
+    </Page>
   </Document>
 );
 

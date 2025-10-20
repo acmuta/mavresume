@@ -50,7 +50,7 @@ export default function BuilderPage() {
       ))}
 
       */}
-      <img src="" alt="" />
+      
     </div>
   );
 }
