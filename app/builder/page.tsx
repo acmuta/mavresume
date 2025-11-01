@@ -20,12 +20,13 @@ export default function BuilderPage() {
 
   const sections = [
     { Component: PersonalInfoSection, id: "personal-info" },
+    { Component: PersonalInfoSection, id: "personal-info-2" }, // Placeholder for additional sections
     
   ];
 
   return (
-    <div className="bg-[#101113] text-white relative">
-      {/* <div className="fixed top-0 left-0 w-full z-50">
+    <div className="relative">
+      <div className="fixed top-0 left-0 w-full z-50">
         <BuilderHeaderBar />
       </div>
 
@@ -49,7 +50,7 @@ export default function BuilderPage() {
         </div>
       ))}
 
-      */}
+     
       
     </div>
   );

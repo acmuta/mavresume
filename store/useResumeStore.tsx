@@ -5,13 +5,20 @@ interface PersonalInfo {
   email: string;
   phone: string;
   linkedin?: string;
+  github?: string;
+}
+
+interface Skills {
+  languagesList: string[];
+  technologiesList: string[];
 }
 
 interface Education {
   school: string;
   degree: string;
   graduationDate: string;
-  gpa?: string;
+  location: string;
+  relevantCourses?: string[];
 }
 
 interface Project {
@@ -24,7 +31,7 @@ interface ResumeState {
   personalInfo: PersonalInfo;
   education: Education[];
   projects: Project[];
-  skills: string[];
+  skills: Skills;
   experience: any[];
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
@@ -35,7 +42,7 @@ export const useResumeStore = create<ResumeState>((set) => ({
   personalInfo: { name: "", email: "", phone: "" },
   education: [],
   projects: [],
-  skills: [],
+  skills: { languagesList: [], technologiesList: [] },
   experience: [],
 
   updatePersonalInfo: (info) =>
