@@ -3,6 +3,10 @@ import { useRef } from "react";
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { Fade } from "react-awesome-reveal";
+import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
+import { EducationSection } from "../../components/sections/education";
+import { ExperienceSection } from "../../components/sections/experience";
+import { ProjectsSection } from "../../components/sections/projects";
 
 
 export default function BuilderPage() {
@@ -20,7 +24,10 @@ export default function BuilderPage() {
 
   const sections = [
     { Component: PersonalInfoSection, id: "personal-info" },
-    { Component: PersonalInfoSection, id: "personal-info-2" }, // Placeholder for additional sections
+    { Component: EducationSection, id: "education"},
+    { Component: TechnicalSkillsSection, id: "technical-skills" }, 
+    { Component: ProjectsSection, id: "projects" },
+    { Component: ExperienceSection, id: "experience" },
     
   ];
 

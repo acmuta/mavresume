@@ -7,17 +7,18 @@ import { ResumeDoc } from "../elements/ResumeDoc";
 export function HeroSection() {
   return (
     <div className="flex flex-col md:flex-row items-center md:justify-center h-full w-full">
-      <div className="md:flex flex-col md:w-4/10">
+      <div className="md:flex flex-col md:w-5/10">
         {/* Title and Description */}
         <Fade direction="up" duration={800}>
           <section className="h-fit mt-20 flex flex-col text-center md:text-start">
-            <h1 className="text-4xl md:text-7xl font-bold mb-2">
+            <h1 className="text-4xl md:text-8xl font-bold mb-2  [mask-image:linear-gradient(to_bottom,black_40%,transparent)] [mask-size:100%_100%] [mask-repeat:no-repeat]">
               MAV<span className="font-extralight">RESUME</span>
             </h1>
             <p className="text-lg md:text-xl font-">
               Helping undergraduates quickly build tailored, professional
               resumes - simple, guided, and stress-free.
             </p>
+            
           </section>
         </Fade>
         {/* Icons */}

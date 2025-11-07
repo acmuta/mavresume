@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface PersonalInfo {
   name: string;
@@ -13,12 +14,11 @@ interface Skills {
   technologiesList: string[];
 }
 
-interface Education {
+export interface Education {
   school: string;
   degree: string;
-  graduationDate: string;
-  location: string;
-  relevantCourses?: string[];
+  major: string;
+  graduationYear: string;
 }
 
 interface Project {
@@ -30,31 +30,56 @@ interface Project {
 interface ResumeState {
   personalInfo: PersonalInfo;
   education: Education[];
+  relevantCourses?: string[];
   projects: Project[];
   skills: Skills;
   experience: any[];
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
+  updateEducation: (index: number, edu: Partial<Education>) => void;
   updateProject: (index: number, proj: Partial<Project>) => void;
 }
 
-export const useResumeStore = create<ResumeState>((set) => ({
-  personalInfo: { name: "", email: "", phone: "" },
-  education: [],
-  projects: [],
-  skills: { languagesList: [], technologiesList: [] },
-  experience: [],
+export const useResumeStore = create<ResumeState>()(
+  persist(
+    (set) => ({
+      personalInfo: { name: "", email: "", phone: "" },
+      education: [{ school: "", degree: "", major: "", graduationYear: "" }],
+      relevantCourses: [],
+      projects: [],
+      skills: { languagesList: [], technologiesList: [] },
+      experience: [],
 
-  updatePersonalInfo: (info) =>
-    set((state) => ({ personalInfo: { ...state.personalInfo, ...info } })),
+      updatePersonalInfo: (info) =>
+        set((state) => ({
+          personalInfo: { ...state.personalInfo, ...info },
+        })),
 
-  addEducation: (edu) =>
-    set((state) => ({ education: [...state.education, edu] })),
+      addEducation: (edu) =>
+        set((state) => ({
+          education: [...state.education, edu],
+        })),
 
-  updateProject: (index, proj) =>
-    set((state) => {
-      const newProjects = [...state.projects];
-      newProjects[index] = { ...newProjects[index], ...proj };
-      return { projects: newProjects };
+      updateEducation: (index, updated) =>
+        set((state) => {
+          const newList = [...state.education];
+          newList[index] = {
+            ...newList[index],
+            ...updated,
+          };
+          return { education: newList };
+        }),
+
+      updateProject: (index, proj) =>
+        set((state) => {
+          const newProjects = [...state.projects];
+          newProjects[index] = { ...newProjects[index], ...proj };
+          return { projects: newProjects };
+        }),
     }),
-}));
+
+    {
+      name: "resume-storage",
+    }
+  )
+);

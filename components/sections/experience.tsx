@@ -4,16 +4,15 @@ interface SectionProps {
   onContinue: () => void;
 }
 
-export function TechnicalSkillsSection({ onContinue }: SectionProps) {
+export function ExperienceSection({ onContinue }: SectionProps) {
   return (
     <div className="flex w-full h-full items-center justify-center">
       <div className="md:flex flex-col border-2 p-7 bg-[#151618] border-[#1c1d21] rounded-2xl w-full">
         {/* Title and Description */}
         <CustomSectionTitle
-          title="Technical Skills"
-          description="Highlight the tools, technologies, and strengths you bring to the table."
+          title="Experience"
+          description="List your jobs or internships. Focus on what you did and the impact you made."
         />
-        <section className="mt-4 flex flex-col gap-3 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4"></section>
       </div>
     </div>
   );

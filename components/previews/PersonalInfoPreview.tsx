@@ -16,9 +16,9 @@ export const PersonalInfoPreview = () => {
   }
 
   return (
-    <div className="w-full text-center mb-[10px]">
-      <div>
-        <p className="text-[3em] font-bold">{resume.personalInfo.name}</p>
+    <div className="w-full text-center">
+      <div className="">
+        <p className="text-[2.5em] font-bold">{resume.personalInfo.name}</p>
       </div>
       <p className="text-[1em]">
         {[
