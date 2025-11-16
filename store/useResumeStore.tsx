@@ -21,10 +21,10 @@ export interface Education {
   graduationYear: string;
 }
 
-interface Project {
+export interface Project {
   title: string;
-  description: string;
   technologies: string[];
+  bulletPoints: string[];
 }
 
 interface ResumeState {
@@ -46,7 +46,7 @@ export const useResumeStore = create<ResumeState>()(
       personalInfo: { name: "", email: "", phone: "" },
       education: [{ school: "", degree: "", major: "", graduationYear: "" }],
       relevantCourses: [],
-      projects: [],
+      projects: [{ title: "", technologies: [], bulletPoints: [] }],
       skills: { languagesList: [], technologiesList: [] },
       experience: [],
 

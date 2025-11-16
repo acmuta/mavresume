@@ -11,7 +11,17 @@ interface SectionProps {
 }
 
 export function EducationSection({ onContinue }: SectionProps) {
-  const { addEducation } = useResumeStore();
+  const { addEducation, relevantCourses } = useResumeStore();
+
+  const clearInputs = () => {
+    const emptyEducation = {
+      school: "",
+      degree: "",
+      major: "",
+      graduationYear: "",
+    };
+    useResumeStore.setState({ education: [emptyEducation] });
+  };
 
   return (
     <div className="flex w-full h-full items-center justify-center">
@@ -23,6 +33,7 @@ export function EducationSection({ onContinue }: SectionProps) {
         />
 
         <section className="mt-4 flex flex-col gap-3 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
+
           <EducationAccordion />
 
           <button
@@ -43,6 +54,7 @@ export function EducationSection({ onContinue }: SectionProps) {
           <div className="divider m-0"></div>
 
           <NoteBox
+            icon="Info"
             note="Don't skip this! Adding coursework helps us identify related skills
           and projects to put on your resume."
           />
@@ -51,6 +63,17 @@ export function EducationSection({ onContinue }: SectionProps) {
             <label htmlFor="">Add All Relevant Coursework: </label>
             <Combobox
               items={utaEngineeringCourses}
+              value={relevantCourses}
+              onChange={(selected) =>
+                useResumeStore.setState({
+                  relevantCourses: Array.isArray(selected)
+                    ? selected
+                    : selected
+                    ? [selected]
+                    : undefined,
+                })
+              }
+              
               placeholder="Select Courses..."
               multiSelect
             />
@@ -60,7 +83,7 @@ export function EducationSection({ onContinue }: SectionProps) {
         <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
           <button
             className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
-            onClick={() => {}}
+            onClick={() => clearInputs()}
           >
             Clear Inputs
           </button>

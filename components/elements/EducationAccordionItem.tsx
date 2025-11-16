@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { Combobox } from "../ui/combobox";
-import { majorData, universitiesData } from "../../data/university-data";
+import { degreeData, majorData, universitiesData } from "../../data/university-data";
 import { Education, useResumeStore } from "../../store/useResumeStore";
 
 interface EducationAccordionItemProps {
@@ -61,7 +61,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
               <label>Select Degree:</label>
 
               <Combobox
-                items={["Bachelor's", "Master's", "PhD"]}
+                items={degreeData}
                 placeholder="Select Degree..."
                 value={education[index].degree}
                 onChange={(val) =>
