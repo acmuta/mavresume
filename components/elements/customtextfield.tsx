@@ -2,7 +2,7 @@ import React from "react";
 
 interface CustomTextFieldProps {
   id: string;
-  label: string;
+  label?: string;
   type?: string;
   placeholder?: string;
   description?: string;
@@ -23,9 +23,11 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
 }) => {
   return (
     <div className="grid w-fit max-w-sm items-center gap-1 h-fit">
-      <label htmlFor="" className="font-semibold">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor="" className="font-semibold">
+          {label}
+        </label>
+      )}
       <input
         required={required}
         id={id}
@@ -33,11 +35,11 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
         onChange={onChange}
         type={type}
         placeholder={placeholder}
-        className="bg-[#1F2023] min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg border-dotted border-[#6F748B] focus:outline-none focus:border-[#6F748B]"
-
-
+        className="bg-[#1F2023] text-sm min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg border-dotted border-[#6F748B] focus:outline-none focus:border-white hover:text-white hover:border-white transition"
       />
-      <label htmlFor="" className="text-sm text-gray-500">{description}</label>
+      <label htmlFor="" className="text-sm text-gray-500">
+        {description}
+      </label>
     </div>
   );
 };

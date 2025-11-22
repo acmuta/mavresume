@@ -22,7 +22,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
   return (
     <AccordionItem value={`Education-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        Education #{index + 1}{" "}
+        Education #{index + 1}
         {education[index]?.school && ` - ${education[index].school}`}
       </AccordionTrigger>
 

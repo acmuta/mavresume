@@ -5,12 +5,9 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { Combobox } from "../ui/combobox";
-import {
-  degreeData,
-  majorData,
-  universitiesData,
-} from "../../data/university-data";
 import { Project, useResumeStore } from "../../store/useResumeStore";
+import { CustomTextField } from "./CustomTextField";
+import { projectTechnologies } from "../../data/university-data";
 
 interface ProjectAccordionItemProps {
   index: number;
@@ -21,43 +18,55 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   index,
   projects,
 }) => {
+  const { updateProject } = useResumeStore();
   return (
     <AccordionItem value={`Project-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
         Project #{index + 1}
         {projects[index]?.title && ` - ${projects[index].title}`}
       </AccordionTrigger>
-      <div className="w-full font-semibold flex gap-4 justify-center items-center">
-        <div className="w-9/10 flex flex-col gap-2">
-          <div className="flex w-fit flex-wrap gap-2 items-center">
-            <label>Project Title:</label>
-            {/* <Combobox
-              items={universitiesData}
-              placeholder="Select University..."
-              value={education[index].school}
-              onChange={(val) => {
-                updateEducation(index, {
-                  school: Array.isArray(val) ? val[0] : val,
-                });
-              }}
-            /> */}
+      <AccordionContent>
+        <div className="w-full font-semibold flex gap-4 justify-center items-center">
+          <div className="w-9/10 flex flex-col gap-2">
+            <div className="flex w-fit flex-col gap-2 items-center">
+              <div className="flex w-full gap-2 items-center">
+                <label>Project Title:</label>
+                <CustomTextField
+                  id="text"
+                  placeholder="Project Title"
+                  value={projects[index].title}
+                  onChange={(e) => {
+                    updateProject(index, { title: e.target.value });
+                  }}
+                />
+              </div>
 
-            <label>Technologies Used</label>
-            {/* <Combobox
-              items={["Python", "JavaScript", "TypeScript", "React", "Node.js"]}
-              placeholder="Selected Technologies..."
-              value={projects[index].technologies}
-              onChange={(val) =>
-                updateEducation(index, {
-                  graduationYear: Array.isArray(val) ? val[0] : val,
-                })
-              }
-            /> */}
+              <div className="flex w-full gap-2 items-center">
+                <label>Technologies Used:</label>
+                <Combobox
+                  items={projectTechnologies}
+                  placeholder="Selected Technologies..."
+                  value={projects[index].technologies}
+                  onChange={(selectedItems) => {
+                    updateProject(index, {
+                      technologies: Array.isArray(selectedItems)
+                        ? selectedItems
+                        : selectedItems
+                        ? [selectedItems]
+                        : undefined,
+                    });
+                  }}
+                  multiSelect
+                />
+              </div>
+              <div className="flex w-full gap-2 items-start">
+                <label htmlFor="" className="text-lg">Describe the project in bullet points</label>
+                
+                </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <AccordionContent></AccordionContent>
+      </AccordionContent>
     </AccordionItem>
   );
 };

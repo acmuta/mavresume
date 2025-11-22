@@ -9,7 +9,7 @@ export const PersonalInfoPreview = () => {
   if (!resume.personalInfo.name) {
     return (
       <PlaceholderPreview
-        height="h-[70px]"
+        height="h-[70px] mt-2"
         description="Enter Name to Display!"
       />
     );

@@ -36,6 +36,7 @@ interface ResumeState {
   experience: any[];
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
+  addProject: (proj: Project) => void;
   updateEducation: (index: number, edu: Partial<Education>) => void;
   updateProject: (index: number, proj: Partial<Project>) => void;
 }
@@ -58,6 +59,11 @@ export const useResumeStore = create<ResumeState>()(
       addEducation: (edu) =>
         set((state) => ({
           education: [...state.education, edu],
+        })),
+
+      addProject: (proj) =>
+        set((state) => ({
+          projects: [...state.projects, proj],
         })),
 
       updateEducation: (index, updated) =>
