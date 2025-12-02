@@ -1,343 +1,266 @@
+"use client";
 import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-  PDFDownloadLink,
-  PDFViewer,
-  Link,
-} from "@react-pdf/renderer";
-import { useResumeStore } from "@/store/useResumeStore";
+import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { useResumeStore } from "../../store/useResumeStore";
 
+/**
+ * PDF document component using @react-pdf/renderer.
+ *
+ * This component:
+ * - Reads all resume data from Zustand store (reactive - updates when store changes)
+ * - Renders a single-page A4 PDF with traditional resume layout
+ * - Maps store data to PDF structure (personal info → education → skills → experience → projects)
+ * - Filters empty bullet points and handles optional fields (GPA, dates, links)
+ *
+ * Used by:
+ * - ResumeDocPreview: Renders PDF in a modal viewer
+ * - ResumeDocDownloadButton: Generates downloadable PDF file
+ *
+ * Data flow: Store update → component re-render → PDF re-generation
+ */
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 36,
-    paddingBottom: 36,
-    paddingHorizontal: 40,
-    fontSize: 10.5,
-    fontFamily: "Helvetica",
-    lineHeight: 1.45,
-    color: "#111",
-    backgroundColor: "#fff",
-  },
-
-  // Header
-  header: {
-    marginBottom: 10,
-    width: "100%",
-    textAlign: "center",
-  },
-  nameRow: {
-    marginBottom: 6,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  contact: {
-    fontSize: 9,
-    color: "#444",
-  },
-
-  // Sections
-  section: {
-    marginBottom: 10,
-  },
-  sectionTitle: {
+    padding: 32,
+    fontFamily: "Times-Roman",
     fontSize: 11,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    marginBottom: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-    paddingBottom: 4,
+    lineHeight: 1.4,
+    color: "#000",
   },
 
-  // Skill list
-  skillsLine: {
-    fontSize: 9.5,
-    color: "#222",
-    marginBottom: 4,
-  },
-
-  // Education
-  educationRow: {
-    marginBottom: 4,
-  },
-  school: {
-    fontSize: 10.5,
-    fontWeight: "bold",
-  },
-  degree: {
-    fontSize: 9.5,
-    marginBottom: 2,
-  },
-
-  // Experience
-  jobBlock: {
+  name: {
+    fontSize: 22,
+    fontWeight: 700,
+    textAlign: "center",
     marginBottom: 8,
   },
+
+  contactRow: {
+    fontSize: 10,
+    textAlign: "center",
+    marginBottom: 14,
+  },
+
+  section: {
+    marginTop: 3,
+    marginBottom: 3,
+  },
+
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: 700,
+    marginBottom: 4,
+    textTransform: "uppercase",
+    borderBottom: "1px solid #000",
+    paddingBottom: 2,
+  },
+
+  bold: {
+    fontWeight: 700,
+  },
+
   jobHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 3,
+    marginBottom: 2,
   },
-  jobTitle: {
+
+  projectHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 2,
+  },
+
+  smallText: {
     fontSize: 10,
-    fontWeight: "bold",
-  },
-  jobCompany: {
-    fontSize: 9.5,
-    color: "#444",
-  },
-  jobLocation: {
-    fontSize: 9,
-    color: "#666",
-  },
-  bullet: {
-    fontSize: 9.5,
-    marginLeft: 8,
-    marginBottom: 3,
   },
 
-  // Projects / Links
-  projectTitle: {
-    fontSize: 10,
-    fontWeight: "bold",
-    marginBottom: 3,
-  },
-  projectLine: {
-    fontSize: 9.5,
-    marginBottom: 3,
+  bullets: {
+    marginLeft: 12,
+    marginTop: 2,
   },
 
-  links: {
-    fontSize: 9,
-    color: "#0b5394",
-    marginTop: 6,
+  bulletPoint: {
+    flexDirection: "row",
+    marginBottom: 2,
   },
 
-  toc: {
-    fontSize: 8.5,
-    color: "#777",
-    marginTop: 8,
+  bulletSymbol: {
+    width: 10,
+  },
+
+  bulletText: {
+    flex: 1,
   },
 });
 
-const resume = useResumeStore()
+/**
+ * Formats month and year into a readable date string.
+ * Handles partial dates (month only, year only) and empty values.
+ */
+const formatDate = (month?: string, year?: string) => {
+  if (!month && !year) return "";
+  if (!month) return year;
+  if (!year) return month;
+  return `${month} ${year}`;
+};
 
-export const ResumeDoc = () => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.nameRow}>
-          <Text style={styles.name}>{resume.personalInfo.name}</Text>
-        </View>
-        <Text style={styles.contact}>
-          {resume.personalInfo.email} • {resume.personalInfo.phone} • <Link src={resume.personalInfo.linkedin}>LinkedIn</Link> • <Link src={resume.personalInfo.github}>Github</Link> 
-        </Text> 
-      </View>
+/**
+ * Main PDF document component.
+ *
+ * Structure:
+ * 1. Header: Name (centered, large) + contact info (phone, email, GitHub, LinkedIn)
+ * 2. Education: School, degree, major, GPA, graduation date + relevant courses (first entry only)
+ * 3. Technical Skills: Languages and technologies as comma-separated lists
+ * 4. Experience: Company, position, date range, bullet points (filtered for empty)
+ * 5. Projects: Title, technologies, bullet points (filtered for empty)
+ *
+ * All sections use consistent styling: uppercase section titles with bottom border,
+ * bullet points with left margin, and flexible layouts for headers (space-between).
+ */
+export const ResumeDoc = () => {
+  const {
+    personalInfo,
+    education,
+    skills,
+    experience,
+    projects,
+    relevantCourses,
+  } = useResumeStore();
 
-      {/* Technical Skills */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Technical Skills</Text>
-        <Text style={styles.skillsLine}>
-          <Text style={{ fontWeight: "bold" }}>Languages: </Text>
-          {resume.skills.languagesList.join(", ")}
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.name}>{personalInfo.name || ""}</Text>
+
+        {/* Contact info: filters empty values and joins with bullet separators */}
+        <Text style={styles.contactRow}>
+          {[
+            personalInfo.phone || "",
+            personalInfo.email || "",
+            personalInfo.github ? `github.com/${personalInfo.github}` : "",
+            personalInfo.linkedin
+              ? `linkedin.com/in/${personalInfo.linkedin}`
+              : "",
+          ]
+            .filter((x) => x)
+            .join("  •  ")}
         </Text>
-        <Text style={styles.skillsLine}>
-          <Text style={{ fontWeight: "bold" }}>Technologies: </Text>
-          {resume.skills.technologiesList.join(", ")}
-        </Text>
-      </View>
 
-      {/* Education */}
-      {resume.education.map((edu, index) => (
         <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Education</Text>
-        <View style={styles.educationRow}>
-          <Text style={styles.school}>
-            University of Texas At Arlington — Bachelor of Science in Computer
-            Science
-          </Text>
-          <Text style={styles.degree}>{edu.graduationDate} • {edu.location}</Text>
-          <Text style={styles.bullet}>
-            {`Relevant Courses: ${edu.relevantCourses?.join(", ")}`}
-          </Text>
-        </View>
-      </View>
-      ) )}
+          <Text style={styles.sectionTitle}>Education</Text>
 
+          {education.map((edu, idx) => (
+            <View key={idx}>
+              <View style={styles.jobHeader}>
+                <Text style={styles.bold}>{edu.school || ""}</Text>
+                <Text>
+                  {formatDate(edu.graduationMonth, edu.graduationYear)}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text>
+                  {edu.degree}
+                  {edu.major ? ` in ${edu.major}` : ""}
+                </Text>
+                <Text>{edu.gpa && `GPA: ${edu.gpa}`}</Text>
+              </View>
 
-      {/* Experience */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Experience</Text>
-
-        {/* Software Developer Intern */}
-        <View style={styles.jobBlock}>
-          <View style={styles.jobHeader}>
-            <Text style={styles.jobTitle}>Software Developer Intern</Text>
-            <Text style={styles.jobCompany}>June 2025 – Present</Text>
-          </View>
-          <Text style={styles.jobCompany}>Clozure Inc. • Austin, Texas</Text>
-          <Text style={styles.bullet}>
-            • Developed and reviewed production-level code using Flutter,
-            Firebase, Python, and Dart, contributing to features deployed to end
-            users on a weekly release cycle.
-          </Text>
-          <Text style={styles.bullet}>
-            • Collaborated with senior engineers to debug, test, and optimize
-            application functionality, achieving a less than 5% bug rate for new
-            feature releases.
-          </Text>
-          <Text style={styles.bullet}>
-            • Leveraged Jira, Figma, and GitHub to coordinate sprints, track
-            development progress, and facilitate cross-functional collaboration
-            between engineering and design teams.
-          </Text>
+              {/* Relevant courses only shown for first education entry */}
+              <View style={styles.bullets}>
+                {idx === 0 && relevantCourses && (
+                  <View style={styles.bulletPoint}>
+                    <Text style={styles.bulletSymbol}>•</Text>
+                    <Text style={styles.bulletText}>
+                      Relevant Coursework: {relevantCourses.join(", ")}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          ))}
         </View>
 
-        {/* ACM Create */}
-        <View style={styles.jobBlock}>
-          <View style={styles.jobHeader}>
-            <Text style={styles.jobTitle}>
-              General Director, Software Engineering Committee
-            </Text>
-            <Text style={styles.jobCompany}>August 2025 – Present</Text>
-          </View>
-          <Text style={styles.jobCompany}>
-            ACM Create at UTA • Arlington, Texas
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Technical Skills</Text>
+
+          <Text style={styles.smallText}>
+            <Text style={styles.bold}>Languages: </Text>
+            {skills.languagesList?.length
+              ? skills.languagesList.join(", ")
+              : "None added"}
           </Text>
-          <Text style={styles.bullet}>
-            • Directed 7+ Project Managers and 50+ Student Engineers in
-            delivering 10+ Production-Quality Applications with a combined user
-            base of 1,000+ students and campus organizations.
-          </Text>
-          <Text style={styles.bullet}>
-            • Mentored 7+ Project Managers in Scoping, Leadership, and
-            Technical Execution, resulting in 100% of teams delivering
-            production-ready projects each semester.
-          </Text>
-          <Text style={styles.bullet}>
-            • Oversaw delivery of 10+ Full-Stack, Mobile, Backend, and API
-            Projects, creating real-world engineering opportunities for 50+
-            Students across multiple majors.
+
+          <Text style={styles.smallText}>
+            <Text style={styles.bold}>Technologies: </Text>
+            {skills.technologiesList?.length
+              ? skills.technologiesList.join(", ")
+              : "None added"}
           </Text>
         </View>
 
-        {/* Pioneer Investing */}
-        <View style={styles.jobBlock}>
-          <View style={styles.jobHeader}>
-            <Text style={styles.jobTitle}>Full Stack Developer Intern</Text>
-            <Text style={styles.jobCompany}>May 2025 – July 2025</Text>
-          </View>
-          <Text style={styles.jobCompany}>Pioneer Investing Inc. • Dallas, Texas</Text>
-          <Text style={styles.bullet}>
-            • Built and optimized Full Stack web applications using Next.js,
-            TypeScript, and Node.js, delivering features from concept to
-            production within weekly sprint cycles.
-          </Text>
-          <Text style={styles.bullet}>
-            • Integrated AWS services (Lambda, S3, DynamoDB) to implement
-            scalable backend APIs, improve load times by 30%, and enhance
-            application reliability.
-          </Text>
-          <Text style={styles.bullet}>
-            • Applied best practices in CI/CD and cloud deployment, streamlining
-            the release process and ensuring high availability for production
-            applications.
-          </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Experience</Text>
+          {experience.map((job, idx) => (
+            <View key={idx} style={{ marginBottom: 5 }}>
+              {/* Header line */}
+              <View style={styles.jobHeader}>
+                <Text style={styles.bold}>
+                  {job.company && `${job.company} -`} {job.position || ""}
+                </Text>
+                <Text>
+                  {formatDate(job.startMonth, job.startYear)} –{" "}
+                  {job.isCurrent
+                    ? "Present"
+                    : formatDate(job.endMonth, job.endYear)}
+                </Text>
+              </View>
+
+              {/* Filter empty bullet points before rendering */}
+              <View style={styles.bullets}>
+                {job.bulletPoints
+                  .filter((bp) => bp.trim() !== "")
+                  .map((bp, i) => (
+                    <View key={i} style={styles.bulletPoint}>
+                      <Text style={styles.bulletSymbol}>•</Text>
+                      <Text style={styles.bulletText}>{bp}</Text>
+                    </View>
+                  ))}
+              </View>
+            </View>
+          ))}
         </View>
 
-        {/* Freelance */}
-        <View style={styles.jobBlock}>
-          <View style={styles.jobHeader}>
-            <Text style={styles.jobTitle}>Freelance Full Stack Developer</Text>
-            <Text style={styles.jobCompany}>January 2025 – June 2025</Text>
-          </View>
-          <Text style={styles.jobCompany}>Zexu Studio (Freelance) • Dallas, Texas</Text>
-          <Text style={styles.bullet}>
-            • Designed, developed, and maintained Full Stack websites for local
-            churches and small businesses, improving their online visibility and
-            increasing user engagement by 40% on average.
-          </Text>
-          <Text style={styles.bullet}>
-            • Integrated third-party tools like Google/Vercel Analytics, Stripe,
-            and Mailchimp while developing Mobile-First UIs using Next.js and
-            React Native, achieving 100% responsiveness across devices.
-          </Text>
-          <Text style={styles.bullet}>
-            • Optimized websites for local SEO, increasing organic traffic by
-            25%+ and improving search visibility on Google Maps and local
-            directories.
-          </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Projects</Text>
+
+          {projects.map((p, idx) => (
+            <View key={idx} style={{ marginBottom: 5 }}>
+              <View style={styles.projectHeader}>
+                <Text style={styles.bold}>{p.title}</Text>
+                <Text>{p.technologies?.join(", ")}</Text>
+              </View>
+
+              {/* Filter empty bullet points before rendering */}
+              <View style={styles.bullets}>
+                {p.bulletPoints
+                  ?.filter((bp) => bp && bp.trim() !== "")
+                  .map((bp, i) => (
+                    <View key={i} style={styles.bulletPoint}>
+                      <Text style={styles.bulletSymbol}>•</Text>
+                      <Text style={styles.bulletText}>{bp}</Text>
+                    </View>
+                  ))}
+              </View>
+            </View>
+          ))}
         </View>
-      </View>
-
-      {/* Projects */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Projects</Text>
-
-        <View style={{ marginBottom: 6 }}>
-          <Text style={styles.projectTitle}>Serenity</Text>
-          <Text style={styles.projectLine}>
-            Next.js, React.js, Typescript, Tailwind CSS, Supabase •
-            August 2025
-          </Text>
-          <Text style={styles.projectLine}>
-            • Developed and deployed a Full-stack Bible study web app enabling
-            users to read, highlight, and share scripture interactively.
-          </Text>
-        </View>
-
-        <View style={{ marginBottom: 6 }}>
-          <Text style={styles.projectTitle}>Woven Apparel</Text>
-          <Text style={styles.projectLine}>
-            Next.js, Typescript, Express.js, PostgreSQL • January 2025
-          </Text>
-          <Text style={styles.projectLine}>
-            • Developed and launched a Full-stack e-commerce platform for
-            Christian apparel generating over $1,000+ in revenue in the first
-            60 days.
-          </Text>
-        </View>
-      </View>
-
-      {/* Links */}
-      <View>
-        <Text style={styles.links}>tobiakere50@gmail.com</Text>
-        <Text style={styles.links}>https://github.com/tobidevs</Text>
-        <Text style={styles.links}>https://linkedin.com/in/tobiakere</Text>
-        <Text style={styles.links}>https://serenity-kohl-tau.vercel.app/</Text>
-        <Text style={styles.links}>https://woven-ecom.vercel.app/</Text>
-      </View>
-
-      {/* small footer toc */}
-      <View>
-        <Text style={styles.toc}>Technical Skills • Education • Experience • Projects</Text>
-      </View>
-    </Page>
-  </Document>
-);
-
-// Example viewer / download usage (in your React app):
-export const ResumeDownloadAndPreview = () => (
-  <div style={{ display: "flex", gap: 16, height: "100vh" }}>
-    <div style={{ flex: 1 }}>
-      <PDFViewer style={{ width: "100%", height: "100%" }}>
-        <ResumeDoc />
-      </PDFViewer>
-    </div>
-    <div style={{ width: 220, padding: 12 }}>
-      <PDFDownloadLink document={<ResumeDoc />} fileName="Tobi_Akere_Resume.pdf">
-        {({ loading }) => (loading ? "Preparing…" : "Download Resume PDF")}
-      </PDFDownloadLink>
-    </div>
-    
-  </div>
-);
+      </Page>
+    </Document>
+  );
+};

@@ -58,16 +58,16 @@ export function PersonalInfoSection({ onContinue }: SectionProps) {
           <div className="flex flex-col md:flex-row gap-5 w-full">
             <CustomTextField
               id="text"
-              label="LinkedIn URL"
-              placeholder="https://www.linkedin.com/in/name/"
+              label="LinkedIn Name"
+              placeholder="JohnDoe"
               description="Optional, But Recommended"
               value={personalInfo.linkedin}
               onChange={(e) => updatePersonalInfo({ linkedin: e.target.value })}
             />
             <CustomTextField
               id="text"
-              label="Github URL"
-              placeholder="https://github.com/name"
+              label="Github Username"
+              placeholder="JohnDoe"
               description="Optional, But Recommended"
               value={personalInfo.github}
               onChange={(e) => updatePersonalInfo({ github: e.target.value })}

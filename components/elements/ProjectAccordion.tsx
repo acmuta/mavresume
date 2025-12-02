@@ -10,11 +10,7 @@ export const ProjectAccordion = () => {
     <Accordion type="single" collapsible>
       {projects.map((_, index) => {
         return (
-          <ProjectAccordionItem
-            key={index}
-            index={index}
-            projects={projects}
-          />
+          <ProjectAccordionItem key={index} index={index} projects={projects} />
         );
       })}
     </Accordion>

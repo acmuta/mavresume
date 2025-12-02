@@ -7,8 +7,8 @@ interface NoteBoxProps {
 }
 
 export const NoteBox: React.FC<NoteBoxProps> = ({ icon = "Info", note }) => {
-
-  const LucideIcon = (Icons[icon as keyof typeof Icons] ?? Icons.Info) as React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  const LucideIcon = (Icons[icon as keyof typeof Icons] ??
+    Icons.Info) as React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
   return (
     <aside className="bg-[#274CBC]/20 w-full flex items-center p-3 text-white font-semibold rounded-2xl border-[2px] border-[#274CBC] border-dashed">

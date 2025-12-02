@@ -18,7 +18,6 @@ export function HeroSection() {
               Helping undergraduates quickly build tailored, professional
               resumes - simple, guided, and stress-free.
             </p>
-            
           </section>
         </Fade>
         {/* Icons */}
@@ -52,7 +51,6 @@ export function HeroSection() {
           />
         </section>
       </Fade>
-      
     </div>
   );
 }

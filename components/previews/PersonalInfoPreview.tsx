@@ -4,32 +4,35 @@ import { useResumeStore } from "../../store/useResumeStore";
 import { PlaceholderPreview } from "./PlaceholderPreview";
 
 export const PersonalInfoPreview = () => {
-  const resume = useResumeStore();
+  const { personalInfo } = useResumeStore();
 
-  if (!resume.personalInfo.name) {
+  if (!personalInfo.name) {
     return (
       <PlaceholderPreview
-        height="h-[70px] mt-2"
+        height="h-1/10 mt-2"
         description="Enter Name to Display!"
       />
     );
   }
+  const formattedLinkedIn = personalInfo.linkedin
+    ? `linkedin.com/in/${personalInfo.linkedin}`
+    : null;
+
+  const formattedGitHub = personalInfo.github
+    ? `github.com/${personalInfo.github}`
+    : null;
+
+  const contactItems = [
+    personalInfo.email,
+    personalInfo.phone,
+    formattedLinkedIn,
+    formattedGitHub,
+  ].filter(Boolean);
 
   return (
     <div className="w-full text-center">
-      <div className="">
-        <p className="text-[2.5em] font-bold">{resume.personalInfo.name}</p>
-      </div>
-      <p className="text-[1em]">
-        {[
-          resume.personalInfo.email,
-          resume.personalInfo.phone,
-          resume.personalInfo.linkedin,
-          resume.personalInfo.github,
-        ]
-          .filter(Boolean)
-          .join(" • ")}
-      </p>
+      <p className="text-[2.5em] font-bold">{personalInfo.name}</p>
+      <p className="text-[1.2em]">{contactItems.join(" • ")}</p>
     </div>
   );
 };

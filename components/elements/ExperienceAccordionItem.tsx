@@ -1,14 +1,15 @@
 import React, { useState } from "react";
+import { Experience, useResumeStore } from "../../store/useResumeStore";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Combobox } from "../ui/combobox";
-import { Project, useResumeStore } from "../../store/useResumeStore";
 import { CustomTextField } from "./CustomTextField";
-import { Technologies } from "../../data/university-data";
-import { Dot, Wand2, Loader2 } from "lucide-react";
+import { Combobox } from "../ui/combobox";
+import { months, years } from "../../data/university-data";
+import { Label } from "../ui/label";
+import { Wand2, Loader2 } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
@@ -22,16 +23,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-interface ProjectAccordionItemProps {
+interface ExperienceAccordionItemProps {
   index: number;
-  projects: Project[];
+  experience: Experience[];
 }
 
-export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
-  index,
-  projects,
-}) => {
-  const { updateProject } = useResumeStore();
+export const ExperienceAccordionItem: React.FC<
+  ExperienceAccordionItemProps
+> = ({ index, experience }) => {
+  const { updateExperience } = useResumeStore();
   const [isRefiningAll, setIsRefiningAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -42,20 +42,20 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   >([]);
 
   /**
-   * Refines all non-empty bullet points for this project entry in batch.
+   * Refines all non-empty bullet points for this experience entry in batch.
    *
    * Data flow:
    * 1. Filter non-empty bullets from the array (may have empty slots)
-   * 2. Call refineBulletPoints with project context (title + technologies)
+   * 2. Call refineBulletPoints with experience context (position + company)
    * 3. Collect successful refinements and open overlay dialog
    * 4. Users can accept/decline each refinement in the overlay
    *
-   * Projects include technologies in context (unlike experiences) to help AI
-   * generate more technically accurate refinements.
+   * The mapping logic preserves the original array structure: empty slots stay empty,
+   * and refined bullets are shown in the overlay for review.
    */
   const handleRefineAll = async () => {
-    const project = projects[index];
-    const nonEmptyBullets = project.bulletPoints.filter(
+    const exp = experience[index];
+    const nonEmptyBullets = exp.bulletPoints.filter(
       (bp) => bp && bp.trim().length > 0
     );
 
@@ -69,11 +69,9 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
     setError(null);
 
     try {
-      // Pass project context (title + technologies) to help AI generate
-      // technically accurate and relevant refinements
+      // Pass experience context (position + company) to help AI generate relevant refinements
       const results = await refineBulletPoints(nonEmptyBullets, {
-        title: project.title,
-        technologies: project.technologies,
+        title: `${exp.position} at ${exp.company}`,
       });
 
       // Check for errors - batch may partially succeed
@@ -94,15 +92,12 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
         refined: string;
       }> = [];
       let resultIndex = 0;
-      for (let i = 0; i < project.bulletPoints.length; i++) {
-        if (
-          project.bulletPoints[i] &&
-          project.bulletPoints[i].trim().length > 0
-        ) {
+      for (let i = 0; i < exp.bulletPoints.length; i++) {
+        if (exp.bulletPoints[i] && exp.bulletPoints[i].trim().length > 0) {
           if (results[resultIndex] && !results[resultIndex].error) {
             refinements.push({
               index: i,
-              original: project.bulletPoints[i],
+              original: exp.bulletPoints[i],
               refined: results[resultIndex].refinedText,
             });
           }
@@ -129,9 +124,9 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
     const refinement = batchRefinements.find((r) => r.index === bulletIndex);
     if (refinement) {
       // Update store with refined text
-      const newBulletPoints = [...projects[index].bulletPoints];
+      const newBulletPoints = [...experience[index].bulletPoints];
       newBulletPoints[bulletIndex] = refinement.refined;
-      updateProject(index, { bulletPoints: newBulletPoints });
+      updateExperience(index, { bulletPoints: newBulletPoints });
 
       // Remove from batch refinements
       setBatchRefinements((prev) =>
@@ -159,11 +154,11 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
 
   const handleAcceptAll = () => {
     // Update store with all refined texts
-    const newBulletPoints = [...projects[index].bulletPoints];
+    const newBulletPoints = [...experience[index].bulletPoints];
     batchRefinements.forEach((refinement) => {
       newBulletPoints[refinement.index] = refinement.refined;
     });
-    updateProject(index, { bulletPoints: newBulletPoints });
+    updateExperience(index, { bulletPoints: newBulletPoints });
 
     // Close overlay and clear refinements
     setShowRefineAllOverlay(false);
@@ -179,54 +174,93 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   return (
     <AccordionItem value={`Project-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        Project #{index + 1}
-        {projects[index]?.title && ` - ${projects[index].title}`}
+        Experience #{index + 1}
+        {experience[index]?.position && ` - ${experience[index].position}`}
       </AccordionTrigger>
       <AccordionContent>
         <div className="w-full font-semibold flex gap-4 justify-center items-center">
           <div className="w-9/10 flex flex-col gap-2">
             <div className="flex w-full flex-col gap-2 items-center">
               <div className="flex w-full gap-2 items-center">
-                <label>Project Title:</label>
+                <label>Position:</label>
                 <CustomTextField
                   id="text"
-                  placeholder="Project Title"
-                  value={projects[index].title}
+                  placeholder="Position Title"
+                  value={experience[index].position}
                   onChange={(e) => {
-                    updateProject(index, { title: e.target.value });
+                    updateExperience(index, { position: e.target.value });
                   }}
                 />
+                <label>at</label>
+                <CustomTextField
+                  id="text"
+                  placeholder="Company Name"
+                  value={experience[index].company}
+                  onChange={(e) => {
+                    updateExperience(index, { company: e.target.value });
+                  }}
+                />
+                <input
+                  type="checkbox"
+                  checked={experience[index].isCurrent}
+                  onChange={(e) => {
+                    updateExperience(index, { isCurrent: e.target.checked });
+                  }}
+                  className="checkbox border border-[#6F748B] hover:border-white transition"
+                />
+                <Label>Current Position</Label>
               </div>
 
               <div className="flex w-full gap-2 items-center">
-                <label>Technologies Used:</label>
+                <label>Date:</label>
+
                 <Combobox
-                  items={Technologies}
-                  placeholder="Selected Technologies..."
-                  value={projects[index].technologies}
-                  onChange={(selectedItems) => {
-                    updateProject(index, {
-                      technologies: Array.isArray(selectedItems)
-                        ? selectedItems
-                        : selectedItems
-                        ? [selectedItems]
-                        : undefined,
-                    });
-                  }}
-                  multiSelect
+                  items={months}
+                  placeholder="Select Month"
+                  onChange={(val) =>
+                    updateExperience(index, { startMonth: val as string })
+                  }
                 />
+                <Combobox
+                  items={years}
+                  placeholder="Select Year"
+                  onChange={(val) =>
+                    updateExperience(index, { startYear: val as string })
+                  }
+                />
+                <label> - </label>
+                {!experience[index].isCurrent ? (
+                  <div className="flex gap-2">
+                    <Combobox
+                      items={months}
+                      placeholder="Select Month"
+                      onChange={(val) =>
+                        updateExperience(index, { endMonth: val as string })
+                      }
+                    />
+                    <Combobox
+                      items={years}
+                      placeholder="Select Year"
+                      onChange={(val) =>
+                        updateExperience(index, { endYear: val as string })
+                      }
+                    />
+                  </div>
+                ) : (
+                  <Label>Present</Label>
+                )}
               </div>
               <div className="flex flex-col w-full gap-2 items-start">
                 <div className="flex items-center justify-between w-full">
                   <label htmlFor="" className="text-lg">
-                    Describe the project in bullet points
+                    Describe your role and achievements:
                   </label>
                   <button
                     type="button"
                     onClick={handleRefineAll}
                     disabled={
                       isRefiningAll ||
-                      !projects[index].bulletPoints.some(
+                      !experience[index].bulletPoints.some(
                         (bp) => bp && bp.trim().length > 0
                       )
                     }
@@ -247,22 +281,22 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                   </button>
                 </div>
 
-                {projects[index].bulletPoints.map((bp, bpIndex) => (
+                {experience[index].bulletPoints.map((bp, bpIndex) => (
                   <div key={bpIndex} className="flex flex-col w-full gap-2">
                     <div className="flex items-center w-full gap-2">
                       <p className="text-2xl">&bull;</p>
                       <input
                         className="flex flex-wrap text-sm w-full border-b py-2 border-[#6F748B] 
-                 focus:outline-none focus:border-white hover:text-white 
-                 hover:border-white transition"
+                             focus:outline-none focus:border-white hover:text-white 
+                             hover:border-white transition"
                         placeholder={`Bullet Point #${bpIndex + 1}`}
                         value={bp}
                         onChange={(e) => {
                           const newBulletPoints = [
-                            ...projects[index].bulletPoints,
+                            ...experience[index].bulletPoints,
                           ];
                           newBulletPoints[bpIndex] = e.target.value;
-                          updateProject(index, {
+                          updateExperience(index, {
                             bulletPoints: newBulletPoints,
                           });
                         }}
@@ -277,8 +311,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                           }));
                         }}
                         context={{
-                          title: projects[index].title,
-                          technologies: projects[index].technologies,
+                          title: `${experience[index].position} at ${experience[index].company}`,
                         }}
                       />
                     </div>
@@ -289,10 +322,10 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                         onAccept={() => {
                           // Update store with refined text
                           const newBulletPoints = [
-                            ...projects[index].bulletPoints,
+                            ...experience[index].bulletPoints,
                           ];
                           newBulletPoints[bpIndex] = previewTexts[bpIndex];
-                          updateProject(index, {
+                          updateExperience(index, {
                             bulletPoints: newBulletPoints,
                           });
                           // Remove from preview state
@@ -331,7 +364,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
       />
 
       <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
-        <DialogContent className="bg-[#151618] w-1/3 border-[#1c1d21] text-white">
+        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
           <DialogHeader>
             <DialogTitle className="text-red-400">Refinement Error</DialogTitle>
             <DialogDescription className="text-[#a4a7b5]">

@@ -1,27 +1,44 @@
 import { Plus } from "lucide-react";
 import { CustomSectionTitle } from "../elements/CustomSectionTitle";
 import { NoteBox } from "../elements/NoteBox";
-import { utaEngineeringCourses } from "../../data/university-data";
+import {
+  Technologies,
+  utaEngineeringCourses,
+} from "../../data/university-data";
 import { useResumeStore } from "../../store/useResumeStore";
+import { Combobox } from "../ui/combobox";
+import { TechnicalSkillsAccordion } from "../elements/TechnicalSkillsAccordion";
 
 interface SectionProps {
   onContinue: () => void;
 }
 
 export function TechnicalSkillsSection({ onContinue }: SectionProps) {
-  const { relevantCourses } = useResumeStore();
+  const { relevantCourses, skills, addSkills } = useResumeStore();
 
-  const recommendations = utaEngineeringCourses
-    .filter((course) => relevantCourses?.includes(course.name))
-    .reduce<{ languages: string[]; tools: string[] }>(
-      (acc, course) => ({
-        languages: [...acc.languages, ...course.languages],
-        tools: [...acc.tools, ...course.tools],
-      }),
-      { languages: [], tools: [] }
+  const recommendations = (() => {
+    const selected = utaEngineeringCourses.filter((c) =>
+      relevantCourses?.includes(c.value)
     );
-    
-  console.log("Relevant Courses:", recommendations);
+
+    const allLanguages = [...new Set(selected.flatMap((c) => c.languages))];
+    const allTechnologies = [...new Set(selected.flatMap((c) => c.tools))];
+
+    return {
+      languages: allLanguages.filter(
+        (lang) => !skills.languagesList.includes(lang)
+      ),
+      technologies: allTechnologies.filter(
+        (tech) => !skills.technologiesList.includes(tech)
+      ),
+    };
+  })();
+
+  const clearInputs = () => {
+    useResumeStore.setState({
+      skills: { languagesList: [], technologiesList: [] },
+    });
+  };
 
   return (
     <div className="flex w-full h-full items-center justify-center">
@@ -36,30 +53,21 @@ export function TechnicalSkillsSection({ onContinue }: SectionProps) {
             icon="Lightbulb"
             note="Based on your previous courses, we've identified languages and technologies to highlight on your resume!"
           />
-          <div>
-            <h2 className="text-xl font-semibold ">
-              Your Recommended Languages
-            </h2>
-            <div className="mt-2 flex flex-wrap gap-2 mb-3">
-              {/* Example skill tags */}
-              {recommendations.languages.length != 0 ? (
-                recommendations.languages.map((language, index) => (
-                  <button className="flex items-center px-2 py-1 italic bg-[#282a2f]/20 font-semibold text-white transition hover:border-[#b1b3b6] rounded-2xl border-[2px] border-dashed border-[#41444c]">
-                    <Plus className="inline mr-1 max-w-12" />
-                    <span className="">{language}</span>
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-[#51545c]">
-                  No recommendations yet.
-                </p>
-              )}
-            </div>
-
-            <div className="w-full p-2 h-30 flex bg-[#282a2f]/20 rounded-2xl border-[2px] border-[#41444c]">
-              {}
-            </div>
-          </div>
+          <TechnicalSkillsAccordion />
+        </section>
+        <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
+          <button
+            className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
+            onClick={clearInputs}
+          >
+            Clear Inputs
+          </button>
+          <button
+            className="btn w-[49%] font-bold bg-[#274CBC] rounded-xl border border-[#2a4fbe]"
+            onClick={onContinue}
+          >
+            Next<span className="hidden md:block">: Projects</span>
+          </button>
         </section>
       </div>
     </div>

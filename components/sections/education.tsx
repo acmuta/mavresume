@@ -18,6 +18,8 @@ export function EducationSection({ onContinue }: SectionProps) {
       school: "",
       degree: "",
       major: "",
+      includeGPA: false,
+      graduationMonth: "",
       graduationYear: "",
     };
     useResumeStore.setState({ education: [emptyEducation] });
@@ -33,7 +35,6 @@ export function EducationSection({ onContinue }: SectionProps) {
         />
 
         <section className="mt-4 flex flex-col gap-3 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
-
           <EducationAccordion />
 
           <button
@@ -43,6 +44,8 @@ export function EducationSection({ onContinue }: SectionProps) {
                 school: "",
                 degree: "",
                 major: "",
+                includeGPA: false,
+                graduationMonth: "",
                 graduationYear: "",
               })
             }
@@ -73,7 +76,6 @@ export function EducationSection({ onContinue }: SectionProps) {
                     : undefined,
                 })
               }
-              
               placeholder="Select Courses..."
               multiSelect
             />

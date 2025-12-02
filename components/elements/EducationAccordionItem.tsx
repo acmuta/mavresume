@@ -5,8 +5,16 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { Combobox } from "../ui/combobox";
-import { degreeData, majorData, universitiesData } from "../../data/university-data";
+import {
+  degreeData,
+  majorData,
+  months,
+  universitiesData,
+} from "../../data/university-data";
 import { Education, useResumeStore } from "../../store/useResumeStore";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
+import { CustomTextField } from "./CustomTextField";
 
 interface EducationAccordionItemProps {
   index: number;
@@ -34,7 +42,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
               <label>Select University:</label>
               <Combobox
                 items={universitiesData}
-                placeholder="Select University..."
+                placeholder="Select University"
                 value={education[index].school}
                 onChange={(val) => {
                   updateEducation(index, {
@@ -43,10 +51,20 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
                 }}
               />
 
-              <label>Grad Year:</label>
+              <label>Gradation Date:</label>
+              <Combobox
+                items={months}
+                value={education[index].graduationMonth}
+                onChange={(val) =>
+                  updateEducation(index, {
+                    graduationMonth: Array.isArray(val) ? val[0] : val,
+                  })
+                }
+                placeholder="Grad Month"
+              />
               <Combobox
                 items={["2025", "2026", "2027", "2028", "2029"]}
-                placeholder="Graduation Year..."
+                placeholder="Grad Year"
                 value={education[index].graduationYear}
                 onChange={(val) =>
                   updateEducation(index, {
@@ -62,7 +80,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
 
               <Combobox
                 items={degreeData}
-                placeholder="Select Degree..."
+                placeholder="Select Degree"
                 value={education[index].degree}
                 onChange={(val) =>
                   updateEducation(index, {
@@ -75,7 +93,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
 
               <Combobox
                 items={majorData}
-                placeholder="Select Major..."
+                placeholder="Select Major"
                 value={education[index].major}
                 onChange={(val) =>
                   updateEducation(index, {
@@ -83,6 +101,27 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
                   })
                 }
               />
+            </div>
+            <div className="flex gap-2 items-center">
+              <input
+                type="checkbox"
+                checked={education[index].includeGPA}
+                onChange={(e) => {
+                  updateEducation(index, { includeGPA: e.target.checked });
+                }}
+                className="checkbox border border-[#6F748B] hover:border-white transition"
+              />
+              <Label htmlFor="gpa">Include GPA on Resume</Label>
+              {education[index].includeGPA && (
+                <CustomTextField
+                  id="text"
+                  placeholder="Enter GPA"
+                  value={education[index].gpa}
+                  onChange={(e) =>
+                    updateEducation(index, { gpa: e.target.value })
+                  }
+                />
+              )}
             </div>
           </div>
         </div>

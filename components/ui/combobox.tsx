@@ -30,6 +30,7 @@ interface ComboboxProps {
   inputClassName?: string
   itemClassName?: string
   multiSelect?: boolean 
+  disableDisplayValue?: boolean
 }
 
 export function Combobox({
@@ -42,13 +43,13 @@ export function Combobox({
   inputClassName,
   itemClassName,
   multiSelect = false,
+  disableDisplayValue = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState<string | string[]>(
     controlledValue || (multiSelect ? [] : "")
   )
 
-  // Sync external value
   React.useEffect(() => {
     if (controlledValue !== undefined) setValue(controlledValue)
   }, [controlledValue])
@@ -70,7 +71,6 @@ export function Combobox({
     }
   }
 
-  // Normalize items
   const normalized = items.map((item) =>
     typeof item === "string"
       ? { name: item, value: item }
@@ -100,7 +100,7 @@ export function Combobox({
             triggerClassName
           )}
         >
-          <span className="truncate">{displayValue}</span>
+          {!disableDisplayValue ? <span className="truncate">{displayValue}</span> : <span>{placeholder}</span>}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
