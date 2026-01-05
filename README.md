@@ -119,8 +119,6 @@ npm run build
 npm start
 ```
 
-No environment variables are required today.
-
 ## Contributing
 
 Issues and PRs are welcome! A few contribution ideas:
