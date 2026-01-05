@@ -133,7 +133,7 @@ export default function Home() {
                 <Fade direction="up" duration={800} delay={200} triggerOnce>
                   <div className="space-y-4">
                     <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-                      Built for students who don't know where to start.
+                      Built for students who don&apos;t know where to start.
                     </h1>
                     <p className="text-lg text-[#cfd3e1] sm:text-xl">
                       MavResume welcomes undergrads into an easy, guided flow
