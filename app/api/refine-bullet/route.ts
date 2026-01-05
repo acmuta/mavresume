@@ -9,7 +9,7 @@ const openai = new OpenAI({
  * API endpoint for AI-powered bullet point refinement.
  *
  * Accepts a bullet point and optional context (title, technologies) to generate
- * a more impactful, ATS-friendly version using OpenAI's GPT-3.5-turbo model.
+ * a more impactful, ATS-friendly version using OpenAI's GPT-4o-mini model.
  *
  * Data flow: Client → POST /api/refine-bullet → OpenAI API → Refined text → Client
  *

@@ -158,3 +158,6 @@ To customize file naming:
 - `@react-pdf/renderer`: PDF generation library
 - `zustand`: State management (store access)
 
+
+
+

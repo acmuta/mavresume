@@ -93,3 +93,6 @@ To modify refinement behavior:
 - `components/elements/ExperienceAccordionItem.tsx` - Experience batch refinement
 - `components/elements/ProjectAccordionItem.tsx` - Project batch refinement
 
+
+
+

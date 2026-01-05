@@ -12,7 +12,6 @@ import {
   universitiesData,
 } from "../../data/university-data";
 import { Education, useResumeStore } from "../../store/useResumeStore";
-import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { CustomTextField } from "./CustomTextField";
 
