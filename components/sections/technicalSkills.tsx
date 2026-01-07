@@ -42,20 +42,20 @@ export function TechnicalSkillsSection({ onContinue }: SectionProps) {
 
   return (
     <div className="flex w-full h-full items-center justify-center">
-      <div className="md:flex flex-col border-2 p-7 bg-[#151618] border-[#1c1d21] rounded-2xl w-full">
+      <div className="md:flex flex-col p-7 w-full">
         {/* Title and Description */}
         <CustomSectionTitle
           title="Technical Skills"
           description="Highlight the tools, technologies, and strengths you bring to the table."
         />
-        <section className="mt-4 flex flex-col gap-3 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
+        <section className="mt-4 flex flex-col gap-3 p-4">
           <NoteBox
             icon="Lightbulb"
             note="Based on your previous courses, we've identified languages and technologies to highlight on your resume!"
           />
           <TechnicalSkillsAccordion />
         </section>
-        <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
+        {/* <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
           <button
             className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
             onClick={clearInputs}
@@ -68,7 +68,7 @@ export function TechnicalSkillsSection({ onContinue }: SectionProps) {
           >
             Next<span className="hidden md:block">: Projects</span>
           </button>
-        </section>
+        </section> */}
       </div>
     </div>
   );
