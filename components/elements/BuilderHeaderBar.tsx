@@ -1,34 +1,33 @@
 "use client";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Fade } from "react-awesome-reveal";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 
-export const BuilderHeaderBar = () => {
-  const [activeSection, setActiveSection] = useState("personal-info");
+interface BuilderHeaderBarProps {
+  currentSectionIndex: number;
+}
 
-  useEffect(() => {
-    const sections = document.querySelectorAll("div[id]");
+export const BuilderHeaderBar = ({ currentSectionIndex }: BuilderHeaderBarProps) => {
+  // Map section index to section ID for styling
+  const sectionIds = [
+    "personal-info",
+    "education",
+    "technical-skills",
+    "projects",
+    "experience",
+  ];
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        root: null,
-        threshold: 0.35, // works better with animations
-      }
-    );
+  const sectionNames = [
+    "Personal Info",
+    "Education",
+    "Skills",
+    "Projects",
+    "Experience",
+  ];
 
-    sections.forEach((sec) => observer.observe(sec));
-
-    return () => observer.disconnect();
-  }, []);
+  const activeSection = sectionIds[currentSectionIndex] || "personal-info";
 
   return (
     <Fade
@@ -36,78 +35,73 @@ export const BuilderHeaderBar = () => {
       duration={500}
       className="relative w-full overflow-hidden"
     >
+      {/* Backdrop blur mask matching HomeHeaderBar */}
+      <div
+        className="absolute inset-0 backdrop-blur-sm 
+        [mask-image:linear-gradient(to_top,rgba(0,0,0,1)_0%,rgba(0,0,0,0.6)_40%,rgba(0,0,0,0)_100%)]
+        pointer-events-none z-0"
+      />
+
       {/* Header content */}
-      <section className="relative flex items-center justify-between w-full p-6 z-10 bg-gradient-to-b from-[#101113] from-1% to-transparent">
-        <Link
-          href={"/"}
-          className="text-xl w-1/2 md:w-1/4 text-center md:text-4xl font-bold mb-2 [mask-image:linear-gradient(to_bottom,black_40%,transparent)] [mask-size:100%_100%] [mask-repeat:no-repeat]"
+      <header className="relative z-10 w-full px-4 py-3 sm:px-6 lg:px-8">
+        <div
+          className="mx-auto flex max-w-2xl flex-col gap-3 
+          rounded-2xl border border-white/10 
+          bg-[#05060a]/80 shadow-[0_18px_45px_rgba(0,0,0,0.65)] 
+          px-4 py-3"
         >
-          MAV<span className="font-extralight">RESUME</span>
-        </Link>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className="font-bold tracking-tight text-2xl sm:text-4xl 
+                [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
+                [mask-size:100%_100%] [mask-repeat:no-repeat]"
+              >
+                MAV<span className="font-extralight">RESUME</span>
+              </Link>
 
-        <nav className="hidden md:flex w-fit font-semibold justify-center items-center gap-2">
-          <h2
-            className={`transition ${
-              activeSection === "personal-info" ? "text-white" : "text-gray-500"
-            }
-            `}
-          >
-            Personal Info
-          </h2>
-          <ChevronRight />
+              <span
+                className="hidden sm:inline-flex rounded-full text-xs border border-[#2b3242] 
+                bg-white/5 px-3 py-0.5 font-medium uppercase tracking-[0.2em] 
+                text-[#89a5ff]"
+              >
+                Builder
+              </span>
+            </div>
 
-          <h2
-            className={`transition ${
-              activeSection === "education" ? "text-white" : "text-gray-500"
-            }`}
-          >
-            Education
-          </h2>
-          <ChevronRight />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                href="https://www.acmuta.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hidden lg:inline-flex items-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a] px-3 py-1 text-xs font-medium text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white transition-colors"
+              >
+                <span>ACM @ UTA</span>
+              </Link>
+              <Link
+                href="https://discord.gg/WjrDwNn5es"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[#2b3242] bg-[#10121a] text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white transition-colors"
+                aria-label="Discord"
+              >
+                <FaDiscord className="w-4 h-4" />
+              </Link>
+              <Link
+                href="https://github.com/acmuta/mavresume"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[#2b3242] bg-[#10121a] text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white transition-colors"
+                aria-label="GitHub"
+              >
+                <FaGithub className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
 
-          <h2
-            className={`transition ${
-              activeSection === "technical-skills"
-                ? "text-white"
-                : "text-gray-500"
-            }`}
-          >
-            Technical Skills
-          </h2>
-          <ChevronRight />
-
-          <h2
-            className={`transition ${
-              activeSection === "projects" ? "text-white" : "text-gray-500"
-            }`}
-          >
-            Projects
-          </h2>
-          <ChevronRight />
-
-          <h2
-            className={`transition ${
-              activeSection === "experience" ? "text-white" : "text-gray-500"
-            }`}
-          >
-            Experience
-          </h2>
-        </nav>
-
-        <div className="w-1/4 flex gap-4">
-          <Link href="https://www.acmuta.com" className="flex items-center">
-            <p className="font-bold text-[#51545c] hover:text-white transition cursor-pointer">
-              Developed By ACM @ UTA
-            </p>
-          </Link>
-          <Link href="https://discord.gg/WjrDwNn5es">
-            <FaDiscord className="w-6 h-6 text-[#51545c] hover:text-white transition cursor-pointer mx-auto" />
-          </Link>
-          <Link href="https://github.com/acmuta/mavresume">
-            <FaGithub className="w-6 h-6 text-[#51545c] hover:text-white transition cursor-pointer mx-auto" />
-          </Link>
         </div>
-      </section>
+      </header>
     </Fade>
   );
 };
