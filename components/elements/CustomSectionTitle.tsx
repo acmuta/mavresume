@@ -39,7 +39,7 @@ export const CustomSectionTitle: React.FC<CustomSectionTitleProps> = ({
       <div className="w-full flex items-start justify-between gap-4">
         <div className="flex-1 space-y-3">
           <div className="flex items-center gap-3">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-white">
+          <h1 className="text-3xl md:text-5xl font-bold leading-tight text-white">
             {title}
           </h1>
           <Dialog>
@@ -66,7 +66,7 @@ export const CustomSectionTitle: React.FC<CustomSectionTitleProps> = ({
           </div>
           
 
-          <p className="text-base sm:text-lg text-[#cfd3e1] max-w-3xl">
+          <p className="text-base md:text-xl text-[#cfd3e1] max-w-3xl">
             {description}
           </p>
         </div>

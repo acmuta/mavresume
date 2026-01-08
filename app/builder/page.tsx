@@ -76,110 +76,124 @@ export default function BuilderPage() {
 
       {/* Main content area matching landing page structure */}
       <main className="relative z-10 px-4 pb-20 lg:px-8">
-        <BuilderHeaderBar currentSectionIndex={currentSectionIndex} />
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 pt-6">
+        <div
+          className="font-bold tracking-tight text-5xl 
+                [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
+                [mask-size:100%_100%] [mask-repeat:no-repeat] mt-2 mb-8 pointer-events-none"
+        >
+          RESUME<span className="font-extralight">BUILDER</span>
+        </div>
+
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
           {/* Navigation controls */}
-          
-          <div className="flex items-center justify-center gap-5">
 
-            {/* Left navigation arrow */}
-            {currentSectionIndex > 0 && (
-              <Button
-                onClick={goToPrevious}
-                disabled={isTransitioning}
-                variant="outline"
-                size="icon-lg"
-                className="z-40
-                rounded-2xl border-2 border-dashed border-[#2d313a]
+          <div
+            className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-[#1b1d20]
+                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,_#1c2233,_#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
+          >
+            <div className="flex flex-col items-center">
+              <h1 className="text-md font-bold ">Navigation</h1>
+              <div className="flex items-center gap-2">
+                {/* Left navigation arrow */}
+                {currentSectionIndex > 0 && (
+                  <Button
+                    onClick={goToPrevious}
+                    disabled={isTransitioning}
+                    variant="outline"
+                    size="icon-lg"
+                    className="z-40
+                rounded-2xl border-2 border-[#2d313a]
                 bg-[#151618]/80 backdrop-blur-sm
                 text-white hover:text-white
                 hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
                 transition-all duration-300
                 disabled:opacity-50 disabled:cursor-not-allowed
                 shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                aria-label="Previous section"
-              >
-                <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
-              </Button>
-            )}
+                    aria-label="Previous section"
+                  >
+                    <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
+                  </Button>
+                )}
 
-            {/* Navigation steps */}
-            <nav className="hidden md:flex items-center gap-1.5 text-sm font-medium">
-              <span
-                className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                  activeSection === "personal-info"
-                    ? "text-white bg-white/10"
-                    : "text-[#6d7895] hover:text-[#cfd3e1]"
-                }`}
-              >
-                Personal Info
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+                {/* Navigation steps */}
+                <nav className="hidden md:flex items-center gap-1.5 text-md font-bold">
+                  <span
+                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                      activeSection === "personal-info"
+                        ? "text-white bg-white/10"
+                        : "text-[#6d7895] hover:text-[#cfd3e1]"
+                    }`}
+                  >
+                    Personal Info
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
 
-              <span
-                className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                  activeSection === "education"
-                    ? "text-white bg-white/10"
-                    : "text-[#6d7895] hover:text-[#cfd3e1]"
-                }`}
-              >
-                Education
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+                  <span
+                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                      activeSection === "education"
+                        ? "text-white bg-white/10"
+                        : "text-[#6d7895] hover:text-[#cfd3e1]"
+                    }`}
+                  >
+                    Education
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
 
-              <span
-                className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                  activeSection === "technical-skills"
-                    ? "text-white bg-white/10"
-                    : "text-[#6d7895] hover:text-[#cfd3e1]"
-                }`}
-              >
-                Skills
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+                  <span
+                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                      activeSection === "technical-skills"
+                        ? "text-white bg-white/10"
+                        : "text-[#6d7895] hover:text-[#cfd3e1]"
+                    }`}
+                  >
+                    Skills
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
 
-              <span
-                className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                  activeSection === "projects"
-                    ? "text-white bg-white/10"
-                    : "text-[#6d7895] hover:text-[#cfd3e1]"
-                }`}
-              >
-                Projects
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+                  <span
+                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                      activeSection === "projects"
+                        ? "text-white bg-white/10"
+                        : "text-[#6d7895] hover:text-[#cfd3e1]"
+                    }`}
+                  >
+                    Projects
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
 
-              <span
-                className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                  activeSection === "experience"
-                    ? "text-white bg-white/10"
-                    : "text-[#6d7895] hover:text-[#cfd3e1]"
-                }`}
-              >
-                Experience
-              </span>
-            </nav>
+                  <span
+                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                      activeSection === "experience"
+                        ? "text-white bg-white/10"
+                        : "text-[#6d7895] hover:text-[#cfd3e1]"
+                    }`}
+                  >
+                    Experience
+                  </span>
+                </nav>
 
-            {/* Right navigation arrow - hidden on last section */}
-            {currentSectionIndex < sections.length - 1 && (
-              <Button
-                onClick={goToNext}
-                disabled={isTransitioning}
-                variant="outline"
-                size="icon-lg"
-                className="z-40
-                rounded-2xl border-2 border-dashed border-[#2d313a]
+                {/* Right navigation arrow - hidden on last section */}
+                {currentSectionIndex < sections.length - 1 && (
+                  <Button
+                    onClick={goToNext}
+                    disabled={isTransitioning}
+                    variant="outline"
+                    size="icon-lg"
+                    className="z-40
+                rounded-2xl border-2 border-[#2d313a]
                 bg-[#151618]/80 backdrop-blur-sm
                 text-white hover:text-white
                 hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
                 transition-all duration-300
                 disabled:opacity-50 disabled:cursor-not-allowed
                 shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                aria-label="Next section"
-              >
-                <ChevronRight className="w-6 h-6 md:w-7 md:h-7" />
-              </Button>
-            )}
+                    aria-label="Next section"
+                  >
+                    <ChevronRight className="w-6 h-6 md:w-7 md:h-7" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Section container with hero-like panel framing */}
