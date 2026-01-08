@@ -75,9 +75,9 @@ export default function BuilderPage() {
       <div className="absolute inset-0 " />
 
       {/* Main content area matching landing page structure */}
-      <main className="relative z-10 px-4 pb-20 lg:px-8">
-        <BuilderHeaderBar currentSectionIndex={currentSectionIndex} />
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 pt-6">
+      <main className="relative z-10 px-4 py-20 lg:px-8">
+        
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 ">
           {/* Navigation controls */}
           
           <div className="flex items-center justify-center gap-5">
@@ -104,7 +104,7 @@ export default function BuilderPage() {
             )}
 
             {/* Navigation steps */}
-            <nav className="hidden md:flex items-center gap-1.5 text-sm font-medium">
+            <nav className="hidden md:flex items-center gap-1.5 text-md font-bold">
               <span
                 className={`px-2 py-1 rounded-lg transition-all duration-200 ${
                   activeSection === "personal-info"

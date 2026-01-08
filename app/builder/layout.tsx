@@ -33,7 +33,7 @@ export default function BuildLayout({
             {/* Header with landing-style typography */}
             <div className="flex h-12 pb-4 justify-between items-center border-b border-[#2d313a]/50">
               <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-bold text-white">
+                <h2 className="text-lg font-bold ">
                   Live Resume Preview
                 </h2>
                 
@@ -43,7 +43,7 @@ export default function BuildLayout({
                 <ResumeDocDownloadButton />
               </div>
             </div>
-            <div className="pt-4">
+            <div className="">
               <ResumePreview />
             </div>
           </div>
