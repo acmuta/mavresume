@@ -8,7 +8,7 @@ import { Combobox } from "../ui/combobox";
 import { Project, useResumeStore } from "../../store/useResumeStore";
 import { CustomTextField } from "./CustomTextField";
 import { Technologies } from "../../data/university-data";
-import { Dot, Wand2, Loader2 } from "lucide-react";
+import { Dot, Wand2, Loader2, X } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
@@ -31,7 +31,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   index,
   projects,
 }) => {
-  const { updateProject } = useResumeStore();
+  const { updateProject, removeProject } = useResumeStore();
   const [isRefiningAll, setIsRefiningAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -40,6 +40,12 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   const [batchRefinements, setBatchRefinements] = useState<
     Array<{ index: number; original: string; refined: string }>
   >([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = () => {
+    removeProject(index);
+    setShowDeleteDialog(false);
+  };
 
   /**
    * Refines all non-empty bullet points for this project entry in batch.
@@ -179,8 +185,22 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
   return (
     <AccordionItem value={`Project-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        Project #{index + 1}
-        {projects[index]?.title && ` - ${projects[index].title}`}
+        <span className="flex-1 text-left">
+          Project #{index + 1}
+          {projects[index]?.title && ` - ${projects[index].title}`}
+        </span>
+        {projects.length > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDeleteDialog(true);
+            }}
+            className="ml-2 p-1 rounded-full hover:bg-[#2d313a] transition-colors opacity-70 hover:opacity-100"
+            aria-label="Delete project entry"
+          >
+            <X className="size-4" />
+          </button>
+        )}
       </AccordionTrigger>
       <AccordionContent>
         <div className="w-full font-semibold flex gap-4 justify-center items-center">
@@ -344,6 +364,32 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
               className="bg-[#274CBC] hover:bg-[#315be1]"
             >
               Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-[#151618] w-[30vw] border-[#1c1d21] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-blue-200">Delete Project Entry?</DialogTitle>
+            <DialogDescription className="text-[#a4a7b5]">
+              Are you sure you want to delete this project entry? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              onClick={() => setShowDeleteDialog(false)}
+              variant="outline"
+              className="hover:text-white bg-[#151618] border border-[#2d313a] hover:bg-[#1c1d21]"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              className="border border-[#2d313a] hover:bg-[#1c1d21]"
+            >
+              Delete
             </Button>
           </div>
         </DialogContent>

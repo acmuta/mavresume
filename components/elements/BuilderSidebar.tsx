@@ -98,8 +98,8 @@ export const BuilderSidebar = () => {
                          transition-all duration-300 ease-in-out whitespace-nowrap
                          ${
                            isExpanded
-                             ? "opacity-0 scale-90 pointer-events-none"
-                             : "opacity-100 scale-100"
+                             ? "opacity-0  pointer-events-none"
+                             : "opacity-100 "
                          }`}
             >
               M
@@ -109,8 +109,8 @@ export const BuilderSidebar = () => {
               className={`transition-all duration-300 ease-in-out whitespace-nowrap
                          ${
                            isExpanded
-                             ? "opacity-100 scale-100"
-                             : "opacity-0 scale-90 pointer-events-none"
+                             ? "opacity-100 "
+                             : "opacity-0  pointer-events-none"
                          }`}
               style={{
                 transitionDelay: isExpanded ? "50ms" : "0ms",
@@ -136,18 +136,18 @@ export const BuilderSidebar = () => {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noreferrer" : undefined}
-                className={`flex items-center relative
+                className={`flex items-center relative w-11 h-11
                            rounded-full border border-[#2b3242] bg-[#10121a]
                            text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white
                            transition-all duration-300 ease-in-out
                            ${
                              isExpanded
                                ? "gap-3 px-3 py-2 w-full"
-                               : "justify-center w-11 h-11 p-0"
+                               : "justify-center p-0"
                            }`}
                 aria-label={link.ariaLabel}
               >
-                <IconComponent className="w-6 h-6 flex-shrink-0" />
+                <IconComponent className="w-6 h-6 shrink-0" />
                 <span
                   className={`text-xs font-medium whitespace-nowrap
                              transition-all duration-300 ease-in-out

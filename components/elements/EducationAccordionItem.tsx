@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AccordionContent,
   AccordionItem,
@@ -14,6 +14,15 @@ import {
 import { Education, useResumeStore } from "../../store/useResumeStore";
 import { Label } from "../ui/label";
 import { CustomTextField } from "./CustomTextField";
+import { X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 
 interface EducationAccordionItemProps {
   index: number;
@@ -24,13 +33,33 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
   index,
   education,
 }) => {
-  const { updateEducation } = useResumeStore();
+  const { updateEducation, removeEducation } = useResumeStore();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = () => {
+    removeEducation(index);
+    setShowDeleteDialog(false);
+  };
 
   return (
     <AccordionItem value={`Education-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        Education #{index + 1}
-        {education[index]?.school && ` - ${education[index].school}`}
+        <span className="flex-1 text-left">
+          Education #{index + 1}
+          {education[index]?.school && ` - ${education[index].school}`}
+        </span>
+        {education.length > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDeleteDialog(true);
+            }}
+            className="ml-2 p-1 rounded hover:bg-[#2d313a] transition-colors opacity-70 hover:opacity-100"
+            aria-label="Delete education entry"
+          >
+            <X className="size-4" />
+          </button>
+        )}
       </AccordionTrigger>
 
       <AccordionContent>
@@ -125,6 +154,32 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
           </div>
         </div>
       </AccordionContent>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-400">Delete Education Entry?</DialogTitle>
+            <DialogDescription className="text-[#a4a7b5]">
+              Are you sure you want to delete this education entry? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              onClick={() => setShowDeleteDialog(false)}
+              variant="outline"
+              className="border-[#2d313a] hover:bg-[#1c1d21]"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AccordionItem>
   );
 };

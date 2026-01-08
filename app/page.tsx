@@ -16,6 +16,7 @@ import { FaDiscord, FaGithub } from "react-icons/fa";
 import { Fade } from "react-awesome-reveal";
 
 import { HomeHeaderBar } from "@/components/elements/HomeHeaderBar";
+import { FlowPreview } from "@/components/elements/FlowPreview";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -74,6 +75,8 @@ export default function Home() {
   const heroRef = useRef<HTMLDivElement | null>(null);
   const [showHeader, setShowHeader] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -152,6 +155,10 @@ export default function Home() {
                     </Button>
                     <Button
                       variant="outline"
+                      onClick={() => {
+                        setCurrentStep(0);
+                        setShowPreview(true);
+                      }}
                       className="h-12 rounded-2xl border-dashed border-[#2f323a] bg-transparent px-6 text-base text-white hover:text-white shadow-none hover:border-[#4b4f5c] hover:bg-[#161920] hover:scale-[1.01] transition duration-300"
                     >
                       Preview the flow
@@ -273,6 +280,16 @@ export default function Home() {
               </div>
             </div>
           </section>
+
+          {/* Flow Preview Section */}
+          {showPreview && (
+            <FlowPreview
+              isOpen={showPreview}
+              onClose={() => setShowPreview(false)}
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+            />
+          )}
 
           <section className="space-y-5">
             <Fade direction="up" duration={700} delay={200} triggerOnce>

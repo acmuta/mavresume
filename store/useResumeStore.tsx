@@ -76,6 +76,9 @@ export interface ResumeState {
   updateEducation: (index: number, edu: Partial<Education>) => void;
   updateProject: (index: number, proj: Partial<Project>) => void;
   updateExperience: (index: number, exp: Partial<Experience>) => void;
+  removeEducation: (index: number) => void;
+  removeProject: (index: number) => void;
+  removeExperience: (index: number) => void;
 }
 
 /**
@@ -177,6 +180,37 @@ export const useResumeStore = create<ResumeState>()(
             ...exp,
           };
           return { experience: newList };
+        }),
+
+      // Remove functions: filter out item at index, but ensure at least one item remains
+      removeEducation: (index) =>
+        set((state) => {
+          if (state.education.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            education: state.education.filter((_, i) => i !== index),
+          };
+        }),
+
+      removeProject: (index) =>
+        set((state) => {
+          if (state.projects.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            projects: state.projects.filter((_, i) => i !== index),
+          };
+        }),
+
+      removeExperience: (index) =>
+        set((state) => {
+          if (state.experience.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            experience: state.experience.filter((_, i) => i !== index),
+          };
         }),
     }),
 
