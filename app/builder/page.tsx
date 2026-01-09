@@ -93,32 +93,19 @@ export default function BuilderPage() {
   const activeSection = sectionIds[currentSectionIndex] || "personal-info";
 
   return (
-    <div className="relative min-h-screen  text-white">
-      {/* Background gradient overlay matching landing page */}
-      <div className="absolute inset-0 " />
 
-      {/* Main content area matching landing page structure */}
-      <main className="relative z-10 px-4 pb-20 lg:px-8">
-        <Fade triggerOnce direction="down">
-          <div
-            className="font-bold tracking-tight text-5xl 
-                [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
-                [mask-size:100%_100%] [mask-repeat:no-repeat] mt-2 mb-8 pointer-events-none"
-          >
-            RESUME<span className="font-extralight">BUILDER</span>
-          </div>
-        </Fade>
-
+      
+      <main className="relative text-white z-10 px-4 py-20 lg:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
           {/* Navigation controls */}
-
           <Fade
+            triggerOnce
             direction="up"
             className="flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-[#1b1d20]
-                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,_#1c2233,_#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
+                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
           >
             <div className="flex flex-col items-center">
-              <h1 className="text-md font-bold ">Navigation</h1>
+              <h1 className="text-md font-bold">Navigation</h1>
               <div className="flex items-center gap-2">
                 {/* Left navigation arrow */}
                 {currentSectionIndex > 0 && (
@@ -238,7 +225,7 @@ export default function BuilderPage() {
           </Fade>
           <Fade direction="up">
             {/* Section container with hero-like panel framing */}
-            <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,_#1c2233,_#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
+            <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
               {/* Subtle background glow effects */}
               <div className="absolute inset-0 opacity-40 pointer-events-none">
                 <div className="absolute -top-24 left-16 h-64 w-64 rounded-full bg-[#274cbc]/20 blur-[100px]" />
@@ -258,6 +245,6 @@ export default function BuilderPage() {
           </Fade>
         </div>
       </main>
-    </div>
+
   );
 }

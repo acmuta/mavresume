@@ -18,25 +18,28 @@ import { ExperiencePreview } from "../previews/ExperiencePreview";
  */
 export const ResumePreview = () => {
   return (
-    <section
-      className="relative flex flex-col gap-2 
+    <div className="w-full h-full flex justify-center items-center p-6 overflow-auto">
+      
+      <section
+        className="absolute flex flex-col gap-2 
              w-[clamp(20rem,37vw,35rem)] 
              aspect-[1.03/1.414]
              rounded-2xl
              border-2 border-dashed border-[#2d313a]
              bg-[#151618] text-white 
              shadow-[0_20px_60px_rgba(3,4,7,0.4)]
-             px-[1rem] py-[1rem] text-[0.48vw]
+             px-4 py-4 text-[0.48vw]
              overflow-hidden"
-    >
-      {/* Subtle corner accent matching landing cards */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#274cbc]/5 rounded-full blur-3xl pointer-events-none" />
-      
-      <PersonalInfoPreview />
-      <EducationPreview />
-      <TechnicalSkillsPreview />
-      <ProjectsPreview />
-      <ExperiencePreview />
-    </section>
+      >
+        
+        <div className="w-32 h-32 bg-[#274cbc]/5 rounded-full blur-3xl pointer-events-none" />
+
+        <PersonalInfoPreview />
+        <EducationPreview />
+        <TechnicalSkillsPreview />
+        <ProjectsPreview />
+        <ExperiencePreview />
+      </section>
+    </div>
   );
 };

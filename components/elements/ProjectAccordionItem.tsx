@@ -190,7 +190,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
           {projects[index]?.title && ` - ${projects[index].title}`}
         </span>
         {projects.length > 1 && (
-          <button
+          <div
             onClick={(e) => {
               e.stopPropagation();
               setShowDeleteDialog(true);
@@ -199,7 +199,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
             aria-label="Delete project entry"
           >
             <X className="size-4" />
-          </button>
+          </div>
         )}
       </AccordionTrigger>
       <AccordionContent>

@@ -49,7 +49,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
           {education[index]?.school && ` - ${education[index].school}`}
         </span>
         {education.length > 1 && (
-          <button
+          <div
             onClick={(e) => {
               e.stopPropagation();
               setShowDeleteDialog(true);
@@ -58,7 +58,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
             aria-label="Delete education entry"
           >
             <X className="size-4" />
-          </button>
+          </div>
         )}
       </AccordionTrigger>
 
