@@ -2,7 +2,7 @@ import React from "react";
 
 export const BuilderHeaderBar = () => {
   return (
-    <div className="w-full fixed top-0 left-0 z-20 h-18 ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
+    <div className="w-full fixed top-0 left-0 z-20 h-[8vh] ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
       <div className="flex h-full items-center gap-4 px-5">
         <div
           className="font-bold tracking-tight text-2xl 

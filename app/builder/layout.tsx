@@ -19,7 +19,7 @@ export default function BuildLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative w-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
+    <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
       {/* Builder sidebar (fixed overlay on left) */}
       <BuilderHeaderBar />
       <BuilderSidebar />
@@ -31,19 +31,20 @@ export default function BuildLayout({
       </div>
 
       <section className="hidden z-25 fixed right-0 md:flex md:flex-col md:w-[44vw] h-full bg-[#15171c]/90 backdrop-blur-sm border-l border-[#2d313a]">
-        <div className="h-18 w-full px-5 flex items-center gap-2 border-b border-[#2d313a]">
-          
-            <div
-              className="font-bold tracking-tight text-2xl 
+        <div className="h-[8vh] w-full px-5 flex items-center gap-2 border-b border-[#2d313a]">
+          <div
+            className="font-bold tracking-tight text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
                 mask-size-[100%_100%] mask-no-repeat pointer-events-none"
-            >
-              RESUME<span className="font-extralight">PREVIEW</span>
-            </div>
-            <ResumeDocPreview />
-            <ResumeDocDownloadButton />
+          >
+            RESUME<span className="font-extralight">PREVIEW</span>
+          </div>
+          <ResumeDocPreview />
+          <ResumeDocDownloadButton />
         </div>
-        
+        <div className="w-full h-[92vh] overflow-y-auto">
+          <ResumePreview />
+        </div>
         
         
       </section>

@@ -82,7 +82,7 @@ export const BuilderSidebar = () => {
     >
       <div className="flex flex-col h-full w-full">
         {/* Logo Section */}
-        <div className="px-4 py-4 border-b border-[#2d313a] relative h-18 flex items-center">
+        <div className="px-4 py-4 border-b border-[#2d313a] relative h-[8vh] flex items-center">
           <Link
             href="/"
             className="flex items-center font-bold tracking-tight text-3xl
