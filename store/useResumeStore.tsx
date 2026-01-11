@@ -68,6 +68,7 @@ export interface ResumeState {
   projects: Project[];
   skills: Skills;
   experience: Experience[];
+  sectionOrder: string[];
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
   addSkills: (skills: Skills) => void;
@@ -76,6 +77,10 @@ export interface ResumeState {
   updateEducation: (index: number, edu: Partial<Education>) => void;
   updateProject: (index: number, proj: Partial<Project>) => void;
   updateExperience: (index: number, exp: Partial<Experience>) => void;
+  removeEducation: (index: number) => void;
+  removeProject: (index: number) => void;
+  removeExperience: (index: number) => void;
+  updateSectionOrder: (order: string[]) => void;
 }
 
 /**
@@ -118,6 +123,13 @@ export const useResumeStore = create<ResumeState>()(
           isCurrent: false,
           bulletPoints: ["", "", ""],
         },
+      ],
+      sectionOrder: [
+        "personal-info",
+        "education",
+        "technical-skills",
+        "projects",
+        "experience",
       ],
       // Update functions merge partial updates with existing state
       // Zustand's set() triggers re-renders in all components using the store
@@ -177,6 +189,54 @@ export const useResumeStore = create<ResumeState>()(
             ...exp,
           };
           return { experience: newList };
+        }),
+
+      // Remove functions: filter out item at index, but ensure at least one item remains
+      removeEducation: (index) =>
+        set((state) => {
+          if (state.education.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            education: state.education.filter((_, i) => i !== index),
+          };
+        }),
+
+      removeProject: (index) =>
+        set((state) => {
+          if (state.projects.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            projects: state.projects.filter((_, i) => i !== index),
+          };
+        }),
+
+      removeExperience: (index) =>
+        set((state) => {
+          if (state.experience.length <= 1) {
+            return state; // Don't delete if only one item exists
+          }
+          return {
+            experience: state.experience.filter((_, i) => i !== index),
+          };
+        }),
+
+      updateSectionOrder: (order) =>
+        set((state) => {
+          // Ensure personal-info is always first if present
+          const validOrder = order.filter(
+            (id) =>
+              id === "personal-info" ||
+              id === "education" ||
+              id === "technical-skills" ||
+              id === "projects" ||
+              id === "experience"
+          );
+          const personalInfoFirst = validOrder.includes("personal-info")
+            ? ["personal-info", ...validOrder.filter((id) => id !== "personal-info")]
+            : validOrder;
+          return { sectionOrder: personalInfoFirst };
         }),
     }),
 

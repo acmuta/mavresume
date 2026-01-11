@@ -9,7 +9,7 @@ import { CustomTextField } from "./CustomTextField";
 import { Combobox } from "../ui/combobox";
 import { months, years } from "../../data/university-data";
 import { Label } from "../ui/label";
-import { Wand2, Loader2 } from "lucide-react";
+import { Wand2, Loader2, X } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
@@ -31,7 +31,7 @@ interface ExperienceAccordionItemProps {
 export const ExperienceAccordionItem: React.FC<
   ExperienceAccordionItemProps
 > = ({ index, experience }) => {
-  const { updateExperience } = useResumeStore();
+  const { updateExperience, removeExperience } = useResumeStore();
   const [isRefiningAll, setIsRefiningAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -40,6 +40,12 @@ export const ExperienceAccordionItem: React.FC<
   const [batchRefinements, setBatchRefinements] = useState<
     Array<{ index: number; original: string; refined: string }>
   >([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = () => {
+    removeExperience(index);
+    setShowDeleteDialog(false);
+  };
 
   /**
    * Refines all non-empty bullet points for this experience entry in batch.
@@ -172,10 +178,24 @@ export const ExperienceAccordionItem: React.FC<
   };
 
   return (
-    <AccordionItem value={`Project-${index}`}>
+    <AccordionItem value={`Experience-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        Experience #{index + 1}
-        {experience[index]?.position && ` - ${experience[index].position}`}
+        <span className="flex-1 text-left">
+          Experience #{index + 1}
+          {experience[index]?.position && ` - ${experience[index].position}`}
+        </span>
+        {experience.length > 1 && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDeleteDialog(true);
+            }}
+            className="ml-2 p-1 rounded hover:bg-[#2d313a] transition-colors opacity-70 hover:opacity-100"
+            aria-label="Delete experience entry"
+          >
+            <X className="size-4" />
+          </div>
+        )}
       </AccordionTrigger>
       <AccordionContent>
         <div className="w-full font-semibold flex gap-4 justify-center items-center">
@@ -377,6 +397,32 @@ export const ExperienceAccordionItem: React.FC<
               className="bg-[#274CBC] hover:bg-[#315be1]"
             >
               Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-400">Delete Experience Entry?</DialogTitle>
+            <DialogDescription className="text-[#a4a7b5]">
+              Are you sure you want to delete this experience entry? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              onClick={() => setShowDeleteDialog(false)}
+              variant="outline"
+              className="border-[#2d313a] hover:bg-[#1c1d21]"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
             </Button>
           </div>
         </DialogContent>
