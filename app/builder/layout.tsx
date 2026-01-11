@@ -2,6 +2,7 @@ import { Fade } from "react-awesome-reveal";
 import { ResumePreview } from "../../components/elements/ResumePreview";
 import { ResumeDocPreview } from "../../components/elements/ResumeDocPreview";
 import { ResumeDocDownloadButton } from "../../components/elements/ResumeDocDownloadButton";
+import { SectionReorderButton } from "../../components/elements/SectionReorderButton";
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
 
@@ -31,7 +32,7 @@ export default function BuildLayout({
       </div>
 
       <section className="hidden z-25 fixed right-0 md:flex md:flex-col md:w-[44vw] h-full bg-[#15171c]/90 backdrop-blur-sm border-l border-[#2d313a]">
-        <div className="h-[8vh] w-full px-5 flex items-center gap-2 border-b border-[#2d313a]">
+        <div className="h-[8vh] w-full px-5 flex items-center gap-4 border-b border-[#2d313a]">
           <div
             className="font-bold tracking-tight text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
@@ -39,9 +40,21 @@ export default function BuildLayout({
           >
             RESUME<span className="font-extralight">PREVIEW</span>
           </div>
-          <ResumeDocPreview />
-          <ResumeDocDownloadButton />
+          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+            <SectionReorderButton />
+            <span className="text-xs font-bold text-[#6d7895]">Reorder</span>
+          </div>
+          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+            <ResumeDocPreview />
+            <span className="text-xs font-bold text-[#6d7895]">Preview</span>
+          </div>
+          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+            <ResumeDocDownloadButton />
+            <span className="text-xs font-bold text-[#6d7895]">Download</span>
+          </div>
         </div>
+        
+        
         <div className="w-full h-[92vh] overflow-y-auto">
           <ResumePreview />
         </div>
