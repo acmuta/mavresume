@@ -185,7 +185,7 @@ export const ExperienceAccordionItem: React.FC<
           {experience[index]?.position && ` - ${experience[index].position}`}
         </span>
         {experience.length > 1 && (
-          <button
+          <div
             onClick={(e) => {
               e.stopPropagation();
               setShowDeleteDialog(true);
@@ -194,7 +194,7 @@ export const ExperienceAccordionItem: React.FC<
             aria-label="Delete experience entry"
           >
             <X className="size-4" />
-          </button>
+          </div>
         )}
       </AccordionTrigger>
       <AccordionContent>

@@ -15,7 +15,7 @@ interface FlowPreviewProps {
   isOpen: boolean;
   onClose: () => void;
   currentStep: number;
-  setCurrentStep: (step: number) => void;
+  setCurrentStep: (step: number | ((prevStep: number) => number)) => void;
 }
 
 const STEPS = [
@@ -89,10 +89,29 @@ export const FlowPreview = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
+  const currentStepRef = useRef(currentStep);
+  const isTransitioningRef = useRef(isTransitioning);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
+  useEffect(() => {
+    isTransitioningRef.current = isTransitioning;
+  }, [isTransitioning]);
+
+  // Stop auto-advance when reaching the last step
+  useEffect(() => {
+    if (currentStep >= STEPS.length - 1 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, [currentStep]);
 
   // Auto-advance logic
   useEffect(() => {
-    if (!isOpen || isPaused || currentStep >= STEPS.length - 1) {
+    if (!isOpen || isPaused) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -100,16 +119,36 @@ export const FlowPreview = ({
       return;
     }
 
+    // Don't start if already at last step
+    if (currentStepRef.current >= STEPS.length - 1) {
+      return;
+    }
+
     intervalRef.current = setInterval(() => {
-      handleNext();
+      // Use refs to get latest values, avoiding stale closures
+      const canAdvance = currentStepRef.current < STEPS.length - 1;
+      if (canAdvance && !isTransitioningRef.current) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          // Use functional update to get the latest step value when updating
+            setCurrentStep((latestStep: number): number => {
+            if (latestStep < STEPS.length - 1) {
+              return latestStep + 1;
+            }
+            return latestStep;
+            });
+          setTimeout(() => setIsTransitioning(false), 50);
+        }, 250);
+      }
     }, 3500);
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [isOpen, isPaused, currentStep]);
+  }, [isOpen, isPaused, setCurrentStep]);
 
   // Scroll to preview when opened
   useEffect(() => {

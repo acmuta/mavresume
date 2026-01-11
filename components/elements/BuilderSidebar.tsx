@@ -69,7 +69,7 @@ export const BuilderSidebar = () => {
   return (
     <aside
       className={`hidden md:flex fixed left-0 top-0 h-full z-30
-                 ${isExpanded ? "w-[220px]" : "w-25"}
+                 ${isExpanded ? "w-55" : "w-25"}
                  bg-[#15171c]/90 backdrop-blur-md
                  border-r border-[#2d313a]
                  transition-all duration-300 ease-in-out
@@ -82,12 +82,12 @@ export const BuilderSidebar = () => {
     >
       <div className="flex flex-col h-full w-full">
         {/* Logo Section */}
-        <div className="px-4 py-4 border-b border-[#2d313a]/50 relative min-h-[60px] flex items-center">
+        <div className="px-4 py-4 border-b border-[#2d313a] relative h-[8vh] flex items-center">
           <Link
             href="/"
             className="flex items-center font-bold tracking-tight text-3xl
-                       [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
-                       [mask-size:100%_100%] [mask-repeat:no-repeat]
+                       mask-[linear-gradient(to_bottom,black_40%,transparent)] 
+                       mask-size-[100%_100%] mask-no-repeat
                        text-white hover:text-white transition-colors duration-300
                        relative w-full justify-center"
             aria-label="MavResume home"
@@ -129,7 +129,7 @@ export const BuilderSidebar = () => {
         >
           {sidebarLinks.map((link, index) => {
             const IconComponent = link.icon;
-            const labelDelay = isExpanded ? 100 + index * 30 : 0; 
+            const labelDelay = isExpanded ? 100 + index * 30 : 0;
             return (
               <Link
                 key={link.href}
@@ -168,7 +168,7 @@ export const BuilderSidebar = () => {
         </div>
 
         {/* Tips Section */}
-        <div className="px-3 py-4 border-t border-[#2d313a]/50 relative min-h-[60px]">
+        <div className="px-3 py-4 border-t border-[#2d313a]/50 relative min-h-15">
           {/* Collapsed: Icon only */}
           <div
             className={`absolute inset-0 flex items-center justify-center
@@ -179,7 +179,7 @@ export const BuilderSidebar = () => {
                            : "opacity-100 scale-100"
                        }`}
           >
-            <Lightbulb className="w-4 h-4 text-[#89a5ff] flex-shrink-0" />
+            <Lightbulb className="w-4 h-4 text-[#89a5ff] shrink-0" />
           </div>
 
           {/* Expanded: Icon + Text */}
@@ -195,7 +195,7 @@ export const BuilderSidebar = () => {
               transitionDelay: isExpanded ? "150ms" : "0ms",
             }}
           >
-            <Lightbulb className="w-4 h-4 text-[#89a5ff] flex-shrink-0 mt-0.5" />
+            <Lightbulb className="w-4 h-4 text-[#89a5ff] shrink-0 mt-0.5" />
             <p className="text-xs text-[#cfd3e1] leading-relaxed">
               {resumeTips[currentTipIndex]}
             </p>

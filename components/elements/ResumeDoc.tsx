@@ -110,10 +110,11 @@ const formatDate = (month?: string, year?: string) => {
  *
  * Structure:
  * 1. Header: Name (centered, large) + contact info (phone, email, GitHub, LinkedIn)
- * 2. Education: School, degree, major, GPA, graduation date + relevant courses (first entry only)
- * 3. Technical Skills: Languages and technologies as comma-separated lists
- * 4. Experience: Company, position, date range, bullet points (filtered for empty)
- * 5. Projects: Title, technologies, bullet points (filtered for empty)
+ * 2. Sections rendered dynamically based on sectionOrder from store:
+ *    - Education: School, degree, major, GPA, graduation date + relevant courses (first entry only)
+ *    - Technical Skills: Languages and technologies as comma-separated lists
+ *    - Experience: Company, position, date range, bullet points (filtered for empty)
+ *    - Projects: Title, technologies, bullet points (filtered for empty)
  *
  * All sections use consistent styling: uppercase section titles with bottom border,
  * bullet points with left margin, and flexible layouts for headers (space-between).
@@ -126,7 +127,133 @@ export const ResumeDoc = () => {
     experience,
     projects,
     relevantCourses,
+    sectionOrder,
   } = useResumeStore();
+
+  // Helper function to render Education section
+  const renderEducationSection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Education</Text>
+      {education.map((edu, idx) => (
+        <View key={idx}>
+          <View style={styles.jobHeader}>
+            <Text style={styles.bold}>{edu.school || ""}</Text>
+            <Text>{formatDate(edu.graduationMonth, edu.graduationYear)}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text>
+              {edu.degree}
+              {edu.major ? ` in ${edu.major}` : ""}
+            </Text>
+            <Text>{edu.gpa && `GPA: ${edu.gpa}`}</Text>
+          </View>
+          {/* Relevant courses only shown for first education entry */}
+          <View style={styles.bullets}>
+            {idx === 0 && relevantCourses && (
+              <View style={styles.bulletPoint}>
+                <Text style={styles.bulletSymbol}>•</Text>
+                <Text style={styles.bulletText}>
+                  Relevant Coursework: {relevantCourses.join(", ")}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+
+  // Helper function to render Technical Skills section
+  const renderTechnicalSkillsSection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Technical Skills</Text>
+      <Text style={styles.smallText}>
+        <Text style={styles.bold}>Languages: </Text>
+        {skills.languagesList?.length
+          ? skills.languagesList.join(", ")
+          : "None added"}
+      </Text>
+      <Text style={styles.smallText}>
+        <Text style={styles.bold}>Technologies: </Text>
+        {skills.technologiesList?.length
+          ? skills.technologiesList.join(", ")
+          : "None added"}
+      </Text>
+    </View>
+  );
+
+  // Helper function to render Experience section
+  const renderExperienceSection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Experience</Text>
+      {experience.map((job, idx) => (
+        <View key={idx} style={{ marginBottom: 5 }}>
+          <View style={styles.jobHeader}>
+            <Text style={styles.bold}>
+              {job.company && `${job.company} -`} {job.position || ""}
+            </Text>
+            <Text>
+              {formatDate(job.startMonth, job.startYear)} –{" "}
+              {job.isCurrent ? "Present" : formatDate(job.endMonth, job.endYear)}
+            </Text>
+          </View>
+          <View style={styles.bullets}>
+            {job.bulletPoints
+              .filter((bp) => bp.trim() !== "")
+              .map((bp, i) => (
+                <View key={i} style={styles.bulletPoint}>
+                  <Text style={styles.bulletSymbol}>•</Text>
+                  <Text style={styles.bulletText}>{bp}</Text>
+                </View>
+              ))}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+
+  // Helper function to render Projects section
+  const renderProjectsSection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Projects</Text>
+      {projects.map((p, idx) => (
+        <View key={idx} style={{ marginBottom: 5 }}>
+          <View style={styles.projectHeader}>
+            <Text style={styles.bold}>{p.title}</Text>
+            <Text>{p.technologies?.join(", ")}</Text>
+          </View>
+          <View style={styles.bullets}>
+            {p.bulletPoints
+              ?.filter((bp) => bp && bp.trim() !== "")
+              .map((bp, i) => (
+                <View key={i} style={styles.bulletPoint}>
+                  <Text style={styles.bulletSymbol}>•</Text>
+                  <Text style={styles.bulletText}>{bp}</Text>
+                </View>
+              ))}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+
+  // Map section IDs to their render functions
+  const sectionRenderMap: Record<string, () => React.ReactElement> = {
+    "education": renderEducationSection,
+    "technical-skills": renderTechnicalSkillsSection,
+    "experience": renderExperienceSection,
+    "projects": renderProjectsSection,
+  };
+
+  // Get reorderable sections (excluding personal-info which is always first)
+  const reorderableSections = sectionOrder.filter(
+    (id) => id !== "personal-info"
+  );
 
   return (
     <Document>
@@ -147,119 +274,12 @@ export const ResumeDoc = () => {
             .join("  •  ")}
         </Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Education</Text>
-
-          {education.map((edu, idx) => (
-            <View key={idx}>
-              <View style={styles.jobHeader}>
-                <Text style={styles.bold}>{edu.school || ""}</Text>
-                <Text>
-                  {formatDate(edu.graduationMonth, edu.graduationYear)}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>
-                  {edu.degree}
-                  {edu.major ? ` in ${edu.major}` : ""}
-                </Text>
-                <Text>{edu.gpa && `GPA: ${edu.gpa}`}</Text>
-              </View>
-
-              {/* Relevant courses only shown for first education entry */}
-              <View style={styles.bullets}>
-                {idx === 0 && relevantCourses && (
-                  <View style={styles.bulletPoint}>
-                    <Text style={styles.bulletSymbol}>•</Text>
-                    <Text style={styles.bulletText}>
-                      Relevant Coursework: {relevantCourses.join(", ")}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Technical Skills</Text>
-
-          <Text style={styles.smallText}>
-            <Text style={styles.bold}>Languages: </Text>
-            {skills.languagesList?.length
-              ? skills.languagesList.join(", ")
-              : "None added"}
-          </Text>
-
-          <Text style={styles.smallText}>
-            <Text style={styles.bold}>Technologies: </Text>
-            {skills.technologiesList?.length
-              ? skills.technologiesList.join(", ")
-              : "None added"}
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Experience</Text>
-          {experience.map((job, idx) => (
-            <View key={idx} style={{ marginBottom: 5 }}>
-              {/* Header line */}
-              <View style={styles.jobHeader}>
-                <Text style={styles.bold}>
-                  {job.company && `${job.company} -`} {job.position || ""}
-                </Text>
-                <Text>
-                  {formatDate(job.startMonth, job.startYear)} –{" "}
-                  {job.isCurrent
-                    ? "Present"
-                    : formatDate(job.endMonth, job.endYear)}
-                </Text>
-              </View>
-
-              {/* Filter empty bullet points before rendering */}
-              <View style={styles.bullets}>
-                {job.bulletPoints
-                  .filter((bp) => bp.trim() !== "")
-                  .map((bp, i) => (
-                    <View key={i} style={styles.bulletPoint}>
-                      <Text style={styles.bulletSymbol}>•</Text>
-                      <Text style={styles.bulletText}>{bp}</Text>
-                    </View>
-                  ))}
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Projects</Text>
-
-          {projects.map((p, idx) => (
-            <View key={idx} style={{ marginBottom: 5 }}>
-              <View style={styles.projectHeader}>
-                <Text style={styles.bold}>{p.title}</Text>
-                <Text>{p.technologies?.join(", ")}</Text>
-              </View>
-
-              {/* Filter empty bullet points before rendering */}
-              <View style={styles.bullets}>
-                {p.bulletPoints
-                  ?.filter((bp) => bp && bp.trim() !== "")
-                  .map((bp, i) => (
-                    <View key={i} style={styles.bulletPoint}>
-                      <Text style={styles.bulletSymbol}>•</Text>
-                      <Text style={styles.bulletText}>{bp}</Text>
-                    </View>
-                  ))}
-              </View>
-            </View>
-          ))}
-        </View>
+        {/* Render sections in the order specified by sectionOrder */}
+        {reorderableSections.map((sectionId) => {
+          const renderSection = sectionRenderMap[sectionId];
+          if (!renderSection) return null;
+          return <React.Fragment key={sectionId}>{renderSection()}</React.Fragment>;
+        })}
       </Page>
     </Document>
   );
