@@ -40,18 +40,12 @@ export default function BuildLayout({
           >
             RESUME<span className="font-extralight">PREVIEW</span>
           </div>
-          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+          <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
             <SectionReorderButton />
-            <span className="text-xs font-bold text-[#6d7895]">Reorder</span>
-          </div>
-          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
             <ResumeDocPreview />
-            <span className="text-xs font-bold text-[#6d7895]">Preview</span>
-          </div>
-          <div className="flex items-center border rounded-3xl pr-3 pl-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
             <ResumeDocDownloadButton />
-            <span className="text-xs font-bold text-[#6d7895]">Download</span>
           </div>
+          
         </div>
         
         
