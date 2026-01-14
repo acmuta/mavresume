@@ -25,6 +25,8 @@ interface PersonalInfo {
 interface Skills {
   languagesList: string[];
   technologiesList: string[];
+  customLanguages?: string[];
+  customTechnologies?: string[];
 }
 
 export interface Education {
@@ -111,7 +113,12 @@ export const useResumeStore = create<ResumeState>()(
       ],
       relevantCourses: [],
       projects: [{ title: "", technologies: [], bulletPoints: ["", "", ""] }],
-      skills: { languagesList: [], technologiesList: [] },
+      skills: { 
+        languagesList: [], 
+        technologiesList: [],
+        customLanguages: [],
+        customTechnologies: [],
+      },
       experience: [
         {
           company: "",

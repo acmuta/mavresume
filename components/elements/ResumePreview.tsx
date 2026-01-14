@@ -19,7 +19,11 @@ import { useResumeStore } from "../../store/useResumeStore";
  *
  * Data flow: Form input → store update → preview components re-render → UI updates
  */
-export const ResumePreview = () => {
+interface ResumePreviewProps {
+  showBorder?: boolean;
+}
+
+export const ResumePreview = ({ showBorder = false }: ResumePreviewProps) => {
   const { sectionOrder } = useResumeStore();
 
   // Map section IDs to their preview components
@@ -39,11 +43,13 @@ export const ResumePreview = () => {
   return (
     <div className="w-full h-full flex items-center justify-center p-3 ">
       <section
-        className="flex flex-col gap-2
+        className={`flex flex-col gap-2
              w-[clamp(20rem,37vw,35rem)]
              aspect-[1.1/1.414] text-white scale-120
              px-6 py-2 text-[0.48vw]
-             overflow-hidden "
+             overflow-hidden border transition-all duration-300 ${
+               showBorder ? "border-[#2d313a]" : "border-transparent"
+             }`}
       >
         {/* Personal Info is always rendered first */}
         <PersonalInfoPreview />

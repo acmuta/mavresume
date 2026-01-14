@@ -8,7 +8,7 @@ import { Combobox } from "../ui/combobox";
 import { Project, useResumeStore } from "../../store/useResumeStore";
 import { CustomTextField } from "./CustomTextField";
 import { Technologies } from "../../data/university-data";
-import { Dot, Wand2, Loader2, X } from "lucide-react";
+import { Dot, Wand2, Loader2, X, Plus } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
@@ -182,6 +182,38 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
     setBatchRefinements([]);
   };
 
+  const handleAddBulletPoint = () => {
+    const newBulletPoints = [...projects[index].bulletPoints, ""];
+    updateProject(index, { bulletPoints: newBulletPoints });
+  };
+
+  const handleDeleteBulletPoint = (bpIndex: number) => {
+    if (projects[index].bulletPoints.length <= 1) return; // Safety check
+    const newBulletPoints = projects[index].bulletPoints.filter(
+      (_, i) => i !== bpIndex
+    );
+    updateProject(index, { bulletPoints: newBulletPoints });
+    
+    // Clean up preview text if it exists for deleted bullet
+    if (previewTexts[bpIndex]) {
+      setPreviewTexts((prev) => {
+        const updated = { ...prev };
+        delete updated[bpIndex];
+        // Reindex remaining preview texts
+        const reindexed: Record<number, string> = {};
+        Object.keys(updated).forEach((key) => {
+          const oldIndex = parseInt(key);
+          if (oldIndex > bpIndex) {
+            reindexed[oldIndex - 1] = updated[oldIndex];
+          } else {
+            reindexed[oldIndex] = updated[oldIndex];
+          }
+        });
+        return reindexed;
+      });
+    }
+  };
+
   return (
     <AccordionItem value={`Project-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
@@ -301,6 +333,16 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                           technologies: projects[index].technologies,
                         }}
                       />
+                      {projects[index].bulletPoints.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteBulletPoint(bpIndex)}
+                          className="inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-2 py-1.5 text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+                          title="Delete bullet point"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      )}
                     </div>
                     {previewTexts[bpIndex] && (
                       <BulletRefinementPreview
@@ -334,6 +376,15 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                     )}
                   </div>
                 ))}
+                <button
+                  type="button"
+                  onClick={handleAddBulletPoint}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-3 py-1.5 text-sm text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+                  title="Add bullet point"
+                >
+                  <Plus className="size-4" />
+                  <span>Add Bullet Point</span>
+                </button>
               </div>
             </div>
           </div>

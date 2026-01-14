@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import { Fade } from "react-awesome-reveal";
 import { ResumePreview } from "../../components/elements/ResumePreview";
 import { ResumeDocPreview } from "../../components/elements/ResumeDocPreview";
 import { ResumeDocDownloadButton } from "../../components/elements/ResumeDocDownloadButton";
 import { SectionReorderButton } from "../../components/elements/SectionReorderButton";
+import { ResumeBorderToggleButton } from "../../components/elements/ResumeBorderToggleButton";
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
 import { TooltipProvider } from "../../components/ui/tooltip";
@@ -20,6 +24,8 @@ export default function BuildLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [showBorder, setShowBorder] = useState(false);
+
   return (
     <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
       {/* Builder sidebar (fixed overlay on left) */}
@@ -41,9 +47,14 @@ export default function BuildLayout({
           >
             RESUME<span className="font-extralight">PREVIEW</span>
           </div>
+          {/* Resume Preview Controls */}
           <TooltipProvider>
             <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
               <SectionReorderButton />
+              <ResumeBorderToggleButton
+                showBorder={showBorder}
+                onToggle={() => setShowBorder(!showBorder)}
+              />
               <ResumeDocPreview />
               <ResumeDocDownloadButton />
             </div>
@@ -53,7 +64,7 @@ export default function BuildLayout({
         
         
         <div className="w-full h-[92vh] overflow-y-auto">
-          <ResumePreview />
+          <ResumePreview showBorder={showBorder} />
         </div>
         
         
