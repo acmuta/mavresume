@@ -230,7 +230,7 @@ export const ExperienceAccordionItem: React.FC<
         )}
       </AccordionTrigger>
       <AccordionContent>
-        <div className="w-full font-semibold flex gap-4 justify-center items-center">
+        <div className="w-full font-semibold flex gap-4 justify-center items-center overflow-auto">
           <div className="w-9/10 flex flex-col gap-2">
             <div className="flex w-full flex-col gap-2 items-center">
               <div className="flex w-full gap-2 items-center">

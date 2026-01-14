@@ -29,7 +29,10 @@ export default function BuildLayout({
   return (
     <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
       {/* Builder sidebar (fixed overlay on left) */}
-      <BuilderHeaderBar />
+      <BuilderHeaderBar
+        showBorder={showBorder}
+        setShowBorder={setShowBorder}
+      />
       <BuilderSidebar />
 
       {/* Main content (form sections) */}

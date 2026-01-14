@@ -46,7 +46,7 @@ export const ResumePreview = ({ showBorder = false }: ResumePreviewProps) => {
         className={`flex flex-col gap-2
              w-[clamp(20rem,37vw,35rem)]
              aspect-[1.1/1.414] text-white scale-120
-             px-6 py-2 text-[0.48vw]
+             px-6 py-2 text-[0.9vw] md:text-[0.48vw]
              overflow-hidden border transition-all duration-300 ${
                showBorder ? "border-[#2d313a]" : "border-transparent"
              }`}

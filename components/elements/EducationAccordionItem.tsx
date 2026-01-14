@@ -63,7 +63,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
       </AccordionTrigger>
 
       <AccordionContent>
-        <div className="w-full font-semibold flex gap-4 justify-center items-center">
+        <div className="w-full font-semibold flex gap-4 justify-center items-center overflow-auto">
           <div className="w-9/10 flex flex-col gap-2">
             {/* University */}
             <div className="flex w-fit flex-wrap gap-2 items-center">

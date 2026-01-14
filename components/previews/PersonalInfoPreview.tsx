@@ -14,11 +14,16 @@ export const PersonalInfoPreview = () => {
     ? `github.com/${personalInfo.github}`
     : null;
 
+  const customContacts = (personalInfo.customContacts || []).filter(
+    (contact) => contact.trim() !== ""
+  );
+  
   const contactMethods = [
     { value: personalInfo.email, width: "w-22" },
     { value: personalInfo.phone, width: "w-20" },
     { value: formattedLinkedIn, width: "w-30" },
     { value: formattedGitHub, width: "w-22" },
+    ...customContacts.map((contact) => ({ value: contact, width: "w-24" })),
   ];
 
   const contactItems = contactMethods.map((method, index) => {

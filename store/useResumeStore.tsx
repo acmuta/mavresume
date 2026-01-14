@@ -17,9 +17,10 @@ import { utaEngineeringCourses } from "../data/university-data";
 interface PersonalInfo {
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   linkedin?: string;
   github?: string;
+  customContacts?: string[];
 }
 
 interface Skills {
@@ -100,7 +101,7 @@ export const useResumeStore = create<ResumeState>()(
   persist(
     (set) => ({
       // Initial state: empty templates for each section
-      personalInfo: { name: "", email: "", phone: "" },
+      personalInfo: { name: "", email: "", customContacts: [] },
       education: [
         {
           school: "",

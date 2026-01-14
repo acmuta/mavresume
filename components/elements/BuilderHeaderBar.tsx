@@ -1,15 +1,33 @@
-import React from "react";
+"use client";
 
-export const BuilderHeaderBar = () => {
+import React from "react";
+import { MobileResumePreviewDrawer } from "./MobileResumePreviewDrawer";
+
+interface BuilderHeaderBarProps {
+  showBorder: boolean;
+  setShowBorder: (show: boolean) => void;
+}
+
+export const BuilderHeaderBar = ({
+  showBorder,
+  setShowBorder,
+}: BuilderHeaderBarProps) => {
   return (
-    <div className="w-full fixed top-0 left-0 z-20 h-[8vh] ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
-      <div className="flex h-full items-center gap-4 px-5">
+    <div className="w-full fixed top-0 left-0 z-20 h-[8vh] md:ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
+      <div className="flex h-full items-center justify-between gap-4 px-5">
         <div
           className="font-bold tracking-tight text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
                 mask-size-[100%_100%] mask-no-repeat pointer-events-none"
         >
           RESUME<span className="font-extralight">BUILDER</span>
+        </div>
+        {/* Mobile Preview Button */}
+        <div className="block md:hidden">
+          <MobileResumePreviewDrawer
+            showBorder={showBorder}
+            setShowBorder={setShowBorder}
+          />
         </div>
       </div>
     </div>

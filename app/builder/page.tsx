@@ -95,18 +95,17 @@ export default function BuilderPage() {
   return (
 
       
-      <main className="relative text-white z-10 px-4 py-20 lg:px-8">
+      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
           {/* Navigation controls */}
           <Fade
             triggerOnce
-            direction="up"
-            className="flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-[#1b1d20]
+            className="flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
                 bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
           >
             <div className="flex flex-col items-center">
               <h1 className="text-md font-bold">Navigation</h1>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center scale-60 md:scale-100">
                 {/* Left navigation arrow */}
                 {currentSectionIndex > 0 && (
                   <Button
@@ -114,7 +113,7 @@ export default function BuilderPage() {
                     disabled={isTransitioning}
                     variant="outline"
                     size="icon-lg"
-                    className="z-40
+                    className="z-40 hidden md:block
                 rounded-2xl border-2 border-[#2d313a]
                 bg-[#151618]/80 backdrop-blur-sm
                 text-white hover:text-white
@@ -129,7 +128,7 @@ export default function BuilderPage() {
                 )}
 
                 {/* Navigation steps */}
-                <nav className="hidden md:flex items-center gap-1.5 text-md font-bold">
+                <nav className="flex items-center gap-1.5 text-md font-bold">
                   <button
                     onClick={() => goToSection(0)}
                     disabled={isTransitioning || currentSectionIndex === 0}
@@ -207,7 +206,7 @@ export default function BuilderPage() {
                     disabled={isTransitioning}
                     variant="outline"
                     size="icon-lg"
-                    className="z-40
+                    className="z-40 hidden md:block
                 rounded-2xl border-2 border-[#2d313a]
                 bg-[#151618]/80 backdrop-blur-sm
                 text-white hover:text-white
@@ -223,8 +222,7 @@ export default function BuilderPage() {
               </div>
             </div>
           </Fade>
-          <Fade direction="up">
-            {/* Section container with hero-like panel framing */}
+          <Fade triggerOnce>
             <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
               {/* Subtle background glow effects */}
               <div className="absolute inset-0 opacity-40 pointer-events-none">

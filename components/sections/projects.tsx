@@ -20,7 +20,7 @@ export function ProjectsSection({ onContinue }: SectionProps) {
 
   return (
     <div className="flex w-full h-full items-center justify-center">
-      <div className="md:flex flex-col p-7 w-full">
+      <div className="md:flex flex-col md:p-7 w-full">
         {/* Title and Description */}
         <CustomSectionTitle
           title="Projects"
@@ -44,20 +44,6 @@ export function ProjectsSection({ onContinue }: SectionProps) {
           </button>
         </section>
 
-        {/* <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
-          <button
-            className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
-            onClick={clearInputs}
-          >
-            Clear Inputs
-          </button>
-          <button
-            className="btn w-[49%] font-bold bg-[#274CBC] rounded-xl border border-[#2a4fbe]"
-            onClick={onContinue}
-          >
-            Next<span className="hidden md:block">: Experience</span>
-          </button>
-        </section> */}
       </div>
     </div>
   );

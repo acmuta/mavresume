@@ -30,7 +30,7 @@ const sidebarLinks: SidebarLink[] = [
   },
   {
     href: "https://discord.gg/WjrDwNn5es",
-    label: "Discord",
+    label: "ACM Discord",
     icon: FaDiscord,
     ariaLabel: "Discord server",
     external: true,
