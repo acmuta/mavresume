@@ -212,7 +212,7 @@ export function Combobox({
                   className={cn("cursor-pointer text-[#3c67eb] italic", itemClassName)}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  <span>Create '{searchValue.trim()}'</span>
+                  <span>Create &apos;{searchValue.trim()}&apos;</span>
                 </CommandItem>
               </CommandGroup>
             ) : filteredItems.length === 0 ? (
