@@ -39,10 +39,10 @@ export const ResumePreview = () => {
   return (
     <div className="w-full h-full flex items-center justify-center p-3 ">
       <section
-        className="flex flex-col gap-2 
-             w-[clamp(20rem,37vw,35rem)] 
-             aspect-[1.1/1.414] text-white scale-115
-             px-4 py-4 text-[0.48vw]
+        className="flex flex-col gap-2
+             w-[clamp(20rem,37vw,35rem)]
+             aspect-[1.1/1.414] text-white scale-120
+             px-6 py-2 text-[0.48vw]
              overflow-hidden "
       >
         {/* Personal Info is always rendered first */}
