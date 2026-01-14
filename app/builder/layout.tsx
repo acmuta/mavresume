@@ -5,6 +5,7 @@ import { ResumeDocDownloadButton } from "../../components/elements/ResumeDocDown
 import { SectionReorderButton } from "../../components/elements/SectionReorderButton";
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
+import { TooltipProvider } from "../../components/ui/tooltip";
 
 /**
  * Builder layout creates a split-screen experience:
@@ -32,7 +33,7 @@ export default function BuildLayout({
       </div>
 
       <section className="hidden z-25 fixed right-0 md:flex md:flex-col md:w-[44vw] h-full bg-[#15171c]/90 backdrop-blur-sm border-l border-[#2d313a]">
-        <div className="h-[8vh] w-full px-5 flex items-center gap-4 border-b border-[#2d313a]">
+        <div className="h-[8vh] w-full px-5 flex items-center justify-between border-b border-[#2d313a]">
           <div
             className="font-bold tracking-tight text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
@@ -40,11 +41,13 @@ export default function BuildLayout({
           >
             RESUME<span className="font-extralight">PREVIEW</span>
           </div>
-          <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
-            <SectionReorderButton />
-            <ResumeDocPreview />
-            <ResumeDocDownloadButton />
-          </div>
+          <TooltipProvider>
+            <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+              <SectionReorderButton />
+              <ResumeDocPreview />
+              <ResumeDocDownloadButton />
+            </div>
+          </TooltipProvider>
           
         </div>
         
