@@ -1,19 +1,92 @@
 "use client";
 
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Fade } from "react-awesome-reveal";
-import { resumeTemplates } from "../../data/resume-templates";
-import { TemplateCard } from "../../components/elements/TemplateCard";
-import { HomeHeaderBar } from "../../components/elements/HomeHeaderBar";
+import { Search, SlidersHorizontal } from "lucide-react";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../../components/ui/carousel";
+  resumeTemplates,
+  templateCategories,
+  categoryDisplayNames,
+  type CategoryKey,
+} from "../../data/resume-templates";
+import { TemplateCard } from "../../components/elements/TemplateCard";
+import { CreateOwnTemplateCard } from "../../components/elements/CreateOwnTemplateCard";
+import { HomeHeaderBar } from "../../components/elements/HomeHeaderBar";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Checkbox } from "../../components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/ui/popover";
 
 export default function TemplatesPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>(
+    Object.keys(templateCategories) as CategoryKey[]
+  );
+
+  // Get category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<CategoryKey, number> = {
+      "tech-engineering": templateCategories["tech-engineering"].length,
+      "business-analytics": templateCategories["business-analytics"].length,
+      "design-media": templateCategories["design-media"].length,
+      "health-service": templateCategories["health-service"].length,
+    };
+    return counts;
+  }, []);
+
+  // Filter templates based on search and categories
+  const filteredTemplates = useMemo(() => {
+    return resumeTemplates.filter((template) => {
+      // Search filter (by name, case-insensitive)
+      const matchesSearch =
+        searchQuery === "" ||
+        template.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Category filter
+      const matchesCategory = selectedCategories.some((category) =>
+        templateCategories[category].includes(template.id as never)
+      );
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, selectedCategories]);
+
+  // Handle category toggle
+  const toggleCategory = (category: CategoryKey) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        // Remove category
+        const newCategories = prev.filter((c) => c !== category);
+        // If no categories selected, select all
+        return newCategories.length === 0
+          ? (Object.keys(templateCategories) as CategoryKey[])
+          : newCategories;
+      } else {
+        // Add category
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Handle "All" toggle
+  const toggleAll = () => {
+    const allCategories = Object.keys(templateCategories) as CategoryKey[];
+    if (selectedCategories.length === allCategories.length) {
+      // Deselect all (but keep at least one selected by selecting all again)
+      setSelectedCategories(allCategories);
+    } else {
+      // Select all
+      setSelectedCategories(allCategories);
+    }
+  };
+
+  const allSelected =
+    selectedCategories.length === Object.keys(templateCategories).length;
+
   return (
     <div className="relative min-h-screen bg-[#101113] text-white">
       <div className="absolute inset-0 bg-gradient-to-b from-[#11131a] via-[#0d0e12] to-[#09090b]" />
@@ -38,28 +111,132 @@ export default function TemplatesPage() {
             </div>
           </Fade>
 
-          {/* Templates Carousel */}
-          <div className="w-full px-8 md:px-12 lg:px-16">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: false,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {resumeTemplates.map((template, index) => (
-                  <CarouselItem
+          {/* Create Your Own Template Card */}
+          <Fade duration={800} delay={0} triggerOnce>
+            <div className="flex justify-center w-1/3 mx-auto">
+              <CreateOwnTemplateCard />
+            </div>
+          </Fade>
+
+          {/* Premade Templates Section */}
+          <div className="space-y-6">
+            <Fade direction="up" duration={600} triggerOnce>
+              <div className="flex flex-col md:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="w-1/3 "></div>
+                {/* Title and Description */}
+
+                <div className="w-1/3 flex flex-col items-center">
+                  
+                    <h2 className="text-2xl font-bold text-white md:text-3xl">
+                      Major Specific Templates
+                    </h2>
+                    <p className="text-sm text-[#6d7895] mt-2 text-center">
+                      Professionally designed templates for specific fields and
+                      majors
+                    </p>
+                  
+                </div>
+
+                {/* Search and Filter Controls */}
+                <div className="w-1/3 flex items-center justify-end gap-2">
+                  {/* Search Bar */}
+                  <div className="relative flex">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6d7895]" />
+                    <Input
+                      type="text"
+                      placeholder="Search templates..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-50 bg-[#1a1c22]/50 border-[#2d313a] text-white placeholder:text-[#6d7895] focus-visible:border-[#3d4353]"
+                    />
+                  </div>
+
+                  {/* Filter Button */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="bg-[#1a1c22]/50 border-[#2d313a] text-[#6d7895] hover:text-white hover:bg-[#1c1d21]/90 hover:border-[#3d4353]"
+                      >
+                        <SlidersHorizontal className="w-4 h-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-64 bg-[#1c1d21] border-[#2d313a] text-white p-4"
+                      align="start"
+                    >
+                      <div className="space-y-3">
+                        <div className="text-sm font-semibold text-white mb-2">
+                          Filter by Category
+                        </div>
+                        {/* All Option */}
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="all"
+                            checked={allSelected}
+                            onCheckedChange={toggleAll}
+                            className="border-[#2d313a] data-[state=checked]:bg-[#274cbc] data-[state=checked]:border-[#274cbc]"
+                          />
+                          <label
+                            htmlFor="all"
+                            className="text-sm text-[#cfd3e1] cursor-pointer flex-1"
+                          >
+                            All
+                          </label>
+                        </div>
+                        {/* Category Options */}
+                        {(Object.keys(templateCategories) as CategoryKey[]).map(
+                          (category) => (
+                            <div
+                              key={category}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={category}
+                                checked={selectedCategories.includes(category)}
+                                onCheckedChange={() => toggleCategory(category)}
+                                className="border-[#2d313a] data-[state=checked]:bg-[#274cbc] data-[state=checked]:border-[#274cbc]"
+                              />
+                              <label
+                                htmlFor={category}
+                                className="text-sm text-[#cfd3e1] cursor-pointer flex-1"
+                              >
+                                {categoryDisplayNames[category]} (
+                                {categoryCounts[category]})
+                              </label>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </Fade>
+
+            {/* Templates Grid */}
+            {filteredTemplates.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredTemplates.map((template, index) => (
+                  <Fade
                     key={template.id}
-                    className="pl-5 pr-2 py-2 basis-full sm:basis-1/2 lg:basis-1/3"
+                    direction="up"
+                    duration={800}
+                    delay={index * 100}
+                    triggerOnce
                   >
                     <TemplateCard template={template} />
-                  </CarouselItem>
+                  </Fade>
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="flex -left-2 md:-left-4 lg:-left-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
-              <CarouselNext className="flex -right-2 md:-right-4 lg:-right-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
-            </Carousel>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-[#6d7895] text-lg">
+                  No templates found matching your search criteria.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>

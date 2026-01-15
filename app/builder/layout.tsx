@@ -29,10 +29,7 @@ export default function BuildLayout({
   return (
     <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
       {/* Builder sidebar (fixed overlay on left side) */}
-      <BuilderHeaderBar
-        showBorder={showBorder}
-        setShowBorder={setShowBorder}
-      />
+      <BuilderHeaderBar showBorder={showBorder} setShowBorder={setShowBorder} />
       <BuilderSidebar />
 
       {/* Main content (form sections) */}
@@ -61,13 +58,11 @@ export default function BuildLayout({
               <ResumeDocDownloadButton />
             </div>
           </TooltipProvider>
-          
         </div>
-        
-        <div className="w-full h-[92vh] overflow-y-auto">
+
+        <Fade triggerOnce className="w-full h-[92vh] overflow-y-auto">
           <ResumePreview showBorder={showBorder} />
-        </div>
-        
+        </Fade>
       </section>
     </div>
   );
