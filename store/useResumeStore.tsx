@@ -17,14 +17,17 @@ import { utaEngineeringCourses } from "../data/university-data";
 interface PersonalInfo {
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   linkedin?: string;
   github?: string;
+  customContacts?: string[];
 }
 
 interface Skills {
   languagesList: string[];
   technologiesList: string[];
+  customLanguages?: string[];
+  customTechnologies?: string[];
 }
 
 export interface Education {
@@ -98,7 +101,7 @@ export const useResumeStore = create<ResumeState>()(
   persist(
     (set) => ({
       // Initial state: empty templates for each section
-      personalInfo: { name: "", email: "", phone: "" },
+      personalInfo: { name: "", email: "", customContacts: [] },
       education: [
         {
           school: "",
@@ -111,7 +114,12 @@ export const useResumeStore = create<ResumeState>()(
       ],
       relevantCourses: [],
       projects: [{ title: "", technologies: [], bulletPoints: ["", "", ""] }],
-      skills: { languagesList: [], technologiesList: [] },
+      skills: { 
+        languagesList: [], 
+        technologiesList: [],
+        customLanguages: [],
+        customTechnologies: [],
+      },
       experience: [
         {
           company: "",

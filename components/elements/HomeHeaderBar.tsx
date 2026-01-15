@@ -26,13 +26,14 @@ export const HomeHeaderBar = () => {
           px-4 py-2"
         >
           <div className="flex items-center gap-3">
-            <span
+            <Link
+              href="/"
               className="font-bold tracking-tight text-4xl 
               [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
               [mask-size:100%_100%] [mask-repeat:no-repeat]"
             >
               MAV<span className="font-extralight">RESUME</span>
-            </span>
+            </Link>
 
             <span
               className="hidden rounded-full text-sm border border-[#2b3242] 
@@ -54,7 +55,7 @@ export const HomeHeaderBar = () => {
               className="rounded-xl bg-[#274cbc] px-4 text-xs font-semibold 
                          text-white hover:bg-[#315be1] sm:text-sm"
             >
-              <Link href="/builder">
+              <Link href="/templates">
                 Start building
                 <ChevronRight className="ml-1 size-4" />
               </Link>

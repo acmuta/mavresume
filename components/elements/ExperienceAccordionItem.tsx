@@ -9,7 +9,7 @@ import { CustomTextField } from "./CustomTextField";
 import { Combobox } from "../ui/combobox";
 import { months, years } from "../../data/university-data";
 import { Label } from "../ui/label";
-import { Wand2, Loader2, X } from "lucide-react";
+import { Wand2, Loader2, X, Plus } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
@@ -177,6 +177,38 @@ export const ExperienceAccordionItem: React.FC<
     setBatchRefinements([]);
   };
 
+  const handleAddBulletPoint = () => {
+    const newBulletPoints = [...experience[index].bulletPoints, ""];
+    updateExperience(index, { bulletPoints: newBulletPoints });
+  };
+
+  const handleDeleteBulletPoint = (bpIndex: number) => {
+    if (experience[index].bulletPoints.length <= 1) return; // Safety check
+    const newBulletPoints = experience[index].bulletPoints.filter(
+      (_, i) => i !== bpIndex
+    );
+    updateExperience(index, { bulletPoints: newBulletPoints });
+    
+    // Clean up preview text if it exists for deleted bullet
+    if (previewTexts[bpIndex]) {
+      setPreviewTexts((prev) => {
+        const updated = { ...prev };
+        delete updated[bpIndex];
+        // Reindex remaining preview texts
+        const reindexed: Record<number, string> = {};
+        Object.keys(updated).forEach((key) => {
+          const oldIndex = parseInt(key);
+          if (oldIndex > bpIndex) {
+            reindexed[oldIndex - 1] = updated[oldIndex];
+          } else {
+            reindexed[oldIndex] = updated[oldIndex];
+          }
+        });
+        return reindexed;
+      });
+    }
+  };
+
   return (
     <AccordionItem value={`Experience-${index}`}>
       <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
@@ -198,7 +230,7 @@ export const ExperienceAccordionItem: React.FC<
         )}
       </AccordionTrigger>
       <AccordionContent>
-        <div className="w-full font-semibold flex gap-4 justify-center items-center">
+        <div className="w-full font-semibold flex gap-4 justify-center items-center overflow-auto">
           <div className="w-9/10 flex flex-col gap-2">
             <div className="flex w-full flex-col gap-2 items-center">
               <div className="flex w-full gap-2 items-center">
@@ -334,6 +366,16 @@ export const ExperienceAccordionItem: React.FC<
                           title: `${experience[index].position} at ${experience[index].company}`,
                         }}
                       />
+                      {experience[index].bulletPoints.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteBulletPoint(bpIndex)}
+                          className="inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-2 py-1.5 text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+                          title="Delete bullet point"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      )}
                     </div>
                     {previewTexts[bpIndex] && (
                       <BulletRefinementPreview
@@ -367,6 +409,15 @@ export const ExperienceAccordionItem: React.FC<
                     )}
                   </div>
                 ))}
+                <button
+                  type="button"
+                  onClick={handleAddBulletPoint}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-3 py-1.5 text-sm text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+                  title="Add bullet point"
+                >
+                  <Plus className="size-4" />
+                  <span>Add Bullet Point</span>
+                </button>
               </div>
             </div>
           </div>

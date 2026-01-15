@@ -49,6 +49,20 @@ export const TechnicalSkillsAccordion = () => {
     return `${visible} +${remaining} more`;
   };
 
+  // Merge custom items with Technologies list
+  const customLanguages = skills.customLanguages || [];
+  const customTechnologies = skills.customTechnologies || [];
+
+  const languagesItems = [
+    ...Technologies,
+    ...customLanguages.filter((lang) => !Technologies.includes(lang)),
+  ];
+
+  const technologiesItems = [
+    ...Technologies,
+    ...customTechnologies.filter((tech) => !Technologies.includes(tech)),
+  ];
+
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="Languages">
@@ -71,6 +85,8 @@ export const TechnicalSkillsAccordion = () => {
                       addSkills({
                         languagesList: [...skills.languagesList, lang],
                         technologiesList: skills.technologiesList,
+                        customLanguages: skills.customLanguages,
+                        customTechnologies: skills.customTechnologies,
                       })
                     }
                     className="flex items-center px-2 py-1 italic bg-[#282a2f]/20 font-semibold text-white transition hover:border-[#b1b3b6] rounded-2xl border-[2px] border-dashed border-[#41444c]"
@@ -91,7 +107,7 @@ export const TechnicalSkillsAccordion = () => {
             </div>
             <div className="w-full p-2 mb-2 h-fit flex flex-wrap bg-[#282a2f]/20 rounded-2xl gap-2 border-[2px] border-[#41444c]">
               <Combobox
-                items={Technologies}
+                items={languagesItems}
                 placeholder="Add languages..."
                 value={skills.languagesList}
                 disableDisplayValue={true}
@@ -99,8 +115,21 @@ export const TechnicalSkillsAccordion = () => {
                   addSkills({
                     languagesList: val as string[],
                     technologiesList: skills.technologiesList,
+                    customLanguages: skills.customLanguages,
+                    customTechnologies: skills.customTechnologies,
                   })
                 }
+                onCreateItem={(value) => {
+                  const currentCustom = skills.customLanguages || [];
+                  if (!currentCustom.includes(value)) {
+                    addSkills({
+                      languagesList: skills.languagesList,
+                      technologiesList: skills.technologiesList,
+                      customLanguages: [...currentCustom, value],
+                      customTechnologies: skills.customTechnologies,
+                    });
+                  }
+                }}
                 multiSelect
               />
               {skills.languagesList.length != 0 &&
@@ -113,6 +142,8 @@ export const TechnicalSkillsAccordion = () => {
                           (l) => l !== lang
                         ),
                         technologiesList: skills.technologiesList,
+                        customLanguages: skills.customLanguages,
+                        customTechnologies: skills.customTechnologies,
                       })
                     }
                     className="flex items-center h-fit px-2 py-1 bg-[#282a2f]/50 font-semibold text-white transition border-[#b1b3b6]/20 rounded-2xl border-[2px]"
@@ -144,6 +175,8 @@ export const TechnicalSkillsAccordion = () => {
                       addSkills({
                         languagesList: skills.languagesList,
                         technologiesList: [...skills.technologiesList, tech],
+                        customLanguages: skills.customLanguages,
+                        customTechnologies: skills.customTechnologies,
                       })
                     }
                     className="flex items-center px-2 py-1 italic bg-[#282a2f]/20 font-semibold text-white transition hover:border-[#b1b3b6] rounded-2xl border-[2px] border-dashed border-[#41444c]"
@@ -164,7 +197,7 @@ export const TechnicalSkillsAccordion = () => {
             </div>
             <div className="w-full p-2 mb-2 h-fit flex flex-wrap bg-[#282a2f]/20 rounded-2xl gap-2 border-[2px] border-[#41444c]">
               <Combobox
-                items={Technologies}
+                items={technologiesItems}
                 placeholder="Add Technologies..."
                 value={skills.technologiesList}
                 disableDisplayValue={true}
@@ -172,8 +205,21 @@ export const TechnicalSkillsAccordion = () => {
                   addSkills({
                     languagesList: skills.languagesList,
                     technologiesList: val as string[],
+                    customLanguages: skills.customLanguages,
+                    customTechnologies: skills.customTechnologies,
                   })
                 }
+                onCreateItem={(value) => {
+                  const currentCustom = skills.customTechnologies || [];
+                  if (!currentCustom.includes(value)) {
+                    addSkills({
+                      languagesList: skills.languagesList,
+                      technologiesList: skills.technologiesList,
+                      customLanguages: skills.customLanguages,
+                      customTechnologies: [...currentCustom, value],
+                    });
+                  }
+                }}
                 multiSelect
               />
               {skills.technologiesList.length != 0 &&
@@ -186,6 +232,8 @@ export const TechnicalSkillsAccordion = () => {
                           (t) => t !== tech
                         ),
                         languagesList: skills.languagesList,
+                        customLanguages: skills.customLanguages,
+                        customTechnologies: skills.customTechnologies,
                       })
                     }
                     className="flex items-center h-fit px-2 py-1 bg-[#282a2f]/50 font-semibold text-white transition border-[#b1b3b6]/20 rounded-2xl border-[2px]"

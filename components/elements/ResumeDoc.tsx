@@ -269,6 +269,7 @@ export const ResumeDoc = () => {
             personalInfo.linkedin
               ? `linkedin.com/in/${personalInfo.linkedin}`
               : "",
+            ...(personalInfo.customContacts || []).filter((x) => x.trim() !== ""),
           ]
             .filter((x) => x)
             .join("  •  ")}

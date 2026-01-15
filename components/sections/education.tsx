@@ -27,7 +27,7 @@ export function EducationSection({ onContinue }: SectionProps) {
 
   return (
     <div className="flex w-full h-full items-center justify-center">
-      <div className="md:flex flex-col p-7  w-full">
+      <div className="md:flex flex-col md:p-7 w-full">
         {/* Title and Description */}
         <CustomSectionTitle
           title="Education"
