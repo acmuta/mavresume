@@ -17,7 +17,7 @@ export default function TemplatesPage() {
   return (
     <div className="relative min-h-screen bg-[#101113] text-white">
       <div className="absolute inset-0 bg-gradient-to-b from-[#11131a] via-[#0d0e12] to-[#09090b]" />
-      
+
       {/* Header Bar */}
       <div className="fixed top-0 left-0 z-50 w-full">
         <HomeHeaderBar />
@@ -32,7 +32,8 @@ export default function TemplatesPage() {
                 Choose Your Template
               </h1>
               <p className="text-lg text-[#cfd3e1] sm:text-xl max-w-2xl mx-auto">
-                Select the resume template that best fits your field of study and career goals.
+                Select the resume template that best fits your field of study
+                and career goals.
               </p>
             </div>
           </Fade>
@@ -50,21 +51,14 @@ export default function TemplatesPage() {
                 {resumeTemplates.map((template, index) => (
                   <CarouselItem
                     key={template.id}
-                    className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+                    className="pl-5 pr-2 py-2 basis-full sm:basis-1/2 lg:basis-1/3"
                   >
-                    <Fade
-                      direction="up"
-                      duration={800}
-                      delay={index * 100}
-                      triggerOnce
-                    >
-                      <TemplateCard template={template} />
-                    </Fade>
+                    <TemplateCard template={template} />
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="hidden md:flex -left-4 md:-left-8 lg:-left-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
-              <CarouselNext className="hidden md:flex -right-4 md:-right-8 lg:-right-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
+              <CarouselPrevious className="flex -left-2 md:-left-4 lg:-left-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
+              <CarouselNext className="flex -right-2 md:-right-4 lg:-right-12 border-[#2d313a] bg-[#15171c]/90 hover:bg-[#1a1c22] text-white hover:text-white" />
             </Carousel>
           </div>
         </div>

@@ -22,7 +22,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
   return (
     <Card
-      className={`relative transition-all duration-300 ${
+      className={`relative transition-all h-70 flex flex-col justify-between duration-300 ${
         isAvailable
           ? "hover:scale-[1.02] hover:shadow-[0_25px_60px_rgba(3,4,7,0.7)] cursor-pointer"
           : "opacity-60 cursor-not-allowed"
@@ -55,7 +55,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
           >
             <Link href={`/builder?type=${template.route}`}>
               Get Started
-              <ChevronRight className="ml-2 size-4" />
+              <ChevronRight className="size-4" />
             </Link>
           </Button>
         ) : (

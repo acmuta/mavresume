@@ -131,7 +131,7 @@ function BuilderPageContent() {
                       activeSection === "personal-info"
                         ? "text-white bg-white/10 cursor-default"
                         : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    } disabled:cursor-not-allowed`}
                     aria-label="Go to Personal Info section"
                   >
                     Personal Info
@@ -145,7 +145,7 @@ function BuilderPageContent() {
                       activeSection === "education"
                         ? "text-white bg-white/10 cursor-default"
                         : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    } disabled:cursor-not-allowed`}
                     aria-label="Go to Education section"
                   >
                     Education
@@ -159,7 +159,7 @@ function BuilderPageContent() {
                       activeSection === "technical-skills"
                         ? "text-white bg-white/10 cursor-default"
                         : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    } disabled:cursor-not-allowed`}
                     aria-label="Go to Technical Skills section"
                   >
                     Skills
@@ -173,7 +173,7 @@ function BuilderPageContent() {
                       activeSection === "projects"
                         ? "text-white bg-white/10 cursor-default"
                         : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    } disabled:cursor-not-allowed`}
                     aria-label="Go to Projects section"
                   >
                     Projects
@@ -187,7 +187,7 @@ function BuilderPageContent() {
                       activeSection === "experience"
                         ? "text-white bg-white/10 cursor-default"
                         : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    } disabled:cursor-not-allowed`}
                     aria-label="Go to Experience section"
                   >
                     Experience
