@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaGithub, FaDiscord } from "react-icons/fa";
-import { Lightbulb, HelpCircle, GraduationCap } from "lucide-react";
+import { Lightbulb, HelpCircle, GraduationCap, FileText } from "lucide-react";
 
 interface SidebarLink {
   href: string;
@@ -14,6 +14,13 @@ interface SidebarLink {
 }
 
 const sidebarLinks: SidebarLink[] = [
+  {
+    href: "/templates",
+    label: "Templates",
+    icon: FileText,
+    ariaLabel: "Choose resume template",
+    external: false,
+  },
   {
     href: "https://github.com/acmuta/mavresume",
     label: "GitHub",

@@ -342,7 +342,7 @@ export const FlowPreview = ({
                 asChild
                 className="h-12 rounded-2xl bg-[#274cbc] px-6 text-base font-semibold text-white hover:bg-[#315be1] hover:scale-[1.01] transition duration-300"
               >
-                <Link href="/builder">Ready to build your resume?</Link>
+                <Link href="/templates">Ready to build your resume?</Link>
               </Button>
             )}
           </div>
