@@ -232,7 +232,7 @@ function BuilderPageContent() {
                   isTransitioning ? "opacity-0" : "opacity-100"
                 }`}
               >
-                <CurrentSection onContinue={goToNext} />
+                <CurrentSection />
               </div>
             </section>
           </Fade>

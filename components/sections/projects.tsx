@@ -3,20 +3,8 @@ import { CustomSectionTitle } from "../elements/CustomSectionTitle";
 import { ProjectAccordion } from "../elements/ProjectAccordion";
 import { useResumeStore } from "../../store/useResumeStore";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function ProjectsSection({ onContinue }: SectionProps) {
+export function ProjectsSection() {
   const { addProject } = useResumeStore();
-  const clearInputs = () => {
-    const emptyProject = {
-      title: "",
-      technologies: [],
-      bulletPoints: ["", "", ""],
-    };
-    useResumeStore.setState({ projects: [emptyProject] });
-  };
 
   return (
     <div className="flex w-full h-full items-center justify-center">
