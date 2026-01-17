@@ -8,12 +8,44 @@ interface RefinementContext {
 }
 
 /**
+ * Extracts rate limit information from HTTP response headers.
+ * 
+ * @param response - Fetch Response object
+ * @returns Rate limit info if headers present, undefined otherwise
+ */
+function extractRateLimitFromHeaders(response: Response): RateLimitInfo | undefined {
+  const limit = response.headers.get("X-RateLimit-Limit");
+  const remaining = response.headers.get("X-RateLimit-Remaining");
+  const reset = response.headers.get("X-RateLimit-Reset");
+
+  if (limit && remaining !== null && reset) {
+    return {
+      limit: parseInt(limit, 10),
+      remaining: parseInt(remaining, 10),
+      reset: parseInt(reset, 10),
+    };
+  }
+
+  return undefined;
+}
+
+/**
+ * Rate limit information extracted from API response headers.
+ */
+export interface RateLimitInfo {
+  limit: number;
+  remaining: number;
+  reset: number; // Unix timestamp in seconds
+}
+
+/**
  * Response from refinement API or client function.
  * Always includes refinedText (falls back to original on error).
  */
-interface RefinementResponse {
+export interface RefinementResponse {
   refinedText: string;
   error?: string;
+  rateLimit?: RateLimitInfo; // Rate limit info from response headers
 }
 
 /**
@@ -49,15 +81,25 @@ export async function refineBulletPoint(
     if (!response.ok) {
       // Extract error message from API response, fallback to generic error
       const errorData = await response.json().catch(() => ({}));
+      
+      // Extract rate limit headers even from error responses (e.g., 429)
+      const rateLimit = extractRateLimitFromHeaders(response);
+      
       return {
         refinedText: bulletText,
         error: errorData.error || "Failed to refine bullet point",
+        rateLimit,
       };
     }
 
     const data = await response.json();
+    
+    // Extract rate limit headers from successful response
+    const rateLimit = extractRateLimitFromHeaders(response);
+    
     return {
       refinedText: data.refinedText || bulletText,
+      rateLimit,
     };
   } catch (error) {
     // Network errors (fetch failures) are caught here

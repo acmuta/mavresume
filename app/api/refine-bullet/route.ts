@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { checkRateLimit, createRateLimitHeaders } from "@/lib/rateLimit";
+import {
+  getCachedRefinement,
+  setCachedRefinement,
+} from "@/lib/refinementCache";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -32,6 +37,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "OpenAI API key is not configured" },
         { status: 500 }
+      );
+    }
+
+    // Step 1: Check cache first - cache hits bypass rate limiting and AI costs
+    const cachedResult = await getCachedRefinement(bulletText, context);
+    if (cachedResult) {
+      return NextResponse.json(
+        { refinedText: cachedResult, cached: true },
+        { status: 200 }
+      );
+    }
+
+    // Step 2: Check rate limit - fail-fast before calling expensive OpenAI API
+    const rateLimitResult = await checkRateLimit(request);
+    if (!rateLimitResult.allowed) {
+      const rateLimitHeaders = createRateLimitHeaders(rateLimitResult);
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. Please try again later.",
+        },
+        {
+          status: 429,
+          headers: rateLimitHeaders,
+        }
       );
     }
 
@@ -81,7 +110,19 @@ export async function POST(request: NextRequest) {
     const refinedText =
       completion.choices[0]?.message?.content?.trim() || bulletText;
 
-    return NextResponse.json({ refinedText });
+    // Step 3: Cache the result before returning (non-blocking, fails gracefully)
+    // This ensures future identical requests can be served from cache
+    await setCachedRefinement(bulletText, context, refinedText);
+
+    // Step 4: Return response with rate limit headers
+    const rateLimitHeaders = createRateLimitHeaders(rateLimitResult);
+    return NextResponse.json(
+      { refinedText },
+      {
+        status: 200,
+        headers: rateLimitHeaders,
+      }
+    );
   } catch (error) {
     console.error("Error refining bullet point:", error);
 

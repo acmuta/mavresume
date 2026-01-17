@@ -14,6 +14,7 @@ import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
 import { refineBulletPoints } from "@/lib/bulletRefinement";
+import { useRateLimitContext } from "@/lib/RateLimitContext";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,10 @@ export const ExperienceAccordionItem: React.FC<
     Array<{ index: number; original: string; refined: string }>
   >([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
+  // Get rate limit update function from context (if available)
+  const rateLimitContext = useRateLimitContext();
+  const updateRateLimit = rateLimitContext?.updateFromHeaders || null;
 
   const handleDelete = () => {
     removeExperience(index);
@@ -79,6 +84,15 @@ export const ExperienceAccordionItem: React.FC<
       const results = await refineBulletPoints(nonEmptyBullets, {
         title: `${exp.position} at ${exp.company}`,
       });
+
+      // Update rate limit status from the last result's headers (most recent state)
+      // Batch processing is sequential, so last result has the most up-to-date rate limit info
+      if (updateRateLimit && results.length > 0) {
+        const lastResult = results[results.length - 1];
+        if (lastResult.rateLimit) {
+          updateRateLimit(lastResult.rateLimit);
+        }
+      }
 
       // Check for errors - batch may partially succeed
       const hasError = results.some((r) => r.error);
@@ -454,9 +468,9 @@ export const ExperienceAccordionItem: React.FC<
       </Dialog>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
+        <DialogContent className="bg-[#151618] w-[30vw] border-[#1c1d21] text-white">
           <DialogHeader>
-            <DialogTitle className="text-red-400">Delete Experience Entry?</DialogTitle>
+            <DialogTitle className="text-blue-200">Delete Experience Entry?</DialogTitle>
             <DialogDescription className="text-[#a4a7b5]">
               Are you sure you want to delete this experience entry? This action cannot be undone.
             </DialogDescription>
@@ -465,13 +479,13 @@ export const ExperienceAccordionItem: React.FC<
             <Button
               onClick={() => setShowDeleteDialog(false)}
               variant="outline"
-              className="border-[#2d313a] hover:bg-[#1c1d21]"
+              className="hover:text-white bg-[#151618] border border-[#2d313a] hover:bg-[#1c1d21]"
             >
               Cancel
             </Button>
             <Button
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
+              className="border border-[#2d313a] hover:bg-[#1c1d21]"
             >
               Delete
             </Button>

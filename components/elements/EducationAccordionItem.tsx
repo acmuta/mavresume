@@ -156,9 +156,9 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
       </AccordionContent>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
+        <DialogContent className="bg-[#151618] w-[30vw] border-[#1c1d21] text-white">
           <DialogHeader>
-            <DialogTitle className="text-red-400">Delete Education Entry?</DialogTitle>
+            <DialogTitle className="text-blue-200">Delete Education Entry?</DialogTitle>
             <DialogDescription className="text-[#a4a7b5]">
               Are you sure you want to delete this education entry? This action cannot be undone.
             </DialogDescription>
@@ -167,13 +167,13 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
             <Button
               onClick={() => setShowDeleteDialog(false)}
               variant="outline"
-              className="border-[#2d313a] hover:bg-[#1c1d21]"
+              className="hover:text-white bg-[#151618] border border-[#2d313a] hover:bg-[#1c1d21]"
             >
               Cancel
             </Button>
             <Button
               onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
+              className="border border-[#2d313a] hover:bg-[#1c1d21]"
             >
               Delete
             </Button>

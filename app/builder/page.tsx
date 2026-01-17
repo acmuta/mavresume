@@ -95,7 +95,7 @@ function BuilderPageContent() {
           {/* Navigation controls */}
           <Fade
             triggerOnce
-            className="flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
+            className="flex flex-col items-center justify-center p-2 md:p-3 rounded-3xl border border-[#1b1d20]
                 bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
           >
             <div className="flex flex-col items-center">

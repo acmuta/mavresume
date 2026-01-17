@@ -13,6 +13,7 @@ import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
 import { refineBulletPoints } from "@/lib/bulletRefinement";
+import { useRateLimitContext } from "@/lib/RateLimitContext";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,10 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
     Array<{ index: number; original: string; refined: string }>
   >([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
+  // Get rate limit update function from context (if available)
+  const rateLimitContext = useRateLimitContext();
+  const updateRateLimit = rateLimitContext?.updateFromHeaders || null;
 
   const handleDelete = () => {
     removeProject(index);
@@ -81,6 +86,15 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
         title: project.title,
         technologies: project.technologies,
       });
+
+      // Update rate limit status from the last result's headers (most recent state)
+      // Batch processing is sequential, so last result has the most up-to-date rate limit info
+      if (updateRateLimit && results.length > 0) {
+        const lastResult = results[results.length - 1];
+        if (lastResult.rateLimit) {
+          updateRateLimit(lastResult.rateLimit);
+        }
+      }
 
       // Check for errors - batch may partially succeed
       const hasError = results.some((r) => r.error);

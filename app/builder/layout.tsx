@@ -10,6 +10,8 @@ import { ResumeBorderToggleButton } from "../../components/elements/ResumeBorder
 import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
 import { TooltipProvider } from "../../components/ui/tooltip";
+import { RateLimitProvider } from "../../lib/RateLimitContext";
+import { useRateLimit } from "../../lib/useRateLimit";
 
 /**
  * Builder layout creates a split-screen experience:
@@ -19,18 +21,33 @@ import { TooltipProvider } from "../../components/ui/tooltip";
  * The preview panel is fixed position and remains visible while scrolling through forms.
  * All preview components read from Zustand store and update reactively.
  */
-export default function BuildLayout({
+/**
+ * Inner layout component that uses the rate limit hook.
+ * Separated to allow provider to wrap the entire layout.
+ */
+function BuildLayoutContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [showBorder, setShowBorder] = useState(false);
+  const rateLimit = useRateLimit();
 
   return (
-    <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
-      {/* Builder sidebar (fixed overlay on left side) */}
-      <BuilderHeaderBar showBorder={showBorder} setShowBorder={setShowBorder} />
-      <BuilderSidebar />
+    <RateLimitProvider updateFromHeaders={rateLimit.updateFromHeaders}>
+      <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
+        {/* Builder sidebar (fixed overlay on left side) */}
+        <BuilderHeaderBar 
+          showBorder={showBorder} 
+          setShowBorder={setShowBorder}
+          rateLimit={{
+            limit: rateLimit.limit,
+            remaining: rateLimit.remaining,
+            reset: rateLimit.reset,
+            isLoading: rateLimit.isLoading,
+          }}
+        />
+        <BuilderSidebar />
 
       {/* Main content (form sections) */}
       <div className="relative p-8 min-h-screen md:w-5/10 md:ml-[6vw] mt-8 md:mt-0">
@@ -64,6 +81,15 @@ export default function BuildLayout({
           <ResumePreview showBorder={showBorder} />
         </Fade>
       </section>
-    </div>
+      </div>
+    </RateLimitProvider>
   );
+}
+
+export default function BuildLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <BuildLayoutContent>{children}</BuildLayoutContent>;
 }

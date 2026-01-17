@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useRateLimitContext } from "@/lib/RateLimitContext";
 
 /**
  * Props for BulletRefinementButton component.
@@ -48,6 +49,10 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+  
+  // Get rate limit update function from context (if available)
+  const rateLimitContext = useRateLimitContext();
+  const updateRateLimit = rateLimitContext?.updateFromHeaders || null;
 
   /**
    * Handles the refinement flow: validate input → call API → show preview via callback.
@@ -66,6 +71,11 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
 
     try {
       const result = await refineBulletPoint(bulletText, context);
+
+      // Update rate limit status from response headers (if context available)
+      if (updateRateLimit && result.rateLimit) {
+        updateRateLimit(result.rateLimit);
+      }
 
       if (result.error) {
         // API returned an error (e.g., OpenAI API key missing, rate limit)
