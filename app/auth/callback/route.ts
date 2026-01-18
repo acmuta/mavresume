@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get("code");
-  const redirectTo = requestUrl.searchParams.get("redirect") || "/dashboard";
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get("code");
+  const redirectTo = request.nextUrl.searchParams.get("redirect") || "/dashboard";
 
   if (code) {
     const supabase = await createClient();
@@ -13,11 +12,12 @@ export async function GET(request: Request) {
     if (error) {
       // If code exchange fails, redirect to login with error
       return NextResponse.redirect(
-        new URL(`/login?error=${encodeURIComponent("Authentication failed. Please try again.")}`, requestUrl.origin)
+        new URL(`/login?error=${encodeURIComponent("Authentication failed. Please try again.")}`, request.nextUrl.origin)
       );
     }
   }
 
   // Redirect to the dashboard or the originally requested page
-  return NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
+  // Request.nextUrl for domain-agnostic redirect (works with custom domains, Vercel previews, localhost)
+  return NextResponse.redirect(new URL(redirectTo, request.nextUrl.origin));
 }

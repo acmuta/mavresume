@@ -78,9 +78,15 @@ export async function signUpWithEmail(email: string, password: string) {
     return { error: getErrorMessage(error), data: null };
   }
 
-  // Update session store on successful sign-up
-  if (data.user) {
+  // Only update session store if there's an actual session
+  // When email confirmation is required, signUp returns user but no session
+  // In that case, we should NOT set the session store to avoid false authentication
+  if (data.session && data.user) {
     useSessionStore.getState().setSession(data.user);
+  } else if (data.user) {
+    // User created but no session (email confirmation required)
+    // Clear any existing session to ensure clean state
+    useSessionStore.getState().clearSession();
   }
 
   return { error: null, data };

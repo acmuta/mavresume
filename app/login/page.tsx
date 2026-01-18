@@ -192,6 +192,7 @@ function LoginPageContent() {
         const result = await signUpWithEmail(email, password);
         if (result.error) {
           setError(result.error);
+          console.log(result.error);
         } else {
           // Success - show success message and switch to login mode
           setSuccessMessage(
@@ -204,7 +205,7 @@ function LoginPageContent() {
           setTimeout(() => {
             setMode("login");
             setSuccessMessage(null);
-          }, 2000);
+          }, 4000);
         }
       }
     } catch (err) {
