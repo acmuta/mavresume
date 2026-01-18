@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { Fade } from "react-awesome-reveal";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowLeft } from "lucide-react";
 import {
   resumeTemplates,
   templateCategories,

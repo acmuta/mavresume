@@ -25,7 +25,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
       className={`relative transition-all h-70 flex flex-col justify-between duration-300 ${
         isAvailable
           ? "hover:scale-[1.02] hover:shadow-[0_25px_60px_rgba(3,4,7,0.7)] cursor-pointer"
-          : "opacity-60 cursor-not-allowed"
+          : "opacity-60 cursor-not-allowed border-dashed"
       }`}
     >
       <CardHeader>

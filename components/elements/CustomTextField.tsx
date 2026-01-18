@@ -35,7 +35,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
         onChange={onChange}
         type={type}
         placeholder={placeholder}
-        className="bg-[#1F2023] text-sm min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg border-dotted border-[#6F748B] focus:outline-none focus:border-white hover:text-white hover:border-white transition"
+        className="bg-[#1F2023] text-sm min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg boder-dashed border-[#6F748B] focus:outline-none focus:border-white hover:text-white hover:border-white transition"
       />
       <label htmlFor="" className="text-sm text-gray-500">
         {description}
