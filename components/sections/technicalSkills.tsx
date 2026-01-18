@@ -2,11 +2,7 @@ import { CustomSectionTitle } from "../elements/CustomSectionTitle";
 import { NoteBox } from "../elements/NoteBox";
 import { TechnicalSkillsAccordion } from "../elements/TechnicalSkillsAccordion";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function TechnicalSkillsSection({ onContinue }: SectionProps) {
+export function TechnicalSkillsSection() {
 
   return (
     <div className="flex w-full h-full items-center justify-center">

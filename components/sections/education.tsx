@@ -6,24 +6,8 @@ import { Combobox } from "../ui/combobox";
 import { Plus } from "lucide-react";
 import { EducationAccordion } from "../elements/EducationAccordion";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function EducationSection({ onContinue }: SectionProps) {
+export function EducationSection() {
   const { addEducation, relevantCourses } = useResumeStore();
-
-  const clearInputs = () => {
-    const emptyEducation = {
-      school: "",
-      degree: "",
-      major: "",
-      includeGPA: false,
-      graduationMonth: "",
-      graduationYear: "",
-    };
-    useResumeStore.setState({ education: [emptyEducation] });
-  };
 
   return (
     <div className="flex w-full h-full items-center justify-center">
@@ -81,21 +65,6 @@ export function EducationSection({ onContinue }: SectionProps) {
             />
           </div>
         </section>
-
-        {/* <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
-          <button
-            className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
-            onClick={() => clearInputs()}
-          >
-            Clear Inputs
-          </button>
-          <button
-            className="btn w-[49%] font-bold bg-[#274CBC] rounded-xl border border-[#2a4fbe]"
-            onClick={onContinue}
-          >
-            Next<span className="hidden md:block">: Technical Skills</span>
-          </button>
-        </section> */}
       </div>
     </div>
   );

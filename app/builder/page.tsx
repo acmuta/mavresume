@@ -2,7 +2,6 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
-import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
@@ -10,6 +9,7 @@ import { ProjectsSection } from "../../components/sections/projects";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
+
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
@@ -232,7 +232,7 @@ function BuilderPageContent() {
                   isTransitioning ? "opacity-0" : "opacity-100"
                 }`}
               >
-                <CurrentSection onContinue={goToNext} />
+                <CurrentSection />
               </div>
             </section>
           </Fade>

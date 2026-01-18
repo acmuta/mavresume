@@ -3,14 +3,9 @@ import { useResumeStore } from "../../store/useResumeStore";
 import { CustomSectionTitle } from "../elements/CustomSectionTitle";
 import { ExperienceAccordion } from "../elements/ExperienceAccordion";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function ExperienceSection({ onContinue }: SectionProps) {
+export function ExperienceSection() {
   const { addExperience } = useResumeStore();
 
-  
   return (
     <div className="flex w-full h-full items-center justify-center">
       <div className="md:flex flex-col md:p-7 w-full">
@@ -42,7 +37,6 @@ export function ExperienceSection({ onContinue }: SectionProps) {
             <p>Add Experience</p>
           </button>
         </section>
-
       </div>
     </div>
   );

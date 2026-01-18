@@ -3,23 +3,8 @@ import { useResumeStore } from "../../store/useResumeStore";
 import { CustomSectionTitle } from "../elements/CustomSectionTitle";
 import { Plus, X } from "lucide-react";
 
-interface SectionProps {
-  onContinue: () => void;
-}
-
-export function PersonalInfoSection({ onContinue }: SectionProps) {
+export function PersonalInfoSection() {
   const { personalInfo, updatePersonalInfo } = useResumeStore();
-
-  const clearInputs = () => {
-    updatePersonalInfo({
-      name: "",
-      phone: "",
-      email: "",
-      linkedin: "",
-      github: "",
-      customContacts: [],
-    });
-  };
 
   const handleAddCustomContact = () => {
     const currentCustom = personalInfo.customContacts || [];
@@ -137,21 +122,6 @@ export function PersonalInfoSection({ onContinue }: SectionProps) {
             </button>
           </div>
         </section>
-
-        {/* <section className="mt-4 flex justify-center gap-2 rounded-2xl border-[2px] border-[#313339] border-dashed shadow-lg p-4">
-          <button
-            className="btn w-[49%] font-bold bg-[#2A2C31] rounded-xl border border-[#2c2e34]"
-            onClick={clearInputs}
-          >
-            Clear Inputs
-          </button>
-          <button
-            className="btn w-[49%] font-bold bg-[#274CBC] rounded-xl border border-[#2a4fbe]"
-            onClick={onContinue}
-          >
-            Next<span className="hidden md:block">: Education</span>
-          </button>
-        </section> */}
       </div>
     </div>
   );
