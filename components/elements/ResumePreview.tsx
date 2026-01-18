@@ -19,12 +19,10 @@ import { useResumeStore } from "../../store/useResumeStore";
  *
  * Data flow: Form input → store update → preview components re-render → UI updates
  */
-interface ResumePreviewProps {
-  showBorder?: boolean;
-}
 
-export const ResumePreview = ({ showBorder = false }: ResumePreviewProps) => {
-  const { sectionOrder } = useResumeStore();
+
+export const ResumePreview = () => {
+  const { sectionOrder, showBorder } = useResumeStore();
 
   // Map section IDs to their preview components
   const sectionMap: Record<string, React.ComponentType> = {

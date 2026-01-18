@@ -84,6 +84,10 @@ export interface ResumeState {
   removeProject: (index: number) => void;
   removeExperience: (index: number) => void;
   updateSectionOrder: (order: string[]) => void;
+
+
+  showBorder?: boolean;
+  setShowBorder?: (show: boolean) => void;
 }
 
 /**
@@ -139,6 +143,15 @@ export const useResumeStore = create<ResumeState>()(
         "projects",
         "experience",
       ],
+
+
+      showBorder: false,
+      setShowBorder: (show: boolean) =>
+        set(() => ({
+          showBorder: show,
+        })),
+
+        
       // Update functions merge partial updates with existing state
       // Zustand's set() triggers re-renders in all components using the store
       updatePersonalInfo: (info) =>

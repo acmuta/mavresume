@@ -21,10 +21,6 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 
-export const metadata = {
-  title: "Templates",
-}
-
 export default function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<CategoryKey[]>(

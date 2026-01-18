@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -16,15 +16,10 @@ import { TooltipProvider } from "../ui/tooltip";
 import { EyeIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
-interface MobileResumePreviewDrawerProps {
-  showBorder: boolean;
-  setShowBorder: (show: boolean) => void;
-}
 
-export const MobileResumePreviewDrawer = ({
-  showBorder,
-  setShowBorder,
-}: MobileResumePreviewDrawerProps) => {
+export const MobileResumePreviewDrawer = () => {
+   const [showBorder, setShowBorder] = useState(false);
+   
   return (
     <Drawer direction="bottom">
       <DrawerTrigger asChild>
@@ -61,7 +56,7 @@ export const MobileResumePreviewDrawer = ({
           </TooltipProvider>
         </DrawerHeader>
         <div className="w-full h-[calc(90vh-8vh)] overflow-y-auto">
-          <ResumePreview showBorder={showBorder} />
+          <ResumePreview />
         </div>
       </DrawerContent>
     </Drawer>
