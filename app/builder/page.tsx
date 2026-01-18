@@ -11,6 +11,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
 
+export const metadata = {
+  title: "Builder",
+}
+
 function BuilderPageContent() {
   const searchParams = useSearchParams();
   const resumeType = searchParams.get("type");
