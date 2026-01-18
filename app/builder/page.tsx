@@ -2,7 +2,6 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
-import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
 import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
@@ -11,9 +10,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
 
-export const metadata = {
-  title: "Builder",
-}
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
