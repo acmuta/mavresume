@@ -49,6 +49,10 @@ export async function refineBulletPoint(
     if (!response.ok) {
       // Extract error message from API response, fallback to generic error
       const errorData = await response.json().catch(() => ({}));
+      // Notify header to refetch rate limit (e.g. 429)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("refinement-complete"));
+      }
       return {
         refinedText: bulletText,
         error: errorData.error || "Failed to refine bullet point",
@@ -56,6 +60,10 @@ export async function refineBulletPoint(
     }
 
     const data = await response.json();
+    // Notify header to refetch rate limit after a refinement
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("refinement-complete"));
+    }
     return {
       refinedText: data.refinedText || bulletText,
     };
