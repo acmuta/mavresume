@@ -1,11 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import React from "react";
 import { Fade } from "react-awesome-reveal";
 
 import { Button } from "@/components/ui/button";
+import { useSessionStore } from "@/store/useSessionStore";
 
 export const HomeHeaderBar = () => {
+  const { isAuthenticated } = useSessionStore();
+
   return (
     <Fade
       direction="down"
@@ -27,7 +32,7 @@ export const HomeHeaderBar = () => {
         >
           <div className="flex items-center gap-3">
             <Link
-              href="/"
+              href={isAuthenticated ? "/dashboard" : "/"}
               className="font-bold tracking-tight text-4xl 
               [mask-image:linear-gradient(to_bottom,black_40%,transparent)] 
               [mask-size:100%_100%] [mask-repeat:no-repeat]"
@@ -55,7 +60,7 @@ export const HomeHeaderBar = () => {
               className="rounded-xl bg-[#274cbc] px-4 text-xs font-semibold 
                          text-white hover:bg-[#315be1] sm:text-sm"
             >
-              <Link href="/templates">
+              <Link href="/login">
                 Start building
                 <ChevronRight className="ml-1 size-4" />
               </Link>

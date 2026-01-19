@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaGithub, FaDiscord } from "react-icons/fa";
 import { Lightbulb, HelpCircle, GraduationCap, FileText } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
+import type { User } from "@supabase/supabase-js";
 
 interface SidebarLink {
   href: string;
@@ -63,6 +65,16 @@ const resumeTips = [
 export const BuilderSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+
+  // Check if user is signed in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { user } = await getCurrentUser();
+      setUser(user);
+    };
+    checkUser();
+  }, []);
 
   // Rotate tips every 10 seconds
   useEffect(() => {
@@ -91,13 +103,13 @@ export const BuilderSidebar = () => {
         {/* Logo Section */}
         <div className="px-4 py-4 border-b border-[#2d313a] relative h-[8vh] flex items-center">
           <Link
-            href="/"
+            href={user ? "/dashboard" : "/"}
             className="flex items-center font-bold tracking-tight text-3xl
                        mask-[linear-gradient(to_bottom,black_40%,transparent)] 
                        mask-size-[100%_100%] mask-no-repeat
                        text-white hover:text-white transition-colors duration-300
                        relative w-full justify-center"
-            aria-label="MavResume home"
+            aria-label={user ? "Go to dashboard" : "MavResume home"}
           >
             {/* Collapsed logo */}
             <span
