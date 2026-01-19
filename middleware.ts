@@ -14,25 +14,60 @@ import { updateSession } from "@/lib/supabase/middleware";
  */
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  try {
+    const { pathname } = request.nextUrl;
 
-  // Define public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/auth/callback"];
-  const isPublicRoute = publicRoutes.includes(pathname);
+    // Define public routes that don't require authentication
+    const publicRoutes = ["/", "/login", "/auth/callback"];
+    const isPublicRoute = publicRoutes.includes(pathname);
 
-  // Allow public routes without authentication check
-  if (isPublicRoute) {
-    // Still update session to refresh tokens, but don't block access
-    const { response } = await updateSession(request);
+    // Allow public routes without authentication check
+    if (isPublicRoute) {
+      try {
+        // Still update session to refresh tokens, but don't block access
+        const { response } = await updateSession(request);
+        return response;
+      } catch (error) {
+        // If session update fails on public route, allow access anyway
+        // Public routes should be accessible even if auth check fails
+        console.error("Middleware: Error updating session on public route:", error);
+        return NextResponse.next({ request });
+      }
+    }
+
+    // For protected routes, check authentication
+    const { response, user } = await updateSession(request);
+
+    // If user is not authenticated, redirect to login
+    if (!user) {
+      // Handle API routes differently - return 401 instead of redirect
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+
+      // For page routes, redirect to login with original destination
+      const redirectUrl = new URL("/login", request.url);
+      redirectUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // User is authenticated, allow access
     return response;
-  }
+  } catch (error) {
+    // Fail closed: if middleware fails, protect routes by default
+    console.error("Middleware error:", error);
+    const { pathname } = request.nextUrl;
 
-  // For protected routes, check authentication
-  const { response, user } = await updateSession(request);
+    // Allow public routes even on error
+    const publicRoutes = ["/", "/login", "/auth/callback"];
+    if (publicRoutes.includes(pathname)) {
+      return NextResponse.next({ request });
+    }
 
-  // If user is not authenticated, redirect to login
-  if (!user) {
-    // Handle API routes differently - return 401 instead of redirect
+    // For protected routes, redirect to login on error (fail closed)
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -40,14 +75,10 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    // For page routes, redirect to login with original destination
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
   }
-
-  // User is authenticated, allow access
-  return response;
 }
 
 /**

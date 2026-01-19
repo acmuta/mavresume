@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Cookies are automatically set by exchangeCodeForSession via createClient's cookieStore.set()
     // Next.js automatically includes cookies from cookieStore in the redirect response
     // Request.nextUrl for domain-agnostic redirect (works with custom domains, Vercel previews, localhost)
     const redirectUrl = new URL(redirectTo, request.nextUrl.origin);

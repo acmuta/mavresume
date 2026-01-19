@@ -30,8 +30,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithEmail, signUpWithEmail, signInWithGoogle } from "@/lib/auth";
-import { useSessionStore } from "@/store/useSessionStore";
-import { useSessionSync } from "@/lib/hooks/useSessionSync";
 
 const resumeTips = [
   {
@@ -77,10 +75,6 @@ function LoginPageContent() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
-  // Check authentication status
-  const { isAuthenticated, isLoading: isAuthLoading } = useSessionStore();
-  useSessionSync();
-
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -96,14 +90,6 @@ function LoginPageContent() {
     string | null
   >(null);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
-
-  // Redirect authenticated users to dashboard
-  useEffect(() => {
-    if (!isAuthLoading && isAuthenticated) {
-      router.push(redirectTo);
-      router.refresh();
-    }
-  }, [isAuthLoading, isAuthenticated, redirectTo, router]);
 
   // Rotate resume tips every 5 seconds
   useEffect(() => {
@@ -205,7 +191,7 @@ function LoginPageContent() {
           setTimeout(() => {
             setMode("login");
             setSuccessMessage(null);
-          }, 4000);
+          }, 3000);
         }
       }
     } catch (err) {
@@ -239,24 +225,6 @@ function LoginPageContent() {
       setIsLoading(false);
     }
   };
-
-  // Show loading state while checking authentication
-  if (isAuthLoading) {
-    return (
-      <div className="relative min-h-screen bg-[#101113] text-white flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#11131a] via-[#0d0e12] to-[#09090b]" />
-        <div className="relative z-10 flex flex-col items-center gap-4">
-          <Loader2 className="size-8 animate-spin text-[#274cbc]" />
-          <p className="text-[#a4a7b5]">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render login form if user is authenticated (redirect will happen)
-  if (isAuthenticated) {
-    return null;
-  }
 
   return (
     <div className="relative min-h-screen bg-[#101113] text-white">
