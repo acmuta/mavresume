@@ -178,7 +178,7 @@ function LoginPageContent() {
         const result = await signUpWithEmail(email, password);
         if (result.error) {
           setError(result.error);
-          console.log(result.error);
+          console.error(result.error);
         } else {
           // Success - show success message and switch to login mode
           setSuccessMessage(
