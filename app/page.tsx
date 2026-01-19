@@ -151,7 +151,7 @@ export default function Home() {
                       asChild
                       className="h-12 rounded-2xl bg-[#274cbc] px-6 text-base font-semibold text-white hover:bg-[#315be1] hover:scale-[1.01] transition duration-300"
                     >
-                      <Link href="/templates">Start Building Your Resume</Link>
+                      <Link href="/login">Start Building Your Resume</Link>
                     </Button>
                     <Button
                       variant="outline"
@@ -391,7 +391,7 @@ export default function Home() {
                     asChild
                     className="h-12 rounded-2xl bg-[#274cbc] text-base font-semibold hover:bg-[#315be1] hover:scale-[1.01] transition-transform duration-300"
                   >
-                    <Link href="/templates">Start Building Your Resume</Link>
+                    <Link href="/login">Start Building Your Resume</Link>
                   </Button>
                 </CardContent>
               </Card>
