@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
 import { Fade } from "react-awesome-reveal";
 import { Search, SlidersHorizontal, ArrowLeft } from "lucide-react";
 import {
