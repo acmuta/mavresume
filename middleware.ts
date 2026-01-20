@@ -21,18 +21,10 @@ export async function middleware(request: NextRequest) {
     const publicRoutes = ["/", "/login", "/auth/callback"];
     const isPublicRoute = publicRoutes.includes(pathname);
 
-    // Allow public routes without authentication check
+    // Skip updateSession for public routes to avoid Supabase RTT before document (improves FCP/TTFB).
+    // Session refresh runs on first protected request or /auth/callback.
     if (isPublicRoute) {
-      try {
-        // Still update session to refresh tokens, but don't block access
-        const { response } = await updateSession(request);
-        return response;
-      } catch (error) {
-        // If session update fails on public route, allow access anyway
-        // Public routes should be accessible even if auth check fails
-        console.error("Middleware: Error updating session on public route:", error);
-        return NextResponse.next({ request });
-      }
+      return NextResponse.next({ request });
     }
 
     // For protected routes, check authentication

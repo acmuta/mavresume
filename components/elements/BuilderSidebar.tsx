@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FaGithub, FaDiscord } from "react-icons/fa";
-import { LogIn, HelpCircle, GraduationCap, FileText } from "lucide-react";
+import { Github, LogIn, HelpCircle, GraduationCap, FileText } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/DiscordIcon";
 import { signOut } from "@/lib/auth";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useSessionSync } from "@/lib/hooks/useSessionSync";
@@ -28,7 +28,7 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://github.com/acmuta/mavresume",
     label: "GitHub",
-    icon: FaGithub,
+    icon: Github,
     ariaLabel: "GitHub repository",
     external: true,
   },
@@ -42,7 +42,7 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://discord.gg/WjrDwNn5es",
     label: "ACM Discord",
-    icon: FaDiscord,
+    icon: DiscordIcon,
     ariaLabel: "Discord server",
     external: true,
   },
@@ -71,6 +71,7 @@ export const BuilderSidebar = () => {
   const { user } = useSessionStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useSessionSync();
 
@@ -236,16 +237,22 @@ export const BuilderSidebar = () => {
                   onClick={async () => {
                     setIsSigningOut(true);
                     await signOut();
+                    setIsSigningOut(false);
+                    setIsRedirecting(true);
                     router.push("/");
                     router.refresh();
                   }}
-                  disabled={isSigningOut}
+                  disabled={isSigningOut || isRedirecting}
                   className="w-full rounded-xl border border-dashed border-[#2f323a]
                              bg-transparent py-2 text-xs font-medium text-white
                              hover:border-[#4b4f5c] hover:bg-[#161920]
                              disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isSigningOut ? "Signing out…" : "Sign out"}
+                  {isSigningOut
+                    ? "Signing out…"
+                    : isRedirecting
+                      ? "Redirecting to home…"
+                      : "Sign out"}
                 </button>
               </div>
             ) : (
