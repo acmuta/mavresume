@@ -1,23 +1,30 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MobileResumePreviewDrawer } from "./MobileResumePreviewDrawer";
 import { useRateLimitStore } from "@/store/useRateLimitStore";
 
-function formatResetsIn(resetMs: number): string | null {
-  const remainingMs = resetMs - Date.now();
+function formatResetsIn(resetMs: number, asOfMs: number = Date.now()): string | null {
+  const remainingMs = resetMs - asOfMs;
   if (remainingMs <= 0) return null;
-  if (remainingMs >= 60_000) return `Resets in ${Math.ceil(remainingMs / 60_000)}m`;
-  return `Resets in ${Math.ceil(remainingMs / 1000)}s`;
+  return `Resets in ${Math.ceil(remainingMs / 60_000)}m`;
 }
 
 export const BuilderHeaderBar = () => {
   const { limit, remaining, reset, load } = useRateLimitStore();
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     load();
   }, [load]);
 
-  const resetTimeStr = formatResetsIn(reset);
+  // Live countdown: tick every second when the rate-limit badge is shown
+  useEffect(() => {
+    if (limit <= 0) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [limit]);
+
+  const resetTimeStr = formatResetsIn(reset, now);
   const textColor =
     limit > 0 && remaining <= Math.ceil(limit * 0.1) ? "text-amber-400" : "";
 
