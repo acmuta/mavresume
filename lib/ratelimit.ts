@@ -8,13 +8,13 @@ function getLimiter(): Ratelimit | null {
   if (!redis) return null;
   if (_limiter !== undefined) return _limiter;
   const limit = parseInt(
-    process.env.REFINE_RATELIMIT_REQUESTS || "5",
+    process.env.REFINE_RATELIMIT_REQUESTS || "20",
     10
   );
-  const window = (process.env.REFINE_RATELIMIT_WINDOW || "1 m") as Duration;
+  const window = (process.env.REFINE_RATELIMIT_WINDOW || "30 m") as Duration;
   _limiter = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(limit, window),
+    limiter: Ratelimit.fixedWindow(limit, window),
     prefix: "rl:refine",
   });
   return _limiter;
@@ -22,8 +22,9 @@ function getLimiter(): Ratelimit | null {
 
 /**
  * Checks the refinement rate limit for the given user ID (Supabase user.id).
- * Uses a sliding window; only requests that would call OpenAI (cache miss) should
+ * Uses a fixed window; only requests that would call OpenAI (cache miss) should
  * invoke this. On Redis or Ratelimit errors, fails open (returns success: true).
+ * Config: REFINE_RATELIMIT_REQUESTS (default 20), REFINE_RATELIMIT_WINDOW (default "30 m").
  *
  * @param userId - Supabase user.id (sole identifier; no IP or other identity).
  * @returns success, limit, remaining, reset (reset is Unix timestamp in milliseconds).
@@ -45,11 +46,9 @@ export async function checkRefinementLimit(userId: string): Promise<{
 }
 
 /**
- * Returns the refinement rate limit status for the given user without consuming a token.
- * Uses Ratelimit.getRemaining. On Redis or Ratelimit errors, fails open with a default.
- *
- * @param userId - Supabase user.id (sole identifier).
- * @returns limit, remaining, reset (reset is Unix timestamp in milliseconds).
+ * Returns the current refinement rate limit status without consuming.
+ * Use for displaying usage to the user or on cache hits.
+ * When Redis/limiter is unavailable, returns limit: 0 (treat as unlimited).
  */
 export async function getRefinementLimitStatus(userId: string): Promise<{
   limit: number;
@@ -57,11 +56,10 @@ export async function getRefinementLimitStatus(userId: string): Promise<{
   reset: number;
 }> {
   const limiter = getLimiter();
-  if (!limiter) return { limit: 60, remaining: 60, reset: 0 };
+  if (!limiter) return { limit: 0, remaining: 999, reset: 0 };
   try {
-    const { limit, remaining, reset } = await limiter.getRemaining(userId);
-    return { limit, remaining, reset };
+    return await limiter.getRemaining(userId);
   } catch {
-    return { limit: 60, remaining: 60, reset: 0 };
+    return { limit: 0, remaining: 999, reset: 0 };
   }
 }

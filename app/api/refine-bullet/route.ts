@@ -6,7 +6,7 @@ import {
   getCachedRefinement,
   setCachedRefinement,
 } from "@/lib/refine-cache";
-import { checkRefinementLimit } from "@/lib/ratelimit";
+import { checkRefinementLimit, getRefinementLimitStatus } from "@/lib/ratelimit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -60,7 +60,8 @@ export async function POST(request: NextRequest) {
     const cacheKey = await buildRefinementCacheKey(user.id, bulletText, context);
     const cached = await getCachedRefinement(cacheKey);
     if (cached !== null) {
-      return NextResponse.json({ refinedText: cached });
+      const rateLimit = await getRefinementLimitStatus(user.id);
+      return NextResponse.json({ refinedText: cached, rateLimit });
     }
 
     // Rate limit: only consume when we would call OpenAI (cache miss)
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
       completion.choices[0]?.message?.content?.trim() || bulletText;
 
     await setCachedRefinement(cacheKey, refinedText);
-    return NextResponse.json({ refinedText });
+    return NextResponse.json({ refinedText, rateLimit: { limit, remaining, reset } });
   } catch (error) {
     console.error("Error refining bullet point:", error);
 

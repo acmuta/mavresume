@@ -1,3 +1,5 @@
+import { useRateLimitStore } from "@/store/useRateLimitStore";
+
 /**
  * Context passed to AI refinement to improve relevance of generated text.
  * Title and technologies help the AI understand the project/experience context.
@@ -47,12 +49,19 @@ export async function refineBulletPoint(
     });
 
     if (!response.ok) {
-      // Extract error message from API response, fallback to generic error
-      const errorData = await response.json().catch(() => ({}));
-      // Notify header to refetch rate limit (e.g. 429)
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("refinement-complete"));
+      if (response.status === 429) {
+        const limitH = response.headers.get("X-RateLimit-Limit");
+        const remainingH = response.headers.get("X-RateLimit-Remaining");
+        const resetH = response.headers.get("X-RateLimit-Reset");
+        if (limitH != null && remainingH != null && resetH != null) {
+          useRateLimitStore.getState().set({
+            limit: +limitH,
+            remaining: +remainingH,
+            reset: +resetH * 1000,
+          });
+        }
       }
+      const errorData = await response.json().catch(() => ({}));
       return {
         refinedText: bulletText,
         error: errorData.error || "Failed to refine bullet point",
@@ -60,9 +69,8 @@ export async function refineBulletPoint(
     }
 
     const data = await response.json();
-    // Notify header to refetch rate limit after a refinement
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("refinement-complete"));
+    if (data.rateLimit) {
+      useRateLimitStore.getState().set(data.rateLimit);
     }
     return {
       refinedText: data.refinedText || bulletText,
