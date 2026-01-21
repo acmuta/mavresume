@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@/lib/supabase/server";
+import {
+  buildRefinementCacheKey,
+  getCachedRefinement,
+  setCachedRefinement,
+} from "@/lib/refine-cache";
+import { checkRefinementLimit, getRefinementLimitStatus } from "@/lib/ratelimit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -50,6 +56,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Cache lookup: return cached refinement when available to avoid redundant AI calls
+    const cacheKey = await buildRefinementCacheKey(user.id, bulletText, context);
+    const cached = await getCachedRefinement(cacheKey);
+    if (cached !== null) {
+      const rateLimit = await getRefinementLimitStatus(user.id);
+      return NextResponse.json({ refinedText: cached, rateLimit });
+    }
+
+    // Rate limit: only consume when we would call OpenAI (cache miss)
+    const { success, limit, remaining, reset } = await checkRefinementLimit(
+      user.id
+    );
+    if (!success) {
+      const retryAfter = Math.max(
+        1,
+        Math.ceil((reset - Date.now()) / 1000)
+      );
+      return NextResponse.json(
+        { error: "Too many refinement requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": String(limit),
+            "X-RateLimit-Remaining": String(remaining),
+            "X-RateLimit-Reset": String(Math.floor(reset / 1000)),
+            "Retry-After": String(retryAfter),
+          },
+        }
+      );
+    }
+
     // Build context string for the prompt - includes title and technologies to help
     // the AI generate more relevant and contextual refinements
     let contextString = "";
@@ -96,7 +133,8 @@ export async function POST(request: NextRequest) {
     const refinedText =
       completion.choices[0]?.message?.content?.trim() || bulletText;
 
-    return NextResponse.json({ refinedText });
+    await setCachedRefinement(cacheKey, refinedText);
+    return NextResponse.json({ refinedText, rateLimit: { limit, remaining, reset } });
   } catch (error) {
     console.error("Error refining bullet point:", error);
 
