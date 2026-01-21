@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   FileCheck2,
   FileText,
-  Github,
   GraduationCap,
   Layers,
   LayoutDashboard,
@@ -16,7 +15,7 @@ import {
 import { Fade } from "react-awesome-reveal";
 
 import { PreviewContext } from "@/components/contexts/PreviewContext";
-import { DiscordIcon } from "@/components/icons/DiscordIcon";
+import { FaDiscord, FaGithub } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,13 +26,41 @@ import {
 } from "@/components/ui/card";
 
 const features = [
-  { title: "Guided resume builder", description: "Step-by-step prompts tuned for UTA undergrads.", icon: LayoutDashboard },
-  { title: "Skill recommendations", description: "Auto-suggests languages & tools from your courses.", icon: Sparkles },
-  { title: "Course-to-experience converter", description: "Translate class projects into impact bullet points.", icon: FileText },
-  { title: "Section reordering (DND Kit)", description: "Drag-and-drop sections to match recruiter priority.", icon: Layers },
-  { title: "ATS-friendly PDF export", description: "Clean formatting that passes automated scanners.", icon: FileCheck2 },
-  { title: "AI refinement tools", description: "Polish phrasing with confident, action-focused copy.", icon: Wand2 },
-  { title: "Major-specific templates", description: "Layouts tailored for engineering, business, & more.", icon: GraduationCap },
+  {
+    title: "Guided resume builder",
+    description: "Step-by-step prompts tuned for UTA undergrads.",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Skill recommendations",
+    description: "Auto-suggests languages & tools from your courses.",
+    icon: Sparkles,
+  },
+  {
+    title: "Course-to-experience converter",
+    description: "Translate class projects into impact bullet points.",
+    icon: FileText,
+  },
+  {
+    title: "Section reordering (DND Kit)",
+    description: "Drag-and-drop sections to match recruiter priority.",
+    icon: Layers,
+  },
+  {
+    title: "ATS-friendly PDF export",
+    description: "Clean formatting that passes automated scanners.",
+    icon: FileCheck2,
+  },
+  {
+    title: "AI refinement tools",
+    description: "Polish phrasing with confident, action-focused copy.",
+    icon: Wand2,
+  },
+  {
+    title: "Major-specific templates",
+    description: "Layouts tailored for engineering, business, & more.",
+    icon: GraduationCap,
+  },
 ];
 
 const whyPoints = [
@@ -53,12 +80,14 @@ type FlowPreviewComponent = ComponentType<{
 export function HomePageClientWrapper({ children }: { children: ReactNode }) {
   const [showPreview, setShowPreview] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [FlowPreview, setFlowPreview] = useState<FlowPreviewComponent | null>(null);
+  const [FlowPreview, setFlowPreview] = useState<FlowPreviewComponent | null>(
+    null,
+  );
 
   useEffect(() => {
     if (showPreview && !FlowPreview) {
       import("@/components/elements/FlowPreview").then((m) =>
-        setFlowPreview(() => m.FlowPreview)
+        setFlowPreview(() => m.FlowPreview),
       );
     }
   }, [showPreview, FlowPreview]);
@@ -87,13 +116,16 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
             <Fade direction="up" duration={700} delay={200} triggerOnce>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.4em] text-[#6d7895]">What you get</p>
+                  <p className="text-sm uppercase tracking-[0.4em] text-[#6d7895]">
+                    What you get
+                  </p>
                   <h2 className="text-3xl font-semibold sm:text-4xl">
                     Guided tools to build faster with confidence.
                   </h2>
                 </div>
                 <div className="text-sm text-[#a4a9ba]">
-                  Every feature mirrors the builder experience to keep the UI familiar from the start.
+                  Every feature mirrors the builder experience to keep the UI
+                  familiar from the start.
                 </div>
               </div>
             </Fade>
@@ -102,7 +134,13 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
               {features.map(({ title, description, icon: Icon }, index) => {
                 const delays = [300, 400, 500, 600, 700, 800, 900];
                 return (
-                  <Fade key={title} direction="up" duration={600} delay={delays[index]} triggerOnce>
+                  <Fade
+                    key={title}
+                    direction="up"
+                    duration={600}
+                    delay={delays[index]}
+                    triggerOnce
+                  >
                     <Card className="h-full border-2 border-dashed border-[#2d313a] bg-[#15171c]/80 hover:scale-[1.02] transition-transform duration-300">
                       <CardHeader className="flex flex-row items-center gap-4">
                         <div className="flex size-12 items-center justify-center rounded-2xl bg-[#1f2330]/80 text-[#8fa5ff]">
@@ -136,7 +174,13 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
                     {whyPoints.map((point, index) => {
                       const delays = [400, 500, 600, 700];
                       return (
-                        <Fade key={point} direction="up" duration={500} delay={delays[index]} triggerOnce>
+                        <Fade
+                          key={point}
+                          direction="up"
+                          duration={500}
+                          delay={delays[index]}
+                          triggerOnce
+                        >
                           <li className="flex items-start gap-3 text-sm">
                             <CheckCircle2 className="mt-0.5 size-5 text-[#58f5c3]" />
                             <span className="text-[#cfd3e1]">{point}</span>
@@ -161,7 +205,8 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
                   <p className="text-[#cfd3e1]">
-                    Resume sections mirror the builder layout, so you already know what to expect when you click start.
+                    Resume sections mirror the builder layout, so you already
+                    know what to expect when you click start.
                   </p>
                   <Button
                     asChild
@@ -190,7 +235,8 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
                     </a>
                   </p>
                   <p className="text-[0.7rem] text-[#8b90a3] sm:text-xs">
-                    UTA&apos;s largest computer science organization - uniting students through technology.
+                    UTA&apos;s largest computer science organization - uniting
+                    students through technology.
                   </p>
                 </div>
 
@@ -201,7 +247,7 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a] px-3 py-1 text-xs font-medium text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white"
                   >
-                    <Github className="size-4" />
+                    <FaGithub className="size-4" />
                     <span>GitHub</span>
                   </a>
                   <a
@@ -210,7 +256,7 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-full border border-[#28324b] bg-[#0e111b] px-3 py-1 text-xs font-medium text-[#cfd3e1] hover:border-[#3c4c77] hover:text-white"
                   >
-                    <DiscordIcon className="size-4" />
+                    <FaDiscord className="size-4" />
                     <span>ACM Discord</span>
                   </a>
                 </div>
