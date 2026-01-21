@@ -3,8 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FaGithub, FaDiscord } from "react-icons/fa";
-import { LogIn, HelpCircle, GraduationCap, FileText } from "lucide-react";
+import {
+  FaGithub,
+  FaDiscord,
+  FaGraduationCap,
+} from "react-icons/fa";
+import { FileText } from "lucide-react";
+import { IoMdHelpCircle } from "react-icons/io";
+import { IoLogIn } from "react-icons/io5";
+
 import { signOut } from "@/lib/auth";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useSessionSync } from "@/lib/hooks/useSessionSync";
@@ -35,7 +42,7 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://www.acmuta.com",
     label: "ACM @ UTA",
-    icon: GraduationCap,
+    icon: FaGraduationCap,
     ariaLabel: "ACM at UTA website",
     external: true,
   },
@@ -49,17 +56,21 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://github.com/acmuta/mavresume#readme",
     label: "Help",
-    icon: HelpCircle,
+    icon: IoMdHelpCircle,
     ariaLabel: "Documentation",
     external: true,
   },
 ];
 
-function getInitials(user: { user_metadata?: { full_name?: string }; email?: string }): string {
+function getInitials(user: {
+  user_metadata?: { full_name?: string };
+  email?: string;
+}): string {
   const name = user.user_metadata?.full_name?.trim();
   if (name) {
     const parts = name.split(/\s+/);
-    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    if (parts.length >= 2)
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     return (parts[0].slice(0, 2) || "?").toUpperCase();
   }
   const local = user.email?.split("@")[0] ?? "";
@@ -71,6 +82,7 @@ export const BuilderSidebar = () => {
   const { user } = useSessionStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useSessionSync();
 
@@ -195,7 +207,7 @@ export const BuilderSidebar = () => {
                 {getInitials(user)}
               </span>
             ) : (
-              <LogIn className="w-4 h-4 text-[#89a5ff] shrink-0" />
+              <IoLogIn className="w-4 h-4 text-[#89a5ff] shrink-0" />
             )}
           </div>
 
@@ -226,9 +238,13 @@ export const BuilderSidebar = () => {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-[#cfd3e1] truncate">
-                      {user.user_metadata?.full_name || user.email?.split("@")[0] || "User"}
+                      {user.user_metadata?.full_name ||
+                        user.email?.split("@")[0] ||
+                        "User"}
                     </p>
-                    <p className="text-xs text-[#a4a7b5] truncate">{user.email}</p>
+                    <p className="text-xs text-[#a4a7b5] truncate">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -236,16 +252,22 @@ export const BuilderSidebar = () => {
                   onClick={async () => {
                     setIsSigningOut(true);
                     await signOut();
+                    setIsSigningOut(false);
+                    setIsRedirecting(true);
                     router.push("/");
                     router.refresh();
                   }}
-                  disabled={isSigningOut}
+                  disabled={isSigningOut || isRedirecting}
                   className="w-full rounded-xl border border-dashed border-[#2f323a]
                              bg-transparent py-2 text-xs font-medium text-white
                              hover:border-[#4b4f5c] hover:bg-[#161920]
                              disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isSigningOut ? "Signing out…" : "Sign out"}
+                  {isSigningOut
+                    ? "Signing out…"
+                    : isRedirecting
+                      ? "Redirecting to home…"
+                      : "Sign out"}
                 </button>
               </div>
             ) : (
@@ -253,7 +275,9 @@ export const BuilderSidebar = () => {
                 className="rounded-2xl border border-dashed border-[#2d313a]
                            bg-[#10121a] p-3 flex flex-col gap-3"
               >
-                <p className="text-xs text-[#a4a7b5]">Sign in to save your progress.</p>
+                <p className="text-xs text-[#a4a7b5]">
+                  Sign in to save your progress.
+                </p>
                 <Link
                   href="/login"
                   className="w-full rounded-xl border border-dashed border-[#2f323a]

@@ -1,15 +1,11 @@
 export const metadata = {
   title: "Templates",
-}
+};
 
-export default function RootLayout({
-    children,
+export default function TemplatesLayout({
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <html lang="en">
-            <body>{children}</body>
-        </html>
-    );
+  return <>{children}</>;
 }
