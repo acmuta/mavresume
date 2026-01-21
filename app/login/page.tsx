@@ -179,19 +179,25 @@ function LoginPageContent() {
         if (result.error) {
           setError(result.error);
           console.error(result.error);
-        } else {
-          // Success - show success message and switch to login mode
-          setSuccessMessage(
-            "Account created successfully! Please verify your email before logging in.",
-          );
-          // Clear password fields but keep email for convenience
-          setPassword("");
-          setConfirmPassword("");
-          // Switch to login mode after a brief delay
-          setTimeout(() => {
-            setMode("login");
-            setSuccessMessage(null);
-          }, 3000);
+        } else if (result.data?.user) {
+          // Only show success if user was actually created with valid identity
+          if (result.data.user.identities && result.data.user.identities.length > 0) {
+            // Successful signup with email confirmation pending
+            setSuccessMessage(
+              "Account created successfully! Please verify your email before logging in.",
+            );
+            // Clear password fields but keep email for convenience
+            setPassword("");
+            setConfirmPassword("");
+            // Switch to login mode after a brief delay
+            setTimeout(() => {
+              setMode("login");
+              setSuccessMessage(null);
+            }, 3000);
+          } else {
+            // User object exists but no identities = duplicate OAuth account
+            setError("An account with this email already exists. Please sign in or use 'Continue with Google' if you registered with Google.");
+          }
         }
       }
     } catch (err) {

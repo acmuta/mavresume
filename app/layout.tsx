@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Montserrat } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Montserrat } from "next/font/google";
 
+import { DeferredAnalytics } from "@/components/DeferredAnalytics";
 
 const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-montserrat',
-})
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: {
@@ -26,10 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} font-sans bg-[#101113] text-white`}>
+      <body className={`font-sans bg-[#101113] text-white`}>
         {children}
-        <Analytics />
-        <SpeedInsights />
+        <DeferredAnalytics />
       </body>
     </html>
   );

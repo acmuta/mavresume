@@ -1,8 +1,8 @@
 export const metadata = {
-  title: "Templates",
+  title: "Login",
 };
 
-export default function TemplatesLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode;

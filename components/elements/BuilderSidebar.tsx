@@ -1,11 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { FaGithub, FaDiscord } from "react-icons/fa";
-import { Lightbulb, HelpCircle, GraduationCap, FileText } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth";
-import type { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import {
+  FaGithub,
+  FaDiscord,
+  FaGraduationCap,
+} from "react-icons/fa";
+import { FileText } from "lucide-react";
+import { IoMdHelpCircle } from "react-icons/io";
+import { IoLogIn } from "react-icons/io5";
+
+import { signOut } from "@/lib/auth";
+import { useSessionStore } from "@/store/useSessionStore";
+import { useSessionSync } from "@/lib/hooks/useSessionSync";
 
 interface SidebarLink {
   href: string;
@@ -33,7 +42,7 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://www.acmuta.com",
     label: "ACM @ UTA",
-    icon: GraduationCap,
+    icon: FaGraduationCap,
     ariaLabel: "ACM at UTA website",
     external: true,
   },
@@ -47,43 +56,35 @@ const sidebarLinks: SidebarLink[] = [
   {
     href: "https://github.com/acmuta/mavresume#readme",
     label: "Help",
-    icon: HelpCircle,
+    icon: IoMdHelpCircle,
     ariaLabel: "Documentation",
     external: true,
   },
 ];
 
-const resumeTips = [
-  "Use action verbs (Led, Built, Improved) to start bullet points",
-  "Quantify your impact with numbers (e.g., 'Reduced load time by 30%')",
-  "Focus on achievements, not just responsibilities",
-  "Keep bullet points concise - aim for 1-2 lines each",
-  "Tailor your resume to match job descriptions",
-  "Use consistent formatting and professional fonts",
-];
+function getInitials(user: {
+  user_metadata?: { full_name?: string };
+  email?: string;
+}): string {
+  const name = user.user_metadata?.full_name?.trim();
+  if (name) {
+    const parts = name.split(/\s+/);
+    if (parts.length >= 2)
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return (parts[0].slice(0, 2) || "?").toUpperCase();
+  }
+  const local = user.email?.split("@")[0] ?? "";
+  return (local.slice(0, 2) || "?").toUpperCase();
+}
 
 export const BuilderSidebar = () => {
+  const router = useRouter();
+  const { user } = useSessionStore();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [user, setUser] = useState<User | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Check if user is signed in
-  useEffect(() => {
-    const checkUser = async () => {
-      const { user } = await getCurrentUser();
-      setUser(user);
-    };
-    checkUser();
-  }, []);
-
-  // Rotate tips every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTipIndex((prev) => (prev + 1) % resumeTips.length);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
+  useSessionSync();
 
   return (
     <aside
@@ -186,9 +187,9 @@ export const BuilderSidebar = () => {
           })}
         </div>
 
-        {/* Tips Section */}
+        {/* Profile Section */}
         <div className="px-3 py-4 border-t border-[#2d313a]/50 relative min-h-15">
-          {/* Collapsed: Icon only */}
+          {/* Collapsed: Initials or LogIn icon */}
           <div
             className={`absolute inset-0 flex items-center justify-center
                        transition-all duration-300 ease-in-out
@@ -198,12 +199,21 @@ export const BuilderSidebar = () => {
                            : "opacity-100 scale-100"
                        }`}
           >
-            <Lightbulb className="w-4 h-4 text-[#89a5ff] shrink-0" />
+            {user ? (
+              <span
+                className="flex w-8 h-8 items-center justify-center rounded-full
+                           bg-[#1f2330] text-[#89a5ff] text-xs font-medium shrink-0"
+              >
+                {getInitials(user)}
+              </span>
+            ) : (
+              <IoLogIn className="w-4 h-4 text-[#89a5ff] shrink-0" />
+            )}
           </div>
 
-          {/* Expanded: Icon + Text */}
+          {/* Expanded: Profile card or Sign in CTA */}
           <div
-            className={`flex items-start gap-3
+            className={`flex flex-col gap-3
                        transition-all duration-300 ease-in-out
                        ${
                          isExpanded
@@ -214,10 +224,70 @@ export const BuilderSidebar = () => {
               transitionDelay: isExpanded ? "150ms" : "0ms",
             }}
           >
-            <Lightbulb className="w-4 h-4 text-[#89a5ff] shrink-0 mt-0.5" />
-            <p className="text-xs text-[#cfd3e1] leading-relaxed">
-              {resumeTips[currentTipIndex]}
-            </p>
+            {user ? (
+              <div
+                className="rounded-2xl border border-dashed border-[#2d313a]
+                           bg-[#10121a] p-3 flex flex-col gap-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="flex w-10 h-10 items-center justify-center rounded-full
+                               bg-[#1f2330] text-[#89a5ff] text-sm font-medium shrink-0"
+                  >
+                    {getInitials(user)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-[#cfd3e1] truncate">
+                      {user.user_metadata?.full_name ||
+                        user.email?.split("@")[0] ||
+                        "User"}
+                    </p>
+                    <p className="text-xs text-[#a4a7b5] truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsSigningOut(true);
+                    await signOut();
+                    setIsSigningOut(false);
+                    setIsRedirecting(true);
+                    router.push("/");
+                    router.refresh();
+                  }}
+                  disabled={isSigningOut || isRedirecting}
+                  className="w-full rounded-xl border border-dashed border-[#2f323a]
+                             bg-transparent py-2 text-xs font-medium text-white
+                             hover:border-[#4b4f5c] hover:bg-[#161920]
+                             disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isSigningOut
+                    ? "Signing out…"
+                    : isRedirecting
+                      ? "Redirecting to home…"
+                      : "Sign out"}
+                </button>
+              </div>
+            ) : (
+              <div
+                className="rounded-2xl border border-dashed border-[#2d313a]
+                           bg-[#10121a] p-3 flex flex-col gap-3"
+              >
+                <p className="text-xs text-[#a4a7b5]">
+                  Sign in to save your progress.
+                </p>
+                <Link
+                  href="/login"
+                  className="w-full rounded-xl border border-dashed border-[#2f323a]
+                             bg-transparent py-2 text-xs font-medium text-white text-center
+                             hover:border-[#4b4f5c] hover:bg-[#161920] transition-colors"
+                >
+                  Sign in
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

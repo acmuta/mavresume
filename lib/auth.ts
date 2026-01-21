@@ -53,6 +53,14 @@ export async function signInWithEmail(email: string, password: string) {
   });
 
   if (error) {
+    // Provide helpful message for OAuth accounts trying to use password
+    if (error.message.toLowerCase().includes('invalid login credentials') ||
+        error.message.toLowerCase().includes('invalid_credentials')) {
+      return { 
+        error: "Invalid email or password. If you signed up with Google, please use 'Continue with Google' to sign in.", 
+        data: null 
+      };
+    }
     return { error: getErrorMessage(error), data: null };
   }
 
@@ -75,7 +83,27 @@ export async function signUpWithEmail(email: string, password: string) {
   });
 
   if (error) {
+    // Check if error is about existing user
+    if (error.message.toLowerCase().includes('already registered') || 
+        error.message.toLowerCase().includes('already exists')) {
+      return { 
+        error: "An account with this email already exists. If you signed up with Google, please use 'Continue with Google' to sign in.", 
+        data: null 
+      };
+    }
     return { error: getErrorMessage(error), data: null };
+  }
+
+  // Check if signup was successful but no session created
+  if (data.user && !data.session) {
+    // Verify the user was actually created (not a duplicate)
+    if (data.user.identities && data.user.identities.length === 0) {
+      // No identities means signup was blocked (OAuth account exists)
+      return {
+        error: "An account with this email already exists. If you signed up with Google, please use 'Continue with Google' to sign in.",
+        data: null
+      };
+    }
   }
 
   // Only update session store if there's an actual session
