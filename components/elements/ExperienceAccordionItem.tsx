@@ -13,7 +13,7 @@ import { Wand2, Loader2, X, Plus } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
-import { refineBulletPoints } from "@/lib/bulletRefinement";
+import { refineBulletPointsBatch } from "@/lib/bulletRefinement";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +52,7 @@ export const ExperienceAccordionItem: React.FC<
    *
    * Data flow:
    * 1. Filter non-empty bullets from the array (may have empty slots)
-   * 2. Call refineBulletPoints with experience context (position + company)
+   * 2. Call refineBulletPointsBatch with experience context (single API call)
    * 3. Collect successful refinements and open overlay dialog
    * 4. Users can accept/decline each refinement in the overlay
    *
@@ -76,7 +76,8 @@ export const ExperienceAccordionItem: React.FC<
 
     try {
       // Pass experience context (position + company) to help AI generate relevant refinements
-      const results = await refineBulletPoints(nonEmptyBullets, {
+      // Uses batch API for single OpenAI call efficiency
+      const results = await refineBulletPointsBatch(nonEmptyBullets, {
         title: `${exp.position} at ${exp.company}`,
       });
 
@@ -365,6 +366,7 @@ export const ExperienceAccordionItem: React.FC<
                         context={{
                           title: `${experience[index].position} at ${experience[index].company}`,
                         }}
+                        isExternalLoading={isRefiningAll}
                       />
                       {experience[index].bulletPoints.length > 1 && (
                         <button

@@ -12,7 +12,7 @@ import { Dot, Wand2, Loader2, X, Plus } from "lucide-react";
 import { BulletRefinementButton } from "./BulletRefinementButton";
 import { BulletRefinementPreview } from "./BulletRefinementPreview";
 import { RefineAllOverlay } from "./RefineAllOverlay";
-import { refineBulletPoints } from "@/lib/bulletRefinement";
+import { refineBulletPointsBatch } from "@/lib/bulletRefinement";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +52,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
    *
    * Data flow:
    * 1. Filter non-empty bullets from the array (may have empty slots)
-   * 2. Call refineBulletPoints with project context (title + technologies)
+   * 2. Call refineBulletPointsBatch with project context (single API call)
    * 3. Collect successful refinements and open overlay dialog
    * 4. Users can accept/decline each refinement in the overlay
    *
@@ -77,7 +77,8 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
     try {
       // Pass project context (title + technologies) to help AI generate
       // technically accurate and relevant refinements
-      const results = await refineBulletPoints(nonEmptyBullets, {
+      // Uses batch API for single OpenAI call efficiency
+      const results = await refineBulletPointsBatch(nonEmptyBullets, {
         title: project.title,
         technologies: project.technologies,
       });
@@ -332,6 +333,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
                           title: projects[index].title,
                           technologies: projects[index].technologies,
                         }}
+                        isExternalLoading={isRefiningAll}
                       />
                       {projects[index].bulletPoints.length > 1 && (
                         <button

@@ -86,14 +86,9 @@ export async function refineBulletPoint(
 }
 
 /**
- * Refines multiple bullet points in batch
- * @param bulletPoints - Array of bullet point texts to refine
- * @param context - Optional context (title, technologies) to improve refinement
- * @returns Promise with array of refined texts or error messages
- */
-/**
- * Refines multiple bullet points in batch.
- * Processes sequentially (not in parallel) to avoid OpenAI rate limits.
+ * @deprecated Use refineBulletPointsBatch for better performance.
+ * Refines multiple bullet points sequentially (one API call per bullet).
+ * Kept for backwards compatibility.
  * 
  * @param bulletPoints - Array of bullet point texts to refine
  * @param context - Optional context (title, technologies) shared across all bullets
@@ -119,6 +114,86 @@ export async function refineBulletPoints(
   }
 
   return results;
+}
+
+/**
+ * Refines multiple bullet points in a single batch API call.
+ * 
+ * This is the preferred method for "Refine All" operations as it:
+ * - Makes a single OpenAI API call for all bullets (cost efficient)
+ * - Checks cache for each bullet individually (reuses cached refinements)
+ * - Caches each refined bullet individually (enables future reuse)
+ * 
+ * @param bulletPoints - Array of bullet point texts to refine
+ * @param context - Optional context (title, technologies) shared across all bullets
+ * @returns Promise with array of refined texts or error messages
+ */
+export async function refineBulletPointsBatch(
+  bulletPoints: string[],
+  context?: RefinementContext
+): Promise<RefinementResponse[]> {
+  if (!bulletPoints || bulletPoints.length === 0) {
+    return [];
+  }
+
+  // Filter out empty bullets but track their positions
+  const bulletInputs = bulletPoints.map((text) => ({
+    text: text || "",
+    context,
+  }));
+
+  try {
+    const response = await fetch("/api/refine-bullets-batch", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bullets: bulletInputs }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        const limitH = response.headers.get("X-RateLimit-Limit");
+        const remainingH = response.headers.get("X-RateLimit-Remaining");
+        const resetH = response.headers.get("X-RateLimit-Reset");
+        if (limitH != null && remainingH != null && resetH != null) {
+          useRateLimitStore.getState().set({
+            limit: +limitH,
+            remaining: +remainingH,
+            reset: +resetH * 1000,
+          });
+        }
+      }
+      const errorData = await response.json().catch(() => ({}));
+      // Return error for all bullets
+      return bulletPoints.map((text) => ({
+        refinedText: text,
+        error: errorData.error || "Failed to refine bullet points",
+      }));
+    }
+
+    const data = await response.json();
+    if (data.rateLimit) {
+      useRateLimitStore.getState().set(data.rateLimit);
+    }
+
+    // Map API results back to RefinementResponse format
+    const results: RefinementResponse[] = data.results.map(
+      (result: { refinedText: string; error?: string }, index: number) => ({
+        refinedText: result.refinedText || bulletPoints[index],
+        error: result.error,
+      })
+    );
+
+    return results;
+  } catch (error) {
+    console.error("Error calling batch refinement API:", error);
+    // Return error for all bullets
+    return bulletPoints.map((text) => ({
+      refinedText: text,
+      error: "Network error. Please check your connection and try again.",
+    }));
+  }
 }
 
 

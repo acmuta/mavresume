@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
  * @param context - Optional context (title, technologies) passed to AI for better refinement
  * @param size - Button size variant (defaults to "icon" for compact UI)
  * @param className - Additional CSS classes
+ * @param isExternalLoading - Optional external loading state (e.g., when "Refine All" is active)
  */
 interface BulletRefinementButtonProps {
   bulletText: string;
@@ -29,6 +30,7 @@ interface BulletRefinementButtonProps {
   };
   size?: "sm" | "default" | "icon";
   className?: string;
+  isExternalLoading?: boolean;
 }
 
 /**
@@ -44,10 +46,14 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
   context,
   size = "icon",
   className,
+  isExternalLoading = false,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+
+  // Combined loading state: either this button is loading or external (Refine All) is loading
+  const showLoading = isLoading || isExternalLoading;
 
   /**
    * Handles the refinement flow: validate input → call API → show preview via callback.
@@ -91,11 +97,11 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
       <button
         type="button"
         onClick={handleRefine}
-        disabled={isLoading || !bulletText || bulletText.trim().length === 0}
+        disabled={showLoading || !bulletText || bulletText.trim().length === 0}
         className={`inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-2 py-1.5 text-[#3c67eb] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
         title="Refine bullet point with AI"
       >
-        {isLoading ? (
+        {showLoading ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
           <Wand2 className="size-4" />

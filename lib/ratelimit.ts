@@ -63,3 +63,66 @@ export async function getRefinementLimitStatus(userId: string): Promise<{
     return { limit: 0, remaining: 999, reset: 0 };
   }
 }
+
+/**
+ * Checks and consumes multiple rate limit credits at once for batch operations.
+ * Used by the batch refinement endpoint to consume N credits for N bullets.
+ *
+ * First checks if enough credits are available, then consumes them all.
+ * If not enough credits, returns success: false without consuming any.
+ *
+ * @param userId - Supabase user.id
+ * @param count - Number of credits to consume (e.g., number of bullets to refine)
+ * @returns success, limit, remaining, reset (reset is Unix timestamp in milliseconds)
+ */
+export async function checkRefinementLimitBatch(
+  userId: string,
+  count: number
+): Promise<{
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+}> {
+  if (count <= 0) {
+    return { success: true, limit: 0, remaining: 999, reset: 0 };
+  }
+
+  const limiter = getLimiter();
+  if (!limiter) return { success: true, limit: 0, remaining: 999, reset: 0 };
+
+  try {
+    // First check if we have enough remaining credits
+    const status = await limiter.getRemaining(userId);
+    if (status.remaining < count) {
+      return {
+        success: false,
+        limit: status.limit,
+        remaining: status.remaining,
+        reset: status.reset,
+      };
+    }
+
+    // Consume credits by calling limit() count times
+    // We do this sequentially to ensure accurate counting
+    let lastResult = { success: true, limit: 0, remaining: 999, reset: 0 };
+    for (let i = 0; i < count; i++) {
+      const result = await limiter.limit(userId);
+      lastResult = {
+        success: result.success,
+        limit: result.limit,
+        remaining: result.remaining,
+        reset: result.reset,
+      };
+      // If any call fails (shouldn't happen after our check), stop
+      if (!result.success) {
+        return lastResult;
+      }
+    }
+
+    return lastResult;
+  } catch {
+    // Fail open on errors
+    return { success: true, limit: 0, remaining: 999, reset: 0 };
+  }
+}
