@@ -24,7 +24,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
   return (
     <div className="grid w-fit max-w-sm items-center gap-1 h-fit">
       {label && (
-        <label htmlFor="" className="font-semibold">
+        <label htmlFor={id} className="font-semibold">
           {label}
         </label>
       )}
@@ -37,9 +37,11 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
         placeholder={placeholder}
         className="bg-[#1F2023] text-sm min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg border-dashed border-[#6F748B] focus:outline-none focus:border-white hover:text-white hover:border-white transition"
       />
-      <label htmlFor="" className="text-sm text-gray-500">
-        {description}
-      </label>
+      {description && (
+        <label htmlFor={id} className="text-sm text-gray-500">
+          {description}
+        </label>
+      )}
     </div>
   );
 };

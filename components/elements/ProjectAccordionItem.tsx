@@ -242,7 +242,7 @@ export const ProjectAccordionItem: React.FC<ProjectAccordionItemProps> = ({
               <div className="flex w-full gap-2 items-center">
                 <label>Project Title:</label>
                 <CustomTextField
-                  id="text"
+                  id="title"
                   placeholder="Project Title"
                   value={projects[index].title}
                   onChange={(e) => {

@@ -237,7 +237,7 @@ export const ExperienceAccordionItem: React.FC<
               <div className="flex w-full gap-2 items-center">
                 <label>Position:</label>
                 <CustomTextField
-                  id="text"
+                  id="position"
                   placeholder="Position Title"
                   value={experience[index].position}
                   onChange={(e) => {
@@ -246,7 +246,7 @@ export const ExperienceAccordionItem: React.FC<
                 />
                 <label>at</label>
                 <CustomTextField
-                  id="text"
+                  id="company"
                   placeholder="Company Name"
                   value={experience[index].company}
                   onChange={(e) => {

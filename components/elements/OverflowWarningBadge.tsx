@@ -15,7 +15,7 @@ interface OverflowWarningBadgeProps {
  * or exceeds the page boundary.
  * 
  * Design:
- * - Small pill/badge positioned at bottom-right of preview
+ * - Small pill/badge positioned at bottom-left of preview
  * - Amber/warning colors that work with the dark theme
  * - Smooth fade-in animation
  * - Shows "Page limit" warning with optional percentage
@@ -30,7 +30,7 @@ export const OverflowWarningBadge = ({
   return (
     <div
       className={`
-        absolute bottom-3 right-3 z-10
+        absolute bottom-3 left-3 z-10
         flex items-center gap-1.5
         px-2.5 py-1.5
         rounded-full

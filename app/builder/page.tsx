@@ -9,11 +9,13 @@ import { ProjectsSection } from "../../components/sections/projects";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
+import { useGuideStore, SectionId } from "../../store/useGuideStore";
 
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
   const resumeType = searchParams.get("type");
+  const { setCurrentSection } = useGuideStore();
 
   // Track current section index for single-section display
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -28,12 +30,20 @@ function BuilderPageContent() {
 
   // Section configuration: defines order and IDs for navigation/header tracking
   const sections = [
-    { Component: PersonalInfoSection, id: "personal-info" },
-    { Component: EducationSection, id: "education" },
-    { Component: TechnicalSkillsSection, id: "technical-skills" },
-    { Component: ProjectsSection, id: "projects" },
-    { Component: ExperienceSection, id: "experience" },
+    { Component: PersonalInfoSection, id: "personal-info" as SectionId },
+    { Component: EducationSection, id: "education" as SectionId },
+    { Component: TechnicalSkillsSection, id: "technical-skills" as SectionId },
+    { Component: ProjectsSection, id: "projects" as SectionId },
+    { Component: ExperienceSection, id: "experience" as SectionId },
   ];
+
+  // Update guide store when section changes (for contextual help)
+  useEffect(() => {
+    const sectionId = sections[currentSectionIndex]?.id;
+    if (sectionId) {
+      setCurrentSection(sectionId);
+    }
+  }, [currentSectionIndex, setCurrentSection]);
 
   const goToPrevious = () => {
     if (currentSectionIndex > 0 && !isTransitioning) {

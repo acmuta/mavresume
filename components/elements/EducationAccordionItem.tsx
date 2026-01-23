@@ -142,7 +142,7 @@ export const EducationAccordionItem: React.FC<EducationAccordionItemProps> = ({
               <Label htmlFor="gpa">Include GPA on Resume</Label>
               {education[index].includeGPA && (
                 <CustomTextField
-                  id="text"
+                  id="gpa"
                   placeholder="Enter GPA"
                   value={education[index].gpa}
                   onChange={(e) =>
