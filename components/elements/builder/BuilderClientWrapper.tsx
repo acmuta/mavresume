@@ -10,7 +10,7 @@ import { HelpWidget } from "../home/HelpWidget";
  * because the layout is a server component.
  */
 
-const x: number = "hello"
+const x: string = "hello"
 
 
 export function BuilderClientWrapper() {
