@@ -101,32 +101,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Construct prompt with context to guide AI refinement toward ATS-friendly,
-    // metric-driven bullet points with strong action verbs
-    const prompt = `You are a professional resume writing assistant. Refine the following resume bullet point to make it more impactful, ATS-friendly, and professional. Use strong action verbs, include quantifiable metrics when possible, and focus on achievements and impact.
-    ${
-      contextString ? `Context:\n${contextString}\n` : ""
-    } Original bullet point: ${bulletText}
-    Refined bullet point (return only the refined text, no explanations or markdown):`;
+    // Construct prompt with context to guide AI refinement
+    const prompt = `${contextString ? `Context:\n${contextString}\n` : ""}Original bullet point: ${bulletText}
 
-    // Call OpenAI API with system message to enforce clean output format
-    // Temperature 0.7 balances creativity with consistency
-    // Max tokens 200 limits response length to typical bullet point size
+Refine this bullet point and return ONLY the refined text.`;
+
+    // Call OpenAI API with optimized settings
+    // Temperature 0.4 for consistent, professional outputs
+    // Max tokens 150 is sufficient for a single bullet point
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content:
-            "You are a professional resume writing assistant. Always return only the refined bullet point text, without any explanations, markdown formatting, or additional commentary.",
+          content: `You are an expert resume writer. Refine bullet points to be:
+- Action-oriented (start with verbs like Led, Developed, Increased, Optimized)
+- Quantified with metrics when possible (%, $, time saved)
+- ATS-friendly with relevant keywords
+- Concise (under 25 words)
+Return ONLY the refined text, no explanations or markdown.`,
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 200,
+      temperature: 0.4,
+      max_tokens: 150,
     });
 
     // Fallback to original text if API returns empty/null response

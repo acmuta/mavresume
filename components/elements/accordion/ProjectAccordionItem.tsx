@@ -8,7 +8,7 @@ import { Combobox } from "../../ui/combobox";
 import { Project, useResumeStore } from "../../../store/useResumeStore";
 import { CustomTextField } from "../form/CustomTextField";
 import { Technologies } from "../../../data/university-data";
-import { Dot, Wand2, Loader2, X, Plus } from "lucide-react";
+import { Wand2, Loader2, X, Plus } from "lucide-react";
 import { BulletRefinementButton } from "../refinement/BulletRefinementButton";
 import { BulletRefinementPreview } from "../refinement/BulletRefinementPreview";
 import { RefineAllOverlay } from "../refinement/RefineAllOverlay";

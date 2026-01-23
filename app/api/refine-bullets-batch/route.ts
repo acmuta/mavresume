@@ -176,45 +176,46 @@ export async function POST(request: NextRequest) {
       .map((b, idx) => `${idx + 1}. ${b.text}`)
       .join("\n");
 
-    const prompt = `You are a professional resume writing assistant. Refine the following resume bullet points to make them more impactful, ATS-friendly, and professional. Use strong action verbs, include quantifiable metrics when possible, and focus on achievements and impact.
+    const prompt = `Refine these resume bullet points to be more impactful and professional.
 
 ${contextString ? `Context:\n${contextString}\n` : ""}Input bullet points:
 ${bulletList}
 
-Return ONLY a valid JSON array of strings with exactly ${uncachedBullets.length} elements, where each element is the refined version of the corresponding input bullet point. No explanations, no markdown formatting, just the JSON array.`;
+Return a JSON object with a "results" key containing an array of exactly ${uncachedBullets.length} refined bullet strings.`;
 
-    // Call OpenAI API with batch prompt
+    // Call OpenAI API with optimized settings
+    // Temperature 0.4 for consistent outputs
+    // response_format guarantees valid JSON
+    // frequency_penalty 0.3 encourages variety across bullets
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content:
-            "You are a professional resume writing assistant. Always return only a valid JSON array of refined bullet point strings, without any explanations or markdown formatting. The array must have exactly the same number of elements as the input.",
+          content: `You are an expert resume writer. Refine bullet points to be action-oriented, quantified with metrics when possible, ATS-friendly, and concise (under 25 words each). Return a JSON object with a "results" array containing the refined bullet strings.`,
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 200 * uncachedBullets.length, // Scale tokens with bullet count
+      temperature: 0.4,
+      max_tokens: Math.min(150 * uncachedBullets.length, 2000),
+      response_format: { type: "json_object" },
+      frequency_penalty: 0.3,
     });
 
     const responseText = completion.choices[0]?.message?.content?.trim() || "";
 
-    // Parse JSON response
+    // Parse JSON response - expects { results: [...] } format from response_format
     let refinedTexts: string[];
     try {
-      // Handle potential markdown code blocks
-      let jsonText = responseText;
-      if (jsonText.startsWith("```")) {
-        jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-      }
-      refinedTexts = JSON.parse(jsonText);
+      const parsed = JSON.parse(responseText);
+      // Handle both { results: [...] } and direct array format for flexibility
+      refinedTexts = Array.isArray(parsed) ? parsed : (parsed.results || []);
 
       if (!Array.isArray(refinedTexts)) {
-        throw new Error("Response is not an array");
+        throw new Error("Response does not contain a valid results array");
       }
 
       // Ensure we have the right number of results

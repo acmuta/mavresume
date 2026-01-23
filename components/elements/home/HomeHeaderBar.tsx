@@ -60,7 +60,7 @@ export const HomeHeaderBar = () => {
               className="rounded-xl bg-[#274cbc] px-4 text-xs font-semibold 
                          text-white hover:bg-[#315be1] sm:text-sm"
             >
-              <Link href="/login">
+              <Link href={isAuthenticated ? "/dashboard" : "/"}>
                 Start building
                 <ChevronRight className="ml-1 size-4" />
               </Link>
