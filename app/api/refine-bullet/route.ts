@@ -7,11 +7,9 @@ import {
   setCachedRefinement,
 } from "@/lib/refine-cache";
 import { checkRefinementLimit, getRefinementLimitStatus } from "@/lib/ratelimit";
+import { getOpenAIClient } from "@/lib/openai"
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
+const openai = getOpenAIClient();
 /**
  * API endpoint for AI-powered bullet point refinement.
  *

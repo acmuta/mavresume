@@ -10,10 +10,9 @@ import {
   checkRefinementLimitBatch,
   getRefinementLimitStatus,
 } from "@/lib/ratelimit";
+import { getOpenAIClient } from "@/lib/openai"
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = getOpenAIClient();
 
 interface BulletInput {
   text: string;
