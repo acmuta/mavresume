@@ -1,20 +1,167 @@
+/**
+ * Info Guide Configuration
+ *
+ * This file contains all guide content structured for multiple use cases:
+ * - SectionTips: Digestible tips for each section (shown in help widget)
+ * - InfoGuides: Full comprehensive guides (for deep dives)
+ */
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+/** Section-level tips (digestible format for help widget) */
+export interface SectionTip {
+  id: string;
+  title: string;
+  tips: string[];
+  doList: string[];
+  dontList: string[];
+}
+
+/** Subsection within a full guide */
 export interface InfoGuideSubsection {
   title: string;
   points: string[];
 }
 
+/** Section within a full guide */
 export interface InfoGuideSection {
   heading: string;
   points?: string[];
   subsections?: InfoGuideSubsection[];
 }
 
+/** Full comprehensive guide data */
 export interface InfoGuideData {
   name: string;
   title: string;
   description: string;
   sections: InfoGuideSection[];
 }
+
+// ============================================================================
+// SECTION TIPS (Digestible format for help widget)
+// ============================================================================
+
+export const SectionTips: SectionTip[] = [
+  {
+    id: "personal-info",
+    title: "Personal Info Tips",
+    tips: [
+      "Use a professional email format (firstname.lastname@domain.com)",
+      "Include LinkedIn and GitHub if you have professional profiles",
+      "City and state are enough - no need for full address",
+      "Ensure all links are working and up to date",
+      "Match your name across all professional platforms",
+    ],
+    doList: [
+      "Put your strongest link first",
+      "Use a professional email address",
+      "Keep contact information current",
+      "Test all links before applying",
+    ],
+    dontList: [
+      "Use unprofessional email addresses",
+      "Include your full street address",
+      "Add social media unless relevant",
+      "Include outdated or broken links",
+    ],
+  },
+  {
+    id: "education",
+    title: "Education Tips",
+    tips: [
+      "List education in reverse chronological order",
+      "Include GPA if it's 3.0 or above",
+      "Add 4-6 relevant technical courses",
+      "Include honors, awards, or Dean's List achievements",
+      "Place Education at the top if you're a student or recent grad",
+    ],
+    doList: [
+      "Drop high school once you're in college",
+      "Mention major GPA if higher than overall",
+      "Include study abroad with technical coursework",
+      "List relevant certifications in progress",
+    ],
+    dontList: [
+      "List basic or intro-level courses",
+      "Include every course - pick the best 4-6",
+      "List unrelated coursework",
+    ],
+  },
+  {
+    id: "technical-skills",
+    title: "Skills Tips",
+    tips: [
+      "Organize skills into clear categories",
+      "List 10-30 skills maximum",
+      "Prioritize skills from the job description",
+      "Only list skills you can confidently discuss",
+      "Order by relevance, then proficiency",
+    ],
+    doList: [
+      "Update skills for each application",
+      "Spell out acronyms (e.g., AWS - Amazon Web Services)",
+      "Include both broad and specific terms",
+      "Match keywords from job postings",
+    ],
+    dontList: [
+      "Add basic skills like Microsoft Office",
+      "Use skill bars or ratings",
+      "List outdated technologies",
+    ],
+  },
+  {
+    id: "projects",
+    title: "Projects Tips",
+    tips: [
+      "Use the XYZ Method: Accomplished [X], measured by [Y], by doing [Z]",
+      "Start bullets with strong action verbs (Built, Developed, Implemented)",
+      "Quantify impact: users, performance, scale, efficiency",
+      "Include 2-4 bullet points per project",
+      "Link to GitHub repos or live demos when possible",
+    ],
+    doList: [
+      "Showcase 2-4 strong, complete projects",
+      "Include hackathon projects if award-winning",
+      "Maintain clean GitHub READMEs",
+      "Highlight the full tech stack",
+    ],
+    dontList: [
+      "Use vague descriptions like 'made a website'",
+      "List abandoned or incomplete projects",
+      "Include trivial school assignments",
+    ],
+  },
+  {
+    id: "experience",
+    title: "Experience Tips",
+    tips: [
+      "Use Google's XYZ method for every bullet point",
+      "Prioritize results over responsibilities",
+      "Include specific tools, frameworks, and languages used",
+      "Quantify achievements: +30% efficiency, $5k saved, 50k requests/day",
+      "Use 3-5 bullet points per position",
+    ],
+    doList: [
+      "Tailor bullets to each job application",
+      "Use past tense for previous roles",
+      "Include internships, research, and TA roles",
+      "Start each bullet with an action verb",
+    ],
+    dontList: [
+      "Use personal pronouns (I, me, my)",
+      "Write paragraphs instead of bullets",
+      "List responsibilities without impact",
+      "Leave bullets without metrics",
+    ],
+  },
+];
+
+// ============================================================================
+// FULL GUIDES (Comprehensive content for deep dives)
+// ============================================================================
 
 export const InfoGuides: InfoGuideData[] = [
   {
@@ -117,7 +264,7 @@ export const InfoGuides: InfoGuideData[] = [
             ],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: [
               "List basic or intro-level courses.",
               "List every course — pick the top 4–6.",
@@ -196,11 +343,11 @@ export const InfoGuides: InfoGuideData[] = [
             ],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: [
               "Avoid vague descriptions like 'made a website'.",
-              "Don’t list abandoned or incomplete projects.",
-              "Don’t include trivial school assignments.",
+              "Don't list abandoned or incomplete projects.",
+              "Don't include trivial school assignments.",
             ],
           },
         ],
@@ -226,7 +373,7 @@ export const InfoGuides: InfoGuideData[] = [
       {
         heading: "Best Practices",
         points: [
-          "Use Google’s XYZ method for EVERY bullet.",
+          "Use Google's XYZ method for EVERY bullet.",
           "Start bullets with action verbs.",
           "Prioritize results over responsibilities.",
           "Include specific tools, frameworks, languages.",
@@ -283,7 +430,7 @@ export const InfoGuides: InfoGuideData[] = [
             ],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: [
               "Use personal pronouns.",
               "Write paragraphs.",
@@ -356,7 +503,7 @@ export const InfoGuides: InfoGuideData[] = [
             ],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: [
               "Add basic skills (Microsoft Office).",
               "Use skill bars.",
@@ -429,7 +576,7 @@ export const InfoGuides: InfoGuideData[] = [
             ],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: [
               "List passive memberships.",
               "Include unrelated leadership roles.",
@@ -510,7 +657,7 @@ export const InfoGuides: InfoGuideData[] = [
             points: ["Link to badges", "Group related certs"],
           },
           {
-            title: "Don’t",
+            title: "Don't",
             points: ["Include outdated certs", "List unrelated certs"],
           },
         ],
@@ -520,9 +667,34 @@ export const InfoGuides: InfoGuideData[] = [
         points: [
           "You have senior-level experience.",
           "Your projects/experience already demonstrate skills.",
-          "You don’t have relevant certs yet.",
+          "You don't have relevant certs yet.",
         ],
       },
     ],
   },
 ];
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/** Get section tips by section ID */
+export function getSectionTip(sectionId: string): SectionTip | undefined {
+  return SectionTips.find((tip) => tip.id === sectionId);
+}
+
+/** Get full guide by name (case-insensitive) */
+export function getGuideByName(name: string): InfoGuideData | undefined {
+  return InfoGuides.find(
+    (guide) => guide.name.toLowerCase() === name.toLowerCase()
+  );
+}
+
+/** Map section ID to guide name */
+export const sectionIdToGuideName: Record<string, string> = {
+  "personal-info": "personal information",
+  education: "education",
+  "technical-skills": "skills",
+  projects: "projects",
+  experience: "experience",
+};

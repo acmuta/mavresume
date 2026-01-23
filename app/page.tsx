@@ -1,4 +1,4 @@
-import { HomeHeaderBarClient } from "@/components/elements/HomeHeaderBarClient";
+import { HomeHeaderBarClient } from "@/components/elements/home/HomeHeaderBarClient";
 import { HomePageClientWrapper } from "@/components/sections/HomePageClientWrapper";
 import { HeroSection } from "@/components/sections/HeroSection";
 

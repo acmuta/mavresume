@@ -9,9 +9,9 @@ import {
   categoryDisplayNames,
   type CategoryKey,
 } from "../../data/resume-templates";
-import { TemplateCard } from "../../components/elements/TemplateCard";
-import { CreateOwnTemplateCard } from "../../components/elements/CreateOwnTemplateCard";
-import { HomeHeaderBar } from "../../components/elements/HomeHeaderBar";
+import { TemplateCard } from "../../components/elements/templates/TemplateCard";
+import { CreateOwnTemplateCard } from "../../components/elements/templates/CreateOwnTemplateCard";
+import { HomeHeaderBar } from "../../components/elements/home/HomeHeaderBar";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";

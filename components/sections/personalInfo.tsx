@@ -1,6 +1,6 @@
-import { CustomTextField } from "../elements/CustomTextField";
+import { CustomTextField } from "../elements/form/CustomTextField";
 import { useResumeStore } from "../../store/useResumeStore";
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
 import { Plus, X } from "lucide-react";
 
 export function PersonalInfoSection() {
@@ -64,9 +64,9 @@ export function PersonalInfoSection() {
               id="phone"
               label="Phone Number"
               placeholder="123-456-7890"
-              description="Optional"
               value={personalInfo.phone || ""}
               onChange={(e) => updatePersonalInfo({ phone: e.target.value })}
+              required
             />
           </div>
           <div className="flex flex-col md:flex-row gap-5 w-full">
@@ -74,17 +74,17 @@ export function PersonalInfoSection() {
               id="linkedin"
               label="LinkedIn Name"
               placeholder="JohnDoe"
-              description="Optional"
               value={personalInfo.linkedin || ""}
               onChange={(e) => updatePersonalInfo({ linkedin: e.target.value })}
+              required
             />
             <CustomTextField
               id="github"
               label="Github Username"
               placeholder="JohnDoe"
-              description="Optional"
               value={personalInfo.github || ""}
               onChange={(e) => updatePersonalInfo({ github: e.target.value })}
+              required
             />
           </div>
           

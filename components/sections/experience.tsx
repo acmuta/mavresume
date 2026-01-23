@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { useResumeStore } from "../../store/useResumeStore";
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
-import { ExperienceAccordion } from "../elements/ExperienceAccordion";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
+import { ExperienceAccordion } from "../elements/accordion/ExperienceAccordion";
 
 export function ExperienceSection() {
   const { addExperience } = useResumeStore();

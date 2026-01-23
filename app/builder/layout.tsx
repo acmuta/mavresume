@@ -1,9 +1,10 @@
 import { Fade } from "react-awesome-reveal";
-import { ResumePreview } from "../../components/elements/ResumePreview";
-import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
-import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
+import { ResumePreview } from "../../components/elements/resume/ResumePreview";
+import { BuilderHeaderBar } from "../../components/elements/builder/BuilderHeaderBar";
+import { BuilderSidebar } from "../../components/elements/builder/BuilderSidebar";
 import { TooltipProvider } from "../../components/ui/tooltip";
-import { ResumePreviewControls } from "../../components/elements/ResumePreviewControls";
+import { ResumePreviewControls } from "../../components/elements/resume/ResumePreviewControls";
+import { BuilderClientWrapper } from "../../components/elements/builder/BuilderClientWrapper";
 
 /**
  * Builder layout creates a split-screen experience:
@@ -12,6 +13,10 @@ import { ResumePreviewControls } from "../../components/elements/ResumePreviewCo
  *
  * The preview panel is fixed position and remains visible while scrolling through forms.
  * All preview components read from Zustand store and update reactively.
+ *
+ * Also includes:
+ * - Floating help widget for contextual assistance
+ * - Guided tour for first-time users
  */
 
 export const metadata = {
@@ -57,6 +62,9 @@ export default function BuildLayout({
           <ResumePreview />
         </Fade>
       </section>
+
+      {/* Client-side components: Help widget and Guided tour */}
+      <BuilderClientWrapper />
     </div>
   );
 }
