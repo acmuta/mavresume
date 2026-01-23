@@ -1,6 +1,6 @@
 import React from "react";
-import { Accordion } from "../ui/accordion";
-import { useResumeStore } from "../../store/useResumeStore";
+import { Accordion } from "../../ui/accordion";
+import { useResumeStore } from "../../../store/useResumeStore";
 import { ProjectAccordionItem } from "./ProjectAccordionItem";
 
 export const ProjectAccordion = () => {

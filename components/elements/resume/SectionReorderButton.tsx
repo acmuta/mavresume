@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { ListOrdered } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { SectionOrderModal } from "./SectionOrderModal";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 /**
  * Button component that opens the section reordering modal.

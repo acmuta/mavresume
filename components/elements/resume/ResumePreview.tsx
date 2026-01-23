@@ -1,12 +1,12 @@
 "use client";
 import React, { useRef } from "react";
-import { PersonalInfoPreview } from "../previews/PersonalInfoPreview";
-import { EducationPreview } from "../previews/EducationPreview";
-import { TechnicalSkillsPreview } from "../previews/TechnicalSkillsPreview";
-import { ProjectsPreview } from "../previews/ProjectsPreview";
-import { ExperiencePreview } from "../previews/ExperiencePreview";
-import { useResumeStore } from "../../store/useResumeStore";
-import { useContentOverflow } from "../../lib/hooks/useContentOverflow";
+import { PersonalInfoPreview } from "../../previews/PersonalInfoPreview";
+import { EducationPreview } from "../../previews/EducationPreview";
+import { TechnicalSkillsPreview } from "../../previews/TechnicalSkillsPreview";
+import { ProjectsPreview } from "../../previews/ProjectsPreview";
+import { ExperiencePreview } from "../../previews/ExperiencePreview";
+import { useResumeStore } from "../../../store/useResumeStore";
+import { useContentOverflow } from "../../../lib/hooks/useContentOverflow";
 import { OverflowWarningBadge } from "./OverflowWarningBadge";
 
 /**

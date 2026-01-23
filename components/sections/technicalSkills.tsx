@@ -1,6 +1,6 @@
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
-import { NoteBox } from "../elements/NoteBox";
-import { TechnicalSkillsAccordion } from "../elements/TechnicalSkillsAccordion";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
+import { NoteBox } from "../elements/feedback/NoteBox";
+import { TechnicalSkillsAccordion } from "../elements/accordion/TechnicalSkillsAccordion";
 
 export function TechnicalSkillsSection() {
 

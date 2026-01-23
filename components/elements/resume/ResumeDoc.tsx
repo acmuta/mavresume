@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
-import { useResumeStore } from "../../store/useResumeStore";
+import { useResumeStore } from "../../../store/useResumeStore";
 
 /**
  * PDF document component using @react-pdf/renderer.

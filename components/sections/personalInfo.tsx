@@ -1,6 +1,6 @@
-import { CustomTextField } from "../elements/CustomTextField";
+import { CustomTextField } from "../elements/form/CustomTextField";
 import { useResumeStore } from "../../store/useResumeStore";
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
 import { Plus, X } from "lucide-react";
 
 export function PersonalInfoSection() {

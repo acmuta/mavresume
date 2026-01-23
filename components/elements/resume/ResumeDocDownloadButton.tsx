@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { ResumeDoc } from "./ResumeDoc";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { DownloadIcon } from "lucide-react";
-import { useResumeStore } from "../../store/useResumeStore";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useResumeStore } from "../../../store/useResumeStore";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 export const ResumeDocDownloadButton = () => {
   const { personalInfo, sectionOrder } = useResumeStore();

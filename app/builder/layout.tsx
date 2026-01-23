@@ -1,10 +1,10 @@
 import { Fade } from "react-awesome-reveal";
-import { ResumePreview } from "../../components/elements/ResumePreview";
-import { BuilderHeaderBar } from "../../components/elements/BuilderHeaderBar";
-import { BuilderSidebar } from "../../components/elements/BuilderSidebar";
+import { ResumePreview } from "../../components/elements/resume/ResumePreview";
+import { BuilderHeaderBar } from "../../components/elements/builder/BuilderHeaderBar";
+import { BuilderSidebar } from "../../components/elements/builder/BuilderSidebar";
 import { TooltipProvider } from "../../components/ui/tooltip";
-import { ResumePreviewControls } from "../../components/elements/ResumePreviewControls";
-import { BuilderClientWrapper } from "../../components/elements/BuilderClientWrapper";
+import { ResumePreviewControls } from "../../components/elements/resume/ResumePreviewControls";
+import { BuilderClientWrapper } from "../../components/elements/builder/BuilderClientWrapper";
 
 /**
  * Builder layout creates a split-screen experience:

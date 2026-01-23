@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpWidget } from "./HelpWidget";
+import { HelpWidget } from "../home/HelpWidget";
 
 /**
  * BuilderClientWrapper

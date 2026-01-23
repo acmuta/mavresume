@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Square } from "lucide-react";
-import { Button } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 interface ResumeBorderToggleButtonProps {
   showBorder: boolean;

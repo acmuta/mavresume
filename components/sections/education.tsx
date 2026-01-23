@@ -1,10 +1,10 @@
 import { utaEngineeringCourses } from "../../data/university-data";
 import { useResumeStore } from "../../store/useResumeStore";
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
-import { NoteBox } from "../elements/NoteBox";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
+import { NoteBox } from "../elements/feedback/NoteBox";
 import { Combobox } from "../ui/combobox";
 import { Plus } from "lucide-react";
-import { EducationAccordion } from "../elements/EducationAccordion";
+import { EducationAccordion } from "../elements/accordion/EducationAccordion";
 
 export function EducationSection() {
   const { addEducation, relevantCourses } = useResumeStore();

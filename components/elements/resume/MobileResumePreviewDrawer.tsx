@@ -6,15 +6,15 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
-} from "../ui/drawer";
+} from "../../ui/drawer";
 import { ResumePreview } from "./ResumePreview";
 import { ResumeDocPreview } from "./ResumeDocPreview";
 import { ResumeDocDownloadButton } from "./ResumeDocDownloadButton";
 import { SectionReorderButton } from "./SectionReorderButton";
 import { ResumeBorderToggleButton } from "./ResumeBorderToggleButton";
-import { TooltipProvider } from "../ui/tooltip";
+import { TooltipProvider } from "../../ui/tooltip";
 import { EyeIcon } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 
 export const MobileResumePreviewDrawer = () => {

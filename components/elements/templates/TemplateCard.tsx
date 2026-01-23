@@ -9,9 +9,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Button } from "../ui/button";
-import { ResumeTemplate } from "../../data/resume-templates";
+} from "../../ui/card";
+import { Button } from "../../ui/button";
+import { ResumeTemplate } from "../../../data/resume-templates";
 
 interface TemplateCardProps {
   template: ResumeTemplate;

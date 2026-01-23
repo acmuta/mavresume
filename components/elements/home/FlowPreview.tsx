@@ -9,7 +9,7 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { CustomSectionTitle } from "./CustomSectionTitle";
+import { CustomSectionTitle } from "../form/CustomSectionTitle";
 
 interface FlowPreviewProps {
   isOpen: boolean;

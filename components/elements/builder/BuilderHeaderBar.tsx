@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { MobileResumePreviewDrawer } from "./MobileResumePreviewDrawer";
-import { RateLimitStatus } from "./RateLimitStatus";
+import { MobileResumePreviewDrawer } from "../resume/MobileResumePreviewDrawer";
+import { RateLimitStatus } from "../refinement/RateLimitStatus";
 
 export const BuilderHeaderBar = () => {
   return (

@@ -3,15 +3,15 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
-import { Combobox } from "../ui/combobox";
-import { Project, useResumeStore } from "../../store/useResumeStore";
-import { CustomTextField } from "./CustomTextField";
-import { Technologies } from "../../data/university-data";
+} from "../../ui/accordion";
+import { Combobox } from "../../ui/combobox";
+import { Project, useResumeStore } from "../../../store/useResumeStore";
+import { CustomTextField } from "../form/CustomTextField";
+import { Technologies } from "../../../data/university-data";
 import { Dot, Wand2, Loader2, X, Plus } from "lucide-react";
-import { BulletRefinementButton } from "./BulletRefinementButton";
-import { BulletRefinementPreview } from "./BulletRefinementPreview";
-import { RefineAllOverlay } from "./RefineAllOverlay";
+import { BulletRefinementButton } from "../refinement/BulletRefinementButton";
+import { BulletRefinementPreview } from "../refinement/BulletRefinementPreview";
+import { RefineAllOverlay } from "../refinement/RefineAllOverlay";
 import { refineBulletPointsBatch } from "@/lib/bulletRefinement";
 import {
   Dialog,

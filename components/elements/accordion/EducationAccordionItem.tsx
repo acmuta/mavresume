@@ -3,17 +3,17 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
-import { Combobox } from "../ui/combobox";
+} from "../../ui/accordion";
+import { Combobox } from "../../ui/combobox";
 import {
   degreeData,
   majorData,
   months,
   universitiesData,
-} from "../../data/university-data";
-import { Education, useResumeStore } from "../../store/useResumeStore";
-import { Label } from "../ui/label";
-import { CustomTextField } from "./CustomTextField";
+} from "../../../data/university-data";
+import { Education, useResumeStore } from "../../../store/useResumeStore";
+import { Label } from "../../ui/label";
+import { CustomTextField } from "../form/CustomTextField";
 import { X } from "lucide-react";
 import {
   Dialog,
@@ -21,8 +21,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
 
 interface EducationAccordionItemProps {
   index: number;

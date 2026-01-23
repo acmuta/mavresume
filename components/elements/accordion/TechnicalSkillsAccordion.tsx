@@ -4,14 +4,14 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
-import { useResumeStore } from "../../store/useResumeStore";
+} from "../../ui/accordion";
+import { useResumeStore } from "../../../store/useResumeStore";
 import {
   Technologies,
   utaEngineeringCourses,
-} from "../../data/university-data";
+} from "../../../data/university-data";
 import { Plus } from "lucide-react";
-import { Combobox } from "../ui/combobox";
+import { Combobox } from "../../ui/combobox";
 
 export const TechnicalSkillsAccordion = () => {
   const { relevantCourses, skills, addSkills } = useResumeStore();

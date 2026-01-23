@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { Experience, useResumeStore } from "../../store/useResumeStore";
+import { Experience, useResumeStore } from "../../../store/useResumeStore";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
-import { CustomTextField } from "./CustomTextField";
-import { Combobox } from "../ui/combobox";
-import { months, years } from "../../data/university-data";
-import { Label } from "../ui/label";
+} from "../../ui/accordion";
+import { CustomTextField } from "../form/CustomTextField";
+import { Combobox } from "../../ui/combobox";
+import { months, years } from "../../../data/university-data";
+import { Label } from "../../ui/label";
 import { Wand2, Loader2, X, Plus } from "lucide-react";
-import { BulletRefinementButton } from "./BulletRefinementButton";
-import { BulletRefinementPreview } from "./BulletRefinementPreview";
-import { RefineAllOverlay } from "./RefineAllOverlay";
+import { BulletRefinementButton } from "../refinement/BulletRefinementButton";
+import { BulletRefinementPreview } from "../refinement/BulletRefinementPreview";
+import { RefineAllOverlay } from "../refinement/RefineAllOverlay";
 import { refineBulletPointsBatch } from "@/lib/bulletRefinement";
 import {
   Dialog,

@@ -86,7 +86,7 @@ export function HomePageClientWrapper({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (showPreview && !FlowPreview) {
-      import("@/components/elements/FlowPreview").then((m) =>
+      import("@/components/elements/home/FlowPreview").then((m) =>
         setFlowPreview(() => m.FlowPreview),
       );
     }

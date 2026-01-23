@@ -8,8 +8,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Button } from "../ui/button";
+} from "../../ui/card";
+import { Button } from "../../ui/button";
 
 export const CreateOwnTemplateCard: React.FC = () => {
   return (

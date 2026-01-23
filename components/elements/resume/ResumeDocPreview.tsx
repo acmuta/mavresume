@@ -2,10 +2,10 @@
 import { PDFViewer } from "@react-pdf/renderer";
 import React from "react";
 import { ResumeDoc } from "./ResumeDoc";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "../../ui/dialog";
+import { Button } from "../../ui/button";
 import { EyeIcon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 export const ResumeDocPreview = () => {
 

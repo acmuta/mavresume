@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
-import { CustomSectionTitle } from "../elements/CustomSectionTitle";
-import { ProjectAccordion } from "../elements/ProjectAccordion";
+import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
+import { ProjectAccordion } from "../elements/accordion/ProjectAccordion";
 import { useResumeStore } from "../../store/useResumeStore";
 
 export function ProjectsSection() {

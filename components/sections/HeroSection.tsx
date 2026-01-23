@@ -1,5 +1,5 @@
 import { Wand2 } from "lucide-react";
-import { HomeCTAButtons } from "@/components/elements/HomeCTAButtons";
+import { HomeCTAButtons } from "@/components/elements/home/HomeCTAButtons";
 import {
   Card,
   CardContent,

@@ -1,9 +1,9 @@
 import React from "react";
-import { GradCapIcon } from "../../public/svgicons/gradcapicon";
-import { GearIcon } from "../../public/svgicons/gearicon";
-import { DocumentIcon } from "../../public/svgicons/documentIcon";
-import { LightbulbIcon } from "../../public/svgicons/lightbulbicon";
-import { PuzzleIcon } from "../../public/svgicons/puzzleIcon";
+import { GradCapIcon } from "../../../public/svgicons/gradcapicon";
+import { GearIcon } from "../../../public/svgicons/gearicon";
+import { DocumentIcon } from "../../../public/svgicons/documentIcon";
+import { LightbulbIcon } from "../../../public/svgicons/lightbulbicon";
+import { PuzzleIcon } from "../../../public/svgicons/puzzleIcon";
 
 export const FeatureDisplay = () => {
   return (
