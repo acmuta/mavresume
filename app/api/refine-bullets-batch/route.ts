@@ -12,8 +12,6 @@ import {
 } from "@/lib/ratelimit";
 import { getOpenAIClient } from "@/lib/openai"
 
-const openai = getOpenAIClient();
-
 interface BulletInput {
   text: string;
   context?: {
@@ -71,13 +69,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Maximum 20 bullets per batch request" },
         { status: 400 }
-      );
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OpenAI API key is not configured" },
-        { status: 500 }
       );
     }
 
@@ -181,6 +172,9 @@ ${contextString ? `Context:\n${contextString}\n` : ""}Input bullet points:
 ${bulletList}
 
 Return a JSON object with a "results" key containing an array of exactly ${uncachedBullets.length} refined bullet strings.`;
+
+    // Get OpenAI client (lazy initialized at request time)
+    const openai = getOpenAIClient();
 
     // Call OpenAI API with optimized settings
     // Temperature 0.4 for consistent outputs

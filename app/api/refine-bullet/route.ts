@@ -9,7 +9,6 @@ import {
 import { checkRefinementLimit, getRefinementLimitStatus } from "@/lib/ratelimit";
 import { getOpenAIClient } from "@/lib/openai"
 
-const openai = getOpenAIClient();
 /**
  * API endpoint for AI-powered bullet point refinement.
  *
@@ -44,13 +43,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "bulletText is required and must be a string" },
         { status: 400 }
-      );
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OpenAI API key is not configured" },
-        { status: 500 }
       );
     }
 
@@ -103,6 +95,9 @@ export async function POST(request: NextRequest) {
     const prompt = `${contextString ? `Context:\n${contextString}\n` : ""}Original bullet point: ${bulletText}
 
 Refine this bullet point and return ONLY the refined text.`;
+
+    // Get OpenAI client (lazy initialized at request time)
+    const openai = getOpenAIClient();
 
     // Call OpenAI API with optimized settings
     // Temperature 0.4 for consistent, professional outputs
