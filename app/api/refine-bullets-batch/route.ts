@@ -192,8 +192,8 @@ Return a JSON object with a "results" key containing an array of exactly ${uncac
           content: prompt,
         },
       ],
-      temperature: 0.4,
-      max_tokens: Math.min(150 * uncachedBullets.length, 2000),
+      temperature: 0.5,
+      max_tokens: Math.min(185 * uncachedBullets.length, 2000),
       response_format: { type: "json_object" },
       frequency_penalty: 0.3,
     });

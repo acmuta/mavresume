@@ -100,7 +100,7 @@ Refine this bullet point and return ONLY the refined text.`;
     const openai = getOpenAIClient();
 
     // Call OpenAI API with optimized settings
-    // Temperature 0.4 for consistent, professional outputs
+    // Temperature 0.5 for consistent, professional outputs
     // Max tokens 150 is sufficient for a single bullet point
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -119,8 +119,8 @@ Return ONLY the refined text, no explanations or markdown.`,
           content: prompt,
         },
       ],
-      temperature: 0.4,
-      max_tokens: 150,
+      temperature: 0.5,
+      max_tokens: 185,
     });
 
     // Fallback to original text if API returns empty/null response
