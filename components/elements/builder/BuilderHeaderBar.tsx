@@ -1,7 +1,56 @@
 "use client";
 import React from "react";
+import { Loader2, Check, AlertCircle, Cloud } from "lucide-react";
 import { MobileResumePreviewDrawer } from "../resume/MobileResumePreviewDrawer";
 import { RateLimitStatus } from "../refinement/RateLimitStatus";
+import { useResumeStore } from "@/store/useResumeStore";
+
+/**
+ * Save status indicator component.
+ * Displays the current save state with appropriate icon and text.
+ */
+const SaveStatusIndicator: React.FC = () => {
+  const { saveStatus, currentResumeId } = useResumeStore();
+
+  // Don't show indicator if no resume is loaded
+  if (!currentResumeId) {
+    return null;
+  }
+
+  const statusConfig = {
+    idle: {
+      icon: <Cloud className="w-4 h-4 text-[#6d7895]" />,
+      text: "Auto-save enabled",
+      className: "text-[#6d7895]",
+    },
+    saving: {
+      icon: <Loader2 className="w-4 h-4 animate-spin text-[#274cbc]" />,
+      text: "Saving...",
+      className: "text-[#274cbc]",
+    },
+    saved: {
+      icon: <Check className="w-4 h-4 text-green-500" />,
+      text: "Saved",
+      className: "text-green-500",
+    },
+    error: {
+      icon: <AlertCircle className="w-4 h-4 text-red-400" />,
+      text: "Save failed",
+      className: "text-red-400",
+    },
+  };
+
+  const config = statusConfig[saveStatus];
+
+  return (
+    <div
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a1c22]/50 border border-[#2d313a] ${config.className}`}
+    >
+      {config.icon}
+      <span className="text-xs font-medium">{config.text}</span>
+    </div>
+  );
+};
 
 export const BuilderHeaderBar = () => {
   return (
@@ -15,7 +64,12 @@ export const BuilderHeaderBar = () => {
           >
             RESUME<span className="font-extralight">BUILDER</span>
           </div>
-          <RateLimitStatus />
+          
+          {/* Save Status Indicator */}
+          <div className="flex items-center gap-3">
+            <SaveStatusIndicator />
+            <RateLimitStatus />
+          </div>
         </div>
         {/* Mobile Preview Button */}
         <div className="block md:hidden">
