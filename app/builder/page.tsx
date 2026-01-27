@@ -1,32 +1,97 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
 import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
 import { ProjectsSection } from "../../components/sections/projects";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
 import { useGuideStore, SectionId } from "../../store/useGuideStore";
-
+import { useResumeStore } from "../../store/useResumeStore";
+import { getResumeWithData } from "../../lib/resumeService";
+import { useAutoSave } from "../../lib/hooks/useAutoSave";
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
-  const resumeType = searchParams.get("type");
+  const router = useRouter();
+  const resumeId = searchParams.get("id");
   const { setCurrentSection } = useGuideStore();
+  const {
+    currentResumeId,
+    setCurrentResumeId,
+    setResumeFromDatabase,
+    resetResume,
+  } = useResumeStore();
+
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Track current section index for single-section display
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Store resume type for future template-specific logic
+  // Enable auto-save when resume is loaded
+  useAutoSave(!!currentResumeId);
+
+  // Load resume from database on mount
   useEffect(() => {
-    if (resumeType) {
-      // TODO: Store in Zustand store or use for template-specific configuration
+    async function loadResume() {
+      // If no resume ID, redirect to templates
+      if (!resumeId) {
+        router.replace("/templates");
+        return;
+      }
+
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const resumeWithData = await getResumeWithData(resumeId);
+
+        if (!resumeWithData) {
+          setLoadError("Resume not found");
+          // Redirect to dashboard after a short delay
+          setTimeout(() => router.replace("/dashboard"), 2000);
+          return;
+        }
+
+        // Set the current resume ID
+        setCurrentResumeId(resumeId);
+
+        // Hydrate the store with database data
+        if (resumeWithData.resume_data) {
+          setResumeFromDatabase({
+            personal_info: resumeWithData.resume_data.personal_info,
+            education: resumeWithData.resume_data.education,
+            projects: resumeWithData.resume_data.projects,
+            experience: resumeWithData.resume_data.experience,
+            skills: resumeWithData.resume_data.skills,
+            section_order: resumeWithData.resume_data.section_order,
+          });
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to load resume:", error);
+        setLoadError(
+          error instanceof Error ? error.message : "Failed to load resume"
+        );
+        setIsLoading(false);
+      }
     }
-  }, [resumeType]);
+
+    loadResume();
+
+    // Cleanup: reset store when leaving builder
+    return () => {
+      // Only reset if we're actually navigating away (not just re-rendering)
+      // This is handled by the component unmount
+    };
+  }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
 
   // Section configuration: defines order and IDs for navigation/header tracking
   const sections = [
@@ -85,8 +150,6 @@ function BuilderPageContent() {
     }
   };
 
-  const CurrentSection = sections[currentSectionIndex].Component;
-
   const sectionIds = [
     "personal-info",
     "education",
@@ -97,158 +160,185 @@ function BuilderPageContent() {
 
   const activeSection = sectionIds[currentSectionIndex] || "personal-info";
 
-  return (
-
-      
+  // Loading state
+  if (isLoading) {
+    return (
       <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
-          {/* Navigation controls */}
-          <Fade
-            triggerOnce
-            className="flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
-                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
-          >
-            <div className="flex flex-col items-center">
-              <h1 className="text-md font-bold">Navigation</h1>
-              <div className="flex items-center scale-60 md:scale-100 gap-2">
-                {/* Left navigation arrow */}
-                {currentSectionIndex > 0 && (
-                  <Button
-                    onClick={goToPrevious}
-                    disabled={isTransitioning}
-                    variant="outline"
-                    size="icon-lg"
-                    className="z-40 hidden md:flex justify-center
-                rounded-2xl border-2 border-[#2d313a]
-                bg-[#151618]/80 backdrop-blur-sm
-                text-white hover:text-white
-                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
-                transition-all duration-300
-                disabled:opacity-50 disabled:cursor-not-allowed
-                shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                    aria-label="Previous section"
-                  >
-                    <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
-                  </Button>
-                )}
-
-                {/* Navigation steps */}
-                <nav className="flex items-center gap-1.5 text-md font-bold">
-                  <button
-                    onClick={() => goToSection(0)}
-                    disabled={isTransitioning || currentSectionIndex === 0}
-                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                      activeSection === "personal-info"
-                        ? "text-white bg-white/10 cursor-default"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label="Go to Personal Info section"
-                  >
-                    Personal Info
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                  <button
-                    onClick={() => goToSection(1)}
-                    disabled={isTransitioning || currentSectionIndex === 1}
-                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                      activeSection === "education"
-                        ? "text-white bg-white/10 cursor-default"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label="Go to Education section"
-                  >
-                    Education
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                  <button
-                    onClick={() => goToSection(2)}
-                    disabled={isTransitioning || currentSectionIndex === 2}
-                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                      activeSection === "technical-skills"
-                        ? "text-white bg-white/10 cursor-default"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label="Go to Technical Skills section"
-                  >
-                    Skills
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                  <button
-                    onClick={() => goToSection(3)}
-                    disabled={isTransitioning || currentSectionIndex === 3}
-                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                      activeSection === "projects"
-                        ? "text-white bg-white/10 cursor-default"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label="Go to Projects section"
-                  >
-                    Projects
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                  <button
-                    onClick={() => goToSection(4)}
-                    disabled={isTransitioning || currentSectionIndex === 4}
-                    className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                      activeSection === "experience"
-                        ? "text-white bg-white/10 cursor-default"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label="Go to Experience section"
-                  >
-                    Experience
-                  </button>
-                </nav>
-
-                {/* Right navigation arrow - hidden on last section */}
-                {currentSectionIndex < sections.length - 1 && (
-                  <Button
-                    onClick={goToNext}
-                    disabled={isTransitioning}
-                    variant="outline"
-                    size="icon-lg"
-                    className="z-40 hidden md:flex justify-center
-                rounded-2xl border-2 border-[#2d313a]
-                bg-[#151618]/80 backdrop-blur-sm
-                text-white hover:text-white
-                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
-                transition-all duration-300
-                disabled:opacity-50 disabled:cursor-not-allowed
-                shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                    aria-label="Next section"
-                  >
-                    <ChevronRight className="w-6 h-6 md:w-7 md:h-7" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </Fade>
-          <Fade triggerOnce>
-            <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
-              {/* background glow effects */}
-              <div className="absolute inset-0 opacity-40 pointer-events-none">
-                <div className="absolute -top-24 left-16 h-64 w-64 rounded-full bg-[#274cbc]/20 blur-[100px]" />
-                <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-[#19c8ff]/15 blur-[80px]" />
-              </div>
-
-              {/* Section content with fade transition */}
-              <div
-                key={currentSectionIndex}
-                className={`relative transition-opacity duration-500 ease-in-out ${
-                  isTransitioning ? "opacity-0" : "opacity-100"
-                }`}
-              >
-                <CurrentSection />
-              </div>
-            </section>
-          </Fade>
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 min-h-[50vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#274cbc]" />
+          <p className="text-[#a4a7b5]">Loading your resume...</p>
         </div>
       </main>
+    );
+  }
 
+  // Error state
+  if (loadError) {
+    return (
+      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 min-h-[50vh]">
+          <div className="rounded-md bg-red-500/10 border border-red-500/30 px-6 py-4 text-center">
+            <p className="text-red-400">{loadError}</p>
+            <p className="text-sm text-[#6d7895] mt-2">
+              Redirecting to dashboard...
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const CurrentSection = sections[currentSectionIndex].Component;
+
+  return (
+    <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
+        {/* Navigation controls */}
+        <Fade
+          triggerOnce
+          className="flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
+                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
+        >
+          <div className="flex flex-col items-center">
+            <h1 className="text-md font-bold">Navigation</h1>
+            <div className="flex items-center scale-60 md:scale-100 gap-2">
+              {/* Left navigation arrow */}
+              {currentSectionIndex > 0 && (
+                <Button
+                  onClick={goToPrevious}
+                  disabled={isTransitioning}
+                  variant="outline"
+                  size="icon-lg"
+                  className="z-40 hidden md:flex justify-center
+                rounded-2xl border-2 border-[#2d313a]
+                bg-[#151618]/80 backdrop-blur-sm
+                text-white hover:text-white
+                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
+                transition-all duration-300
+                disabled:opacity-50 disabled:cursor-not-allowed
+                shadow-lg hover:shadow-xl hover:scale-[1.05]"
+                  aria-label="Previous section"
+                >
+                  <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
+                </Button>
+              )}
+
+              {/* Navigation steps */}
+              <nav className="flex items-center gap-1.5 text-md font-bold">
+                <button
+                  onClick={() => goToSection(0)}
+                  disabled={isTransitioning || currentSectionIndex === 0}
+                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                    activeSection === "personal-info"
+                      ? "text-white bg-white/10 cursor-default"
+                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                  } disabled:cursor-not-allowed`}
+                  aria-label="Go to Personal Info section"
+                >
+                  Personal Info
+                </button>
+                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+
+                <button
+                  onClick={() => goToSection(1)}
+                  disabled={isTransitioning || currentSectionIndex === 1}
+                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                    activeSection === "education"
+                      ? "text-white bg-white/10 cursor-default"
+                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                  } disabled:cursor-not-allowed`}
+                  aria-label="Go to Education section"
+                >
+                  Education
+                </button>
+                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+
+                <button
+                  onClick={() => goToSection(2)}
+                  disabled={isTransitioning || currentSectionIndex === 2}
+                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                    activeSection === "technical-skills"
+                      ? "text-white bg-white/10 cursor-default"
+                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                  } disabled:cursor-not-allowed`}
+                  aria-label="Go to Technical Skills section"
+                >
+                  Skills
+                </button>
+                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+
+                <button
+                  onClick={() => goToSection(3)}
+                  disabled={isTransitioning || currentSectionIndex === 3}
+                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                    activeSection === "projects"
+                      ? "text-white bg-white/10 cursor-default"
+                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                  } disabled:cursor-not-allowed`}
+                  aria-label="Go to Projects section"
+                >
+                  Projects
+                </button>
+                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
+
+                <button
+                  onClick={() => goToSection(4)}
+                  disabled={isTransitioning || currentSectionIndex === 4}
+                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
+                    activeSection === "experience"
+                      ? "text-white bg-white/10 cursor-default"
+                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                  } disabled:cursor-not-allowed`}
+                  aria-label="Go to Experience section"
+                >
+                  Experience
+                </button>
+              </nav>
+
+              {/* Right navigation arrow - hidden on last section */}
+              {currentSectionIndex < sections.length - 1 && (
+                <Button
+                  onClick={goToNext}
+                  disabled={isTransitioning}
+                  variant="outline"
+                  size="icon-lg"
+                  className="z-40 hidden md:flex justify-center
+                rounded-2xl border-2 border-[#2d313a]
+                bg-[#151618]/80 backdrop-blur-sm
+                text-white hover:text-white
+                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
+                transition-all duration-300
+                disabled:opacity-50 disabled:cursor-not-allowed
+                shadow-lg hover:shadow-xl hover:scale-[1.05]"
+                  aria-label="Next section"
+                >
+                  <ChevronRight className="w-6 h-6 md:w-7 md:h-7" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </Fade>
+        <Fade triggerOnce>
+          <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
+            {/* background glow effects */}
+            <div className="absolute inset-0 opacity-40 pointer-events-none">
+              <div className="absolute -top-24 left-16 h-64 w-64 rounded-full bg-[#274cbc]/20 blur-[100px]" />
+              <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-[#19c8ff]/15 blur-[80px]" />
+            </div>
+
+            {/* Section content with fade transition */}
+            <div
+              key={currentSectionIndex}
+              className={`relative transition-opacity duration-500 ease-in-out ${
+                isTransitioning ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              <CurrentSection />
+            </div>
+          </section>
+        </Fade>
+      </div>
+    </main>
   );
 }
 

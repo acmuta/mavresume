@@ -425,7 +425,7 @@ export const Technologies = [
   // --- DevOps + Cloud ---
   "Docker",
   "Kubernetes",
-  "AWS",
+  "Amazon Web Services",
   "Azure",
   "Google Cloud",
   "Vercel",
