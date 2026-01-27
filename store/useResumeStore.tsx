@@ -1,20 +1,19 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { utaEngineeringCourses } from "../data/university-data";
 
 /**
  * Centralized state management for resume data using Zustand.
  *
  * This store:
  * - Holds all resume data (personal info, education, projects, experience, skills)
- * - Persists to localStorage via zustand/persist middleware (survives page refreshes)
+ * - Syncs with Supabase database via the auto-save hook
  * - Provides update functions that trigger reactive re-renders in components
  * - Is consumed by form components (sections), preview components, and PDF generator
+ * - Tracks save status for UI feedback
  *
- * Data flow: Form input → update function → store state → preview/PDF re-render
+ * Data flow: Form input → update function → store state → auto-save → Supabase
  */
 
-interface PersonalInfo {
+export interface PersonalInfo {
   name: string;
   email: string;
   phone?: string;
@@ -23,7 +22,7 @@ interface PersonalInfo {
   customContacts?: string[];
 }
 
-interface Skills {
+export interface Skills {
   languagesList: string[];
   technologiesList: string[];
   customLanguages?: string[];
@@ -57,14 +56,33 @@ export interface Experience {
   bulletPoints: string[];
 }
 
+// Type for save status indicator
+export type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+// Type for database resume data (used by setResumeFromDatabase)
+export interface DatabaseResumeData {
+  personal_info?: PersonalInfo;
+  education?: Education[];
+  projects?: Project[];
+  experience?: Experience[];
+  skills?: Skills;
+  section_order?: string[];
+}
+
 /**
  * Complete resume state interface.
  *
  * Arrays (education, projects, experience) support multiple entries.
  * Update functions use Partial types to allow updating individual fields.
- * All state is automatically persisted to localStorage key "resume-storage".
+ * State syncs with Supabase via auto-save hook when currentResumeId is set.
  */
 export interface ResumeState {
+  // Database tracking
+  currentResumeId: string | null;
+  saveStatus: SaveStatus;
+  lastSavedAt: Date | null;
+
+  // Resume data
   personalInfo: PersonalInfo;
   education: Education[];
   relevantCourses?: string[];
@@ -72,6 +90,21 @@ export interface ResumeState {
   skills: Skills;
   experience: Experience[];
   sectionOrder: string[];
+
+  // UI state
+  showBorder?: boolean;
+
+  // Database sync actions
+  setCurrentResumeId: (id: string | null) => void;
+  setSaveStatus: (status: SaveStatus) => void;
+  setLastSavedAt: (date: Date | null) => void;
+  setResumeFromDatabase: (data: DatabaseResumeData) => void;
+  resetResume: () => void;
+
+  // UI actions
+  setShowBorder?: (show: boolean) => void;
+
+  // Resume data actions
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
   addSkills: (skills: Skills) => void;
@@ -84,186 +117,237 @@ export interface ResumeState {
   removeProject: (index: number) => void;
   removeExperience: (index: number) => void;
   updateSectionOrder: (order: string[]) => void;
-
-
-  showBorder?: boolean;
-  setShowBorder?: (show: boolean) => void;
 }
 
+// Default initial state for a new/reset resume
+const initialResumeState = {
+  personalInfo: { name: "", email: "", customContacts: [] } as PersonalInfo,
+  education: [
+    {
+      school: "",
+      degree: "",
+      major: "",
+      includeGPA: false,
+      graduationMonth: "",
+      graduationYear: "",
+    },
+  ] as Education[],
+  relevantCourses: [] as string[],
+  projects: [
+    { title: "", technologies: [], bulletPoints: ["", "", ""] },
+  ] as Project[],
+  skills: {
+    languagesList: [],
+    technologiesList: [],
+    customLanguages: [],
+    customTechnologies: [],
+  } as Skills,
+  experience: [
+    {
+      company: "",
+      position: "",
+      startMonth: "",
+      startYear: "",
+      endMonth: "",
+      endYear: "",
+      isCurrent: false,
+      bulletPoints: ["", "", ""],
+    },
+  ] as Experience[],
+  sectionOrder: [
+    "personal-info",
+    "education",
+    "technical-skills",
+    "projects",
+    "experience",
+  ],
+};
+
 /**
- * Zustand store with persistence middleware.
+ * Zustand store for resume data.
  *
- * persist() middleware automatically:
- * - Saves state to localStorage on every update
- * - Restores state from localStorage on app load
- * - Uses key "resume-storage" for localStorage entry
- *
- * Initial state provides empty templates for each section to ensure
- * forms always have at least one entry to edit.
+ * No longer uses localStorage persistence - data syncs with Supabase instead.
+ * The auto-save hook watches for state changes and persists to the database.
  */
-export const useResumeStore = create<ResumeState>()(
-  persist(
-    (set) => ({
-      // Initial state: empty templates for each section
-      personalInfo: { name: "", email: "", customContacts: [] },
-      education: [
-        {
-          school: "",
-          degree: "",
-          major: "",
-          includeGPA: false,
-          graduationMonth: "",
-          graduationYear: "",
-        },
-      ],
-      relevantCourses: [],
-      projects: [{ title: "", technologies: [], bulletPoints: ["", "", ""] }],
-      skills: { 
-        languagesList: [], 
-        technologiesList: [],
-        customLanguages: [],
-        customTechnologies: [],
-      },
-      experience: [
-        {
-          company: "",
-          position: "",
-          startMonth: "",
-          startYear: "",
-          endMonth: "",
-          endYear: "",
-          isCurrent: false,
-          bulletPoints: ["", "", ""],
-        },
-      ],
-      sectionOrder: [
-        "personal-info",
-        "education",
-        "technical-skills",
-        "projects",
-        "experience",
-      ],
+export const useResumeStore = create<ResumeState>()((set) => ({
+  // Database tracking state
+  currentResumeId: null,
+  saveStatus: "idle",
+  lastSavedAt: null,
 
+  // Initial resume data state
+  ...initialResumeState,
 
-      showBorder: false,
-      setShowBorder: (show: boolean) =>
-        set(() => ({
-          showBorder: show,
-        })),
+  // UI state
+  showBorder: false,
 
-        
-      // Update functions merge partial updates with existing state
-      // Zustand's set() triggers re-renders in all components using the store
-      updatePersonalInfo: (info) =>
-        set((state) => ({
-          personalInfo: { ...state.personalInfo, ...info },
-        })),
+  // Database sync actions
+  setCurrentResumeId: (id) =>
+    set(() => ({
+      currentResumeId: id,
+      // Reset save status when switching resumes
+      saveStatus: "idle",
+      lastSavedAt: null,
+    })),
 
-      // Add functions append new entries to arrays
-      addEducation: (edu) =>
-        set((state) => ({
-          education: [...state.education, edu],
-        })),
+  setSaveStatus: (status) =>
+    set(() => ({
+      saveStatus: status,
+    })),
 
-      // Skills are merged (not replaced) to allow partial updates
-      addSkills: (skills) =>
-        set((state) => ({
-          skills: { ...state.skills, ...skills },
-        })),
+  setLastSavedAt: (date) =>
+    set(() => ({
+      lastSavedAt: date,
+    })),
 
-      addProject: (proj) =>
-        set((state) => ({
-          projects: [...state.projects, proj],
-        })),
+  /**
+   * Hydrate the store with data loaded from the database.
+   * Used when opening an existing resume from the dashboard.
+   */
+  setResumeFromDatabase: (data) =>
+    set(() => ({
+      personalInfo: data.personal_info ?? initialResumeState.personalInfo,
+      education:
+        data.education && data.education.length > 0
+          ? data.education
+          : initialResumeState.education,
+      projects:
+        data.projects && data.projects.length > 0
+          ? data.projects
+          : initialResumeState.projects,
+      experience:
+        data.experience && data.experience.length > 0
+          ? data.experience
+          : initialResumeState.experience,
+      skills: data.skills ?? initialResumeState.skills,
+      sectionOrder: data.section_order ?? initialResumeState.sectionOrder,
+      // Reset save status after loading
+      saveStatus: "idle",
+    })),
 
-      addExperience: (exp) =>
-        set((state) => ({
-          experience: [...state.experience, exp],
-        })),
+  /**
+   * Reset the store to initial empty state.
+   * Used when creating a new resume or signing out.
+   */
+  resetResume: () =>
+    set(() => ({
+      currentResumeId: null,
+      saveStatus: "idle",
+      lastSavedAt: null,
+      ...initialResumeState,
+    })),
 
-      // Update functions for array items: create new array, update item at index
-      // This ensures React detects the change and re-renders dependent components
-      updateEducation: (index, updated) =>
-        set((state) => {
-          const newList = [...state.education];
-          newList[index] = {
-            ...newList[index],
-            ...updated,
-          };
-          return { education: newList };
-        }),
+  // UI actions
+  setShowBorder: (show: boolean) =>
+    set(() => ({
+      showBorder: show,
+    })),
 
-      updateProject: (index, proj) =>
-        set((state) => {
-          const newList = [...state.projects];
-          newList[index] = {
-            ...newList[index],
-            ...proj,
-          };
-          return { projects: newList };
-        }),
-      updateExperience: (index, exp) =>
-        set((state) => {
-          const newList = [...state.experience];
-          newList[index] = {
-            ...newList[index],
-            ...exp,
-          };
-          return { experience: newList };
-        }),
+  // Resume data update actions
+  // These trigger reactive re-renders and will be auto-saved via the hook
 
-      // Remove functions: filter out item at index, but ensure at least one item remains
-      removeEducation: (index) =>
-        set((state) => {
-          if (state.education.length <= 1) {
-            return state; // Don't delete if only one item exists
-          }
-          return {
-            education: state.education.filter((_, i) => i !== index),
-          };
-        }),
+  updatePersonalInfo: (info) =>
+    set((state) => ({
+      personalInfo: { ...state.personalInfo, ...info },
+    })),
 
-      removeProject: (index) =>
-        set((state) => {
-          if (state.projects.length <= 1) {
-            return state; // Don't delete if only one item exists
-          }
-          return {
-            projects: state.projects.filter((_, i) => i !== index),
-          };
-        }),
+  addEducation: (edu) =>
+    set((state) => ({
+      education: [...state.education, edu],
+    })),
 
-      removeExperience: (index) =>
-        set((state) => {
-          if (state.experience.length <= 1) {
-            return state; // Don't delete if only one item exists
-          }
-          return {
-            experience: state.experience.filter((_, i) => i !== index),
-          };
-        }),
+  addSkills: (skills) =>
+    set((state) => ({
+      skills: { ...state.skills, ...skills },
+    })),
 
-      updateSectionOrder: (order) =>
-        set((state) => {
-          // Ensure personal-info is always first if present
-          const validOrder = order.filter(
-            (id) =>
-              id === "personal-info" ||
-              id === "education" ||
-              id === "technical-skills" ||
-              id === "projects" ||
-              id === "experience"
-          );
-          const personalInfoFirst = validOrder.includes("personal-info")
-            ? ["personal-info", ...validOrder.filter((id) => id !== "personal-info")]
-            : validOrder;
-          return { sectionOrder: personalInfoFirst };
-        }),
+  addProject: (proj) =>
+    set((state) => ({
+      projects: [...state.projects, proj],
+    })),
+
+  addExperience: (exp) =>
+    set((state) => ({
+      experience: [...state.experience, exp],
+    })),
+
+  // Update functions for array items: create new array, update item at index
+  // This ensures React detects the change and re-renders dependent components
+  updateEducation: (index, updated) =>
+    set((state) => {
+      const newList = [...state.education];
+      newList[index] = {
+        ...newList[index],
+        ...updated,
+      };
+      return { education: newList };
     }),
 
-    {
-      // localStorage key where persisted state is stored
-      name: "resume-storage",
-    }
-  )
-);
+  updateProject: (index, proj) =>
+    set((state) => {
+      const newList = [...state.projects];
+      newList[index] = {
+        ...newList[index],
+        ...proj,
+      };
+      return { projects: newList };
+    }),
+
+  updateExperience: (index, exp) =>
+    set((state) => {
+      const newList = [...state.experience];
+      newList[index] = {
+        ...newList[index],
+        ...exp,
+      };
+      return { experience: newList };
+    }),
+
+  // Remove functions: filter out item at index, but ensure at least one item remains
+  removeEducation: (index) =>
+    set((state) => {
+      if (state.education.length <= 1) {
+        return state; // Don't delete if only one item exists
+      }
+      return {
+        education: state.education.filter((_, i) => i !== index),
+      };
+    }),
+
+  removeProject: (index) =>
+    set((state) => {
+      if (state.projects.length <= 1) {
+        return state; // Don't delete if only one item exists
+      }
+      return {
+        projects: state.projects.filter((_, i) => i !== index),
+      };
+    }),
+
+  removeExperience: (index) =>
+    set((state) => {
+      if (state.experience.length <= 1) {
+        return state; // Don't delete if only one item exists
+      }
+      return {
+        experience: state.experience.filter((_, i) => i !== index),
+      };
+    }),
+
+  updateSectionOrder: (order) =>
+    set(() => {
+      // Ensure personal-info is always first if present
+      const validOrder = order.filter(
+        (id) =>
+          id === "personal-info" ||
+          id === "education" ||
+          id === "technical-skills" ||
+          id === "projects" ||
+          id === "experience"
+      );
+      const personalInfoFirst = validOrder.includes("personal-info")
+        ? ["personal-info", ...validOrder.filter((id) => id !== "personal-info")]
+        : validOrder;
+      return { sectionOrder: personalInfoFirst };
+    }),
+}));
