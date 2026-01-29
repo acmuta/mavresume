@@ -59,6 +59,17 @@ export interface Experience {
 // Type for save status indicator
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
+// Available sections that can be added to a resume (excluding personal-info which is always present)
+export const AVAILABLE_SECTIONS = [
+  { id: "education", label: "Education" },
+  { id: "technical-skills", label: "Technical Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "experience", label: "Experience" },
+] as const;
+
+// Section IDs type
+export type SectionId = "personal-info" | "education" | "technical-skills" | "projects" | "experience";
+
 // Type for database resume data (used by setResumeFromDatabase)
 export interface DatabaseResumeData {
   personal_info?: PersonalInfo;
@@ -117,6 +128,8 @@ export interface ResumeState {
   removeProject: (index: number) => void;
   removeExperience: (index: number) => void;
   updateSectionOrder: (order: string[]) => void;
+  addSection: (sectionId: string) => void;
+  removeSection: (sectionId: string) => void;
 }
 
 // Default initial state for a new/reset resume
@@ -349,5 +362,38 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         ? ["personal-info", ...validOrder.filter((id) => id !== "personal-info")]
         : validOrder;
       return { sectionOrder: personalInfoFirst };
+    }),
+
+  /**
+   * Add a section to the resume.
+   * Section is added at the end of the list (after personal-info).
+   */
+  addSection: (sectionId) =>
+    set((state) => {
+      // Don't add if section already exists or is invalid
+      const validIds = ["education", "technical-skills", "projects", "experience"];
+      if (!validIds.includes(sectionId) || state.sectionOrder.includes(sectionId)) {
+        return state;
+      }
+      // Ensure personal-info stays first
+      const newOrder = state.sectionOrder.includes("personal-info")
+        ? [...state.sectionOrder, sectionId]
+        : ["personal-info", ...state.sectionOrder, sectionId];
+      return { sectionOrder: newOrder };
+    }),
+
+  /**
+   * Remove a section from the resume.
+   * Cannot remove personal-info.
+   */
+  removeSection: (sectionId) =>
+    set((state) => {
+      // Don't allow removing personal-info
+      if (sectionId === "personal-info") {
+        return state;
+      }
+      return {
+        sectionOrder: state.sectionOrder.filter((id) => id !== sectionId),
+      };
     }),
 }));

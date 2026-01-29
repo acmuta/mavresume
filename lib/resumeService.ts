@@ -11,6 +11,55 @@ import type { PersonalInfo, Education, Project, Experience, Skills } from "@/sto
  * All operations respect Row Level Security (RLS) policies configured in Supabase.
  */
 
+/**
+ * Map template section display names to internal section IDs.
+ * Used to initialize section_order based on template type.
+ */
+const sectionNameToId: Record<string, string> = {
+  "Education": "education",
+  "Technical Skills": "technical-skills",
+  "Projects": "projects",
+  "Experience": "experience",
+};
+
+/**
+ * Get section order based on template type.
+ * - Custom template: Only personal-info (user adds sections manually)
+ * - Predefined templates: Map template sections to IDs
+ * - Default/unknown: All sections in default order
+ */
+function getSectionOrderForTemplate(templateType?: string): string[] {
+  // Custom template starts with only personal-info
+  if (templateType === "custom" || !templateType) {
+    return ["personal-info"];
+  }
+
+  // Map predefined template sections
+  // Currently only computer-science is available
+  const templateSections: Record<string, string[]> = {
+    "computer-science": ["Education", "Technical Skills", "Projects", "Experience"],
+    "data-science": ["Education", "Technical Skills", "Projects", "Experience"],
+    "cybersecurity": ["Education", "Technical Skills", "Projects", "Experience"],
+  };
+
+  const sections = templateSections[templateType];
+  if (sections) {
+    const sectionIds = sections
+      .map((name) => sectionNameToId[name])
+      .filter((id): id is string => id !== undefined);
+    return ["personal-info", ...sectionIds];
+  }
+
+  // Fallback: default section order for unknown templates
+  return [
+    "personal-info",
+    "education",
+    "technical-skills",
+    "projects",
+    "experience",
+  ];
+}
+
 // Types matching Supabase table schemas
 
 export interface ResumeMetadata {
@@ -76,6 +125,9 @@ export async function createResume(
     throw new Error(`Failed to create resume: ${resumeError.message}`);
   }
 
+  // Get section order based on template type
+  const sectionOrder = getSectionOrderForTemplate(templateType);
+
   // Create empty resume data linked to the new resume
   const { data: resumeData, error: dataError } = await supabase
     .from("resume_data")
@@ -111,13 +163,7 @@ export async function createResume(
         customLanguages: [],
         customTechnologies: [],
       },
-      section_order: [
-        "personal-info",
-        "education",
-        "technical-skills",
-        "projects",
-        "experience",
-      ],
+      section_order: sectionOrder,
     })
     .select()
     .single();

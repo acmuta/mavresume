@@ -11,6 +11,7 @@ import {
   ChevronDown,
   FileText,
   ExternalLink,
+  ClipboardCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -251,10 +252,10 @@ export default function DashboardPage() {
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "there";
 
   return (
-    <div className="px-6 py-10 md:px-10 md:py-16 max-w-5xl">
+    <div className="px-6 py-10 md:px-10 md:py-16 w-full">
       {/* Welcome Section */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl md:text-3xl font-semibold text-white">
           Welcome back, {displayName}
         </h1>
         <p className="text-sm text-[#6d7895] mt-1">
@@ -262,161 +263,191 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-medium text-[#cfd3e1]">Your Resumes</h2>
-        <Link href="/templates">
-          <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm">
-            <Plus className="w-4 h-4 mr-2" />
-            New Resume
-          </Button>
-        </Link>
-      </div>
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1 lg:w-full">
+          {/* Quick Actions */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-medium text-[#cfd3e1]">Your Resumes</h2>
+            <Link href="/templates">
+              <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm">
+                <Plus className="w-4 h-4 mr-2" />
+                New Resume
+              </Button>
+            </Link>
+          </div>
 
-      {/* Resume Table */}
-      <div className="rounded-xl border border-[#2d313a] bg-[#15171c]/60 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-[#1a1c22]/80 border-b border-[#2d313a]">
-            <tr>
-              <SortableHeader
-                label="Name"
-                column="name"
-                sortConfig={sortConfig}
-                onSort={handleSort}
-                className="w-auto"
-              />
-              <SortableHeader
-                label="Template"
-                column="template_type"
-                sortConfig={sortConfig}
-                onSort={handleSort}
-                className="w-[150px]"
-              />
-              <SortableHeader
-                label="Last Updated"
-                column="updated_at"
-                sortConfig={sortConfig}
-                onSort={handleSort}
-                className="w-[150px]"
-              />
-              <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[80px]">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Loading State */}
-            {isLoadingResumes && (
-              <>
-                <TableRowSkeleton />
-                <TableRowSkeleton />
-                <TableRowSkeleton />
-              </>
-            )}
-
-            {/* Error State */}
-            {loadError && !isLoadingResumes && (
-              <tr>
-                <td colSpan={4} className="px-4 py-12 text-center">
-                  <p className="text-red-400 mb-2">{loadError}</p>
-                  <Button
-                    variant="ghost"
-                    onClick={() => window.location.reload()}
-                    className="text-[#6d7895] hover:text-white text-sm"
-                  >
-                    Try Again
-                  </Button>
-                </td>
-              </tr>
-            )}
-
-            {/* Empty State */}
-            {!isLoadingResumes && !loadError && resumes.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-16 text-center">
-                  <FileText className="mx-auto w-10 h-10 text-[#3d4353] mb-3" />
-                  <p className="text-[#6d7895] mb-4">No resumes yet</p>
-                  <Link href="/templates">
-                    <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create your first resume
-                    </Button>
-                  </Link>
-                </td>
-              </tr>
-            )}
-
-            {/* Resume Rows */}
-            {!isLoadingResumes &&
-              !loadError &&
-              sortedResumes.map((resume) => (
-                <tr
-                  key={resume.id}
-                  onClick={() => handleRowClick(resume.id)}
-                  className="border-b border-[#2d313a]/50 hover:bg-[#1a1c22]/50 cursor-pointer transition-colors group"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex w-8 h-8 items-center justify-center rounded-lg bg-[#1f2330]/80 text-[#6d7895] group-hover:text-[#8fa5ff] transition-colors">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <span className="text-sm font-medium text-white truncate max-w-[300px]">
-                        {resume.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-[#a4a7b5]">
-                      {formatTemplateType(resume.template_type)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-[#6d7895]">
-                      {formatDate(resume.updated_at)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/builder?id=${resume.id}`);
-                        }}
-                        className="h-8 w-8 text-[#6d7895] hover:text-white hover:bg-[#2d313a]/50"
-                        aria-label="Edit resume"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => handleDeleteResume(e, resume.id)}
-                        disabled={deletingId === resume.id}
-                        className="h-8 w-8 text-[#6d7895] hover:text-red-400 hover:bg-red-400/10"
-                        aria-label="Delete resume"
-                      >
-                        {deletingId === resume.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </td>
+          {/* Resume Table */}
+          <div className="rounded-xl border border-[#2d313a] bg-[#15171c]/60 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-[#1a1c22]/80 border-b border-[#2d313a]">
+                <tr>
+                  <SortableHeader
+                    label="Name"
+                    column="name"
+                    sortConfig={sortConfig}
+                    onSort={handleSort}
+                    className="w-auto"
+                  />
+                  <SortableHeader
+                    label="Template"
+                    column="template_type"
+                    sortConfig={sortConfig}
+                    onSort={handleSort}
+                    className="w-[150px]"
+                  />
+                  <SortableHeader
+                    label="Last Updated"
+                    column="updated_at"
+                    sortConfig={sortConfig}
+                    onSort={handleSort}
+                    className="w-[150px]"
+                  />
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[80px]">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {/* Loading State */}
+                {isLoadingResumes && (
+                  <>
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                  </>
+                )}
 
-      {/* Resume count */}
-      {!isLoadingResumes && !loadError && resumes.length > 0 && (
-        <p className="text-xs text-[#6d7895] mt-3">
-          {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
-        </p>
-      )}
+                {/* Error State */}
+                {loadError && !isLoadingResumes && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-12 text-center">
+                      <p className="text-red-400 mb-2">{loadError}</p>
+                      <Button
+                        variant="ghost"
+                        onClick={() => window.location.reload()}
+                        className="text-[#6d7895] hover:text-white text-sm"
+                      >
+                        Try Again
+                      </Button>
+                    </td>
+                  </tr>
+                )}
+
+                {/* Empty State */}
+                {!isLoadingResumes && !loadError && resumes.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-16 text-center">
+                      <FileText className="mx-auto w-10 h-10 text-[#3d4353] mb-3" />
+                      <p className="text-[#6d7895] mb-4">No resumes yet</p>
+                      <Link href="/templates">
+                        <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create your first resume
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                )}
+
+                {/* Resume Rows */}
+                {!isLoadingResumes &&
+                  !loadError &&
+                  sortedResumes.map((resume) => (
+                    <tr
+                      key={resume.id}
+                      onClick={() => handleRowClick(resume.id)}
+                      className="border-b border-[#2d313a]/50 hover:bg-[#1a1c22]/50 cursor-pointer transition-colors group"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex w-8 h-8 items-center justify-center rounded-lg bg-[#1f2330]/80 text-[#6d7895] group-hover:text-[#8fa5ff] transition-colors">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm font-medium text-white truncate max-w-[300px]">
+                            {resume.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm text-[#a4a7b5]">
+                          {formatTemplateType(resume.template_type)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm text-[#6d7895]">
+                          {formatDate(resume.updated_at)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/builder?id=${resume.id}`);
+                            }}
+                            className="h-8 w-8 text-[#6d7895] hover:text-white hover:bg-[#2d313a]/50"
+                            aria-label="Edit resume"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => handleDeleteResume(e, resume.id)}
+                            disabled={deletingId === resume.id}
+                            className="h-8 w-8 text-[#6d7895] hover:text-red-400 hover:bg-red-400/10"
+                            aria-label="Delete resume"
+                          >
+                            {deletingId === resume.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Resume count */}
+          {!isLoadingResumes && !loadError && resumes.length > 0 && (
+            <p className="text-xs text-[#6d7895] mt-3">
+              {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
+            </p>
+          )}
+        </div>
+
+        {/* Right Column - Resume Reviews (Under Development) */}
+        <div className="lg:w-1/3">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-medium text-[#cfd3e1]">Resume Reviews</h2>
+            <span className="inline-flex items-center rounded-md border border-[#2d313a] bg-[#1a1c22]/50 px-2.5 py-0.5 text-xs font-medium text-[#6d7895]">
+              Under Development
+            </span>
+          </div>
+
+          {/* Under Development Card */}
+          <div className="rounded-xl border border-dashed border-[#2d313a] bg-[#15171c]/60 p-6 opacity-60 cursor-not-allowed">
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="flex w-12 h-12 items-center justify-center rounded-xl bg-[#1f2330]/80 text-[#3d4353] mb-4">
+                <ClipboardCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm font-medium text-[#6d7895] mb-2">
+                Resume Reviews Coming Soon
+              </h3>
+              <p className="text-xs text-[#4d5363] max-w-[200px]">
+                Submit your resumes for expert feedback and track review status all in one place.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

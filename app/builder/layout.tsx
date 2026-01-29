@@ -37,7 +37,7 @@ export default function BuildLayout({
       <BuilderSidebar />
 
       {/* Main content (form sections) */}
-      <div className="relative p-8 min-h-screen md:w-5/10 md:ml-[6vw] mt-8 md:mt-0">
+      <div className="relative px-2 py-4 md:px-8 md:py-8 min-h-screen w-full md:w-5/10 md:ml-[6vw] mt-[8vh]">
         {children}
       </div>
       {/* Resume Preview */}
@@ -52,7 +52,7 @@ export default function BuildLayout({
           </div>
           {/* Resume Preview Controls */}
           <TooltipProvider>
-            <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22]/50 border-[#2d313a]">
+            <div className="flex justify-center items-center scale-115 rounded-3xl px-1 py-1 gap-1 bg-transparent ">
               <ResumePreviewControls />
             </div>
           </TooltipProvider>

@@ -1,18 +1,31 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
 import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
 import { ProjectsSection } from "../../components/sections/projects";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Loader2, Settings2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
-import { useGuideStore, SectionId } from "../../store/useGuideStore";
-import { useResumeStore } from "../../store/useResumeStore";
+import { useGuideStore } from "../../store/useGuideStore";
+import { useResumeStore, type SectionId } from "../../store/useResumeStore";
 import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
+import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
+
+/**
+ * Section configuration map.
+ * Maps section IDs to their components and display labels.
+ */
+const SECTION_CONFIG: Record<string, { Component: React.FC; label: string }> = {
+  "personal-info": { Component: PersonalInfoSection, label: "Personal Info" },
+  education: { Component: EducationSection, label: "Education" },
+  "technical-skills": { Component: TechnicalSkillsSection, label: "Skills" },
+  projects: { Component: ProjectsSection, label: "Projects" },
+  experience: { Component: ExperienceSection, label: "Experience" },
+};
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
@@ -23,7 +36,7 @@ function BuilderPageContent() {
     currentResumeId,
     setCurrentResumeId,
     setResumeFromDatabase,
-    resetResume,
+    sectionOrder,
   } = useResumeStore();
 
   // Loading and error states
@@ -33,6 +46,9 @@ function BuilderPageContent() {
   // Track current section index for single-section display
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Section manager modal state
+  const [isSectionManagerOpen, setIsSectionManagerOpen] = useState(false);
 
   // Enable auto-save when resume is loaded
   useAutoSave(!!currentResumeId);
@@ -78,7 +94,7 @@ function BuilderPageContent() {
       } catch (error) {
         console.error("Failed to load resume:", error);
         setLoadError(
-          error instanceof Error ? error.message : "Failed to load resume"
+          error instanceof Error ? error.message : "Failed to load resume",
         );
         setIsLoading(false);
       }
@@ -93,14 +109,23 @@ function BuilderPageContent() {
     };
   }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
 
-  // Section configuration: defines order and IDs for navigation/header tracking
-  const sections = [
-    { Component: PersonalInfoSection, id: "personal-info" as SectionId },
-    { Component: EducationSection, id: "education" as SectionId },
-    { Component: TechnicalSkillsSection, id: "technical-skills" as SectionId },
-    { Component: ProjectsSection, id: "projects" as SectionId },
-    { Component: ExperienceSection, id: "experience" as SectionId },
-  ];
+  // Build dynamic sections array from sectionOrder
+  const sections = useMemo(() => {
+    return sectionOrder
+      .filter((id) => SECTION_CONFIG[id]) // Only include sections that have a config
+      .map((id) => ({
+        Component: SECTION_CONFIG[id].Component,
+        id: id as SectionId,
+        label: SECTION_CONFIG[id].label,
+      }));
+  }, [sectionOrder]);
+
+  // Clamp currentSectionIndex if sections are removed
+  useEffect(() => {
+    if (currentSectionIndex >= sections.length && sections.length > 0) {
+      setCurrentSectionIndex(sections.length - 1);
+    }
+  }, [sections.length, currentSectionIndex]);
 
   // Update guide store when section changes (for contextual help)
   useEffect(() => {
@@ -108,31 +133,8 @@ function BuilderPageContent() {
     if (sectionId) {
       setCurrentSection(sectionId);
     }
-  }, [currentSectionIndex, setCurrentSection]);
+  }, [currentSectionIndex, sections, setCurrentSection]);
 
-  const goToPrevious = () => {
-    if (currentSectionIndex > 0 && !isTransitioning) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentSectionIndex((prev) => prev - 1);
-        // Fade in new section after a brief delay to allow React to render
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 50);
-      }, 250);
-    }
-  };
-  const goToNext = () => {
-    if (currentSectionIndex < sections.length - 1 && !isTransitioning) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentSectionIndex((prev) => prev + 1);
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 50);
-      }, 250);
-    }
-  };
   const goToSection = (targetIndex: number) => {
     if (
       targetIndex >= 0 &&
@@ -150,15 +152,7 @@ function BuilderPageContent() {
     }
   };
 
-  const sectionIds = [
-    "personal-info",
-    "education",
-    "technical-skills",
-    "projects",
-    "experience",
-  ];
-
-  const activeSection = sectionIds[currentSectionIndex] || "personal-info";
+  const activeSection = sections[currentSectionIndex]?.id || "personal-info";
 
   // Loading state
   if (isLoading) {
@@ -188,133 +182,84 @@ function BuilderPageContent() {
     );
   }
 
-  const CurrentSection = sections[currentSectionIndex].Component;
+  // Handle empty sections state
+  if (sections.length === 0) {
+    return (
+      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-6 min-h-[50vh]">
+          <div className="rounded-2xl border-2 border-dashed border-[#2d313a] bg-[#151618]/80 px-8 py-12 text-center">
+            <Settings2 className="w-12 h-12 text-[#3d4353] mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-white mb-2">
+              No Sections Added
+            </h2>
+            <p className="text-[#6d7895] mb-6 max-w-md">
+              Your resume doesn&apos;t have any sections yet. Add sections to
+              start building your resume.
+            </p>
+            <Button
+              onClick={() => setIsSectionManagerOpen(true)}
+              className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-xl px-6"
+            >
+              <Settings2 className="w-4 h-4 mr-2" />
+              Manage Sections
+            </Button>
+          </div>
+        </div>
+        <SectionManagerModal
+          open={isSectionManagerOpen}
+          onOpenChange={setIsSectionManagerOpen}
+        />
+      </main>
+    );
+  }
+
+  const CurrentSection =
+    sections[currentSectionIndex]?.Component || PersonalInfoSection;
 
   return (
-    <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5 ">
+    <main className="relative text-white z-10 px-2 py-3 md:px-4 md:py-20 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 md:gap-5">
         {/* Navigation controls */}
         <Fade
           triggerOnce
-          className="flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
-                bg-[#151618]/80 gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
+          className="flex flex-col relative items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
+                bg-[#151618]/80 gap-2 md:gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
         >
-          <div className="flex flex-col items-center">
-            <h1 className="text-md font-bold">Navigation</h1>
-            <div className="flex items-center scale-60 md:scale-100 gap-2">
-              {/* Left navigation arrow */}
-              {currentSectionIndex > 0 && (
-                <Button
-                  onClick={goToPrevious}
-                  disabled={isTransitioning}
-                  variant="outline"
-                  size="icon-lg"
-                  className="z-40 hidden md:flex justify-center
-                rounded-2xl border-2 border-[#2d313a]
-                bg-[#151618]/80 backdrop-blur-sm
-                text-white hover:text-white
-                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
-                transition-all duration-300
-                disabled:opacity-50 disabled:cursor-not-allowed
-                shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                  aria-label="Previous section"
-                >
-                  <ChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
-                </Button>
-              )}
-
-              {/* Navigation steps */}
-              <nav className="flex items-center gap-1.5 text-md font-bold">
-                <button
-                  onClick={() => goToSection(0)}
-                  disabled={isTransitioning || currentSectionIndex === 0}
-                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                    activeSection === "personal-info"
-                      ? "text-white bg-white/10 cursor-default"
-                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                  } disabled:cursor-not-allowed`}
-                  aria-label="Go to Personal Info section"
-                >
-                  Personal Info
-                </button>
-                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                <button
-                  onClick={() => goToSection(1)}
-                  disabled={isTransitioning || currentSectionIndex === 1}
-                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                    activeSection === "education"
-                      ? "text-white bg-white/10 cursor-default"
-                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                  } disabled:cursor-not-allowed`}
-                  aria-label="Go to Education section"
-                >
-                  Education
-                </button>
-                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                <button
-                  onClick={() => goToSection(2)}
-                  disabled={isTransitioning || currentSectionIndex === 2}
-                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                    activeSection === "technical-skills"
-                      ? "text-white bg-white/10 cursor-default"
-                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                  } disabled:cursor-not-allowed`}
-                  aria-label="Go to Technical Skills section"
-                >
-                  Skills
-                </button>
-                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                <button
-                  onClick={() => goToSection(3)}
-                  disabled={isTransitioning || currentSectionIndex === 3}
-                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                    activeSection === "projects"
-                      ? "text-white bg-white/10 cursor-default"
-                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                  } disabled:cursor-not-allowed`}
-                  aria-label="Go to Projects section"
-                >
-                  Projects
-                </button>
-                <ChevronRight className="w-4 h-4 text-[#6d7895]" />
-
-                <button
-                  onClick={() => goToSection(4)}
-                  disabled={isTransitioning || currentSectionIndex === 4}
-                  className={`px-2 py-1 rounded-lg transition-all duration-200 ${
-                    activeSection === "experience"
-                      ? "text-white bg-white/10 cursor-default"
-                      : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                  } disabled:cursor-not-allowed`}
-                  aria-label="Go to Experience section"
-                >
-                  Experience
-                </button>
+          <div className="flex relative flex-col items-center w-full">
+            {/* Header with title and manage button */}
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <h1 className="text-sm md:text-md font-bold">Navigation</h1>
+              {/* Manage Sections button - visible on all screen sizes */}
+              <Button
+                onClick={() => setIsSectionManagerOpen(true)}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 md:h-10 md:w-10 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all duration-300"
+                aria-label="Manage sections"
+              >
+                <Settings2 className="w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+            </div>
+            
+            {/* Horizontal scrollable navigation */}
+            <div className="w-full overflow-x-auto scrollbar-hide">
+              <nav className="flex items-center gap-2 min-w-max px-1 py-1 justify-center">
+                {sections.map((section, index) => (
+                  <button
+                    key={section.id}
+                    onClick={() => goToSection(index)}
+                    disabled={isTransitioning || currentSectionIndex === index}
+                    className={`py-2 px-4 md:py-1.5 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-all duration-300 ${
+                      activeSection === section.id
+                        ? "px-6 md:px-8 text-white bg-[#274cbc]"
+                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+                    } disabled:cursor-not-allowed`}
+                    aria-label={`Go to ${section.label} section`}
+                  >
+                    {section.label}
+                  </button>
+                ))}
               </nav>
-
-              {/* Right navigation arrow - hidden on last section */}
-              {currentSectionIndex < sections.length - 1 && (
-                <Button
-                  onClick={goToNext}
-                  disabled={isTransitioning}
-                  variant="outline"
-                  size="icon-lg"
-                  className="z-40 hidden md:flex justify-center
-                rounded-2xl border-2 border-[#2d313a]
-                bg-[#151618]/80 backdrop-blur-sm
-                text-white hover:text-white
-                hover:bg-[#1c1d21]/90 hover:border-[#3d4353]
-                transition-all duration-300
-                disabled:opacity-50 disabled:cursor-not-allowed
-                shadow-lg hover:shadow-xl hover:scale-[1.05]"
-                  aria-label="Next section"
-                >
-                  <ChevronRight className="w-6 h-6 md:w-7 md:h-7" />
-                </Button>
-              )}
             </div>
           </div>
         </Fade>
@@ -338,6 +283,12 @@ function BuilderPageContent() {
           </section>
         </Fade>
       </div>
+
+      {/* Section Manager Modal */}
+      <SectionManagerModal
+        open={isSectionManagerOpen}
+        onOpenChange={setIsSectionManagerOpen}
+      />
     </main>
   );
 }

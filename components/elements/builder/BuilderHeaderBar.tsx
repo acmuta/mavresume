@@ -2,6 +2,7 @@
 import React from "react";
 import { Loader2, Check, AlertCircle, Cloud } from "lucide-react";
 import { MobileResumePreviewDrawer } from "../resume/MobileResumePreviewDrawer";
+import { MobileSidebar } from "./MobileSidebar";
 import { RateLimitStatus } from "../refinement/RateLimitStatus";
 import { useResumeStore } from "@/store/useResumeStore";
 
@@ -44,10 +45,10 @@ const SaveStatusIndicator: React.FC = () => {
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-full border border-[#2b3242] bg-[#1a1d24]/80 px-3 py-1 text-xs ${config.className}`}
+      className={`flex items-center gap-1.5 rounded-full border border-[#2b3242] bg-[#1a1d24]/80 px-2 md:px-3 py-1 text-xs ${config.className}`}
     >
       {config.icon}
-      <span className="text-xs font-medium">{config.text}</span>
+      <span className="hidden sm:inline text-xs font-medium">{config.text}</span>
     </div>
   );
 };
@@ -55,25 +56,36 @@ const SaveStatusIndicator: React.FC = () => {
 export const BuilderHeaderBar = () => {
   return (
     <div className="w-full fixed top-0 left-0 z-20 h-[8vh] md:ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
-      <div className="flex h-full items-center justify-between gap-4 px-5">
-        <div className="flex w-full mr-[44vw] pr-25 items-center justify-between gap-4">
+      <div className="flex h-full items-center justify-between gap-2 md:gap-4 px-3 md:px-5">
+        {/* Left section: Mobile menu + Logo */}
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile hamburger menu */}
+          <div className="flex md:hidden">
+            <MobileSidebar />
+          </div>
+          
+          {/* Logo */}
           <div
-            className="font-bold tracking-tight text-2xl 
+            className="font-bold tracking-tight text-lg md:text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
                 mask-size-[100%_100%] mask-no-repeat pointer-events-none"
           >
             RESUME<span className="font-extralight">BUILDER</span>
           </div>
-          
+        </div>
+
+        {/* Center/Right section: Status indicators + Mobile preview */}
+        <div className="flex items-center gap-2 md:gap-3">
           {/* Save Status Indicator */}
-          <div className="flex items-center gap-3">
+          <div className="hidden xs:flex items-center gap-2 md:gap-3">
             <SaveStatusIndicator />
             <RateLimitStatus />
           </div>
-        </div>
-        {/* Mobile Preview Button */}
-        <div className="block md:hidden">
-          <MobileResumePreviewDrawer />
+          
+          {/* Mobile Preview Button */}
+          <div className="flex md:hidden">
+            <MobileResumePreviewDrawer />
+          </div>
         </div>
       </div>
     </div>
