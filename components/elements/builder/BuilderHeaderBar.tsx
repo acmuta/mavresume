@@ -56,7 +56,7 @@ const SaveStatusIndicator: React.FC = () => {
 export const BuilderHeaderBar = () => {
   return (
     <div className="w-full fixed top-0 left-0 z-20 h-[8vh] md:ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
-      <div className="flex h-full items-center justify-between gap-2 md:gap-4 px-3 md:px-5">
+      <div className="flex h-full items-center justify-between gap-2 md:gap-4 px-3 md:px-5 md:mr-[44vw] md:pr-28">
         {/* Left section: Mobile menu + Logo */}
         <div className="flex items-center gap-2 md:gap-4">
           {/* Mobile hamburger menu */}
@@ -77,7 +77,7 @@ export const BuilderHeaderBar = () => {
         {/* Center/Right section: Status indicators + Mobile preview */}
         <div className="flex items-center gap-2 md:gap-3">
           {/* Save Status Indicator */}
-          <div className="hidden xs:flex items-center gap-2 md:gap-3">
+          <div className="hidden md:flex items-center gap-2 md:gap-3">
             <SaveStatusIndicator />
             <RateLimitStatus />
           </div>
