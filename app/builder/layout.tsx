@@ -21,15 +21,13 @@ import { BuilderClientWrapper } from "../../components/elements/builder/BuilderC
 
 export const metadata = {
   title: "Builder",
-}
+};
 
 export default function BuildLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-
   return (
     <div className="relative w-full h-full bg-linear-to-b from-[#11131a] via-[#0d0e12] to-[#09090b] text-white md:flex items-start">
       {/* Builder sidebar (fixed overlay on left side) */}
@@ -37,12 +35,12 @@ export default function BuildLayout({
       <BuilderSidebar />
 
       {/* Main content (form sections) */}
-      <div className="relative px-2 py-4 md:px-8 md:py-8 min-h-screen w-full md:w-5/10 md:ml-[6vw] mt-[8vh]">
+      <div className="relative px-2 py-4 md:px-8 md:py-8 min-h-screen w-full md:w-5/10 md:ml-[6vw] mt-[1vh]">
         {children}
       </div>
       {/* Resume Preview */}
-      <section className="hidden z-25 fixed right-0 md:flex md:flex-col md:w-[44vw] h-full bg-[#15171c]/90 backdrop-blur-sm border-l border-[#2d313a]">
-        <div className="h-[8vh] w-full px-5 flex items-center justify-between border-b border-[#2d313a]">
+      <section className="hidden z-25 fixed right-0 top-0 bottom-0 md:flex md:flex-col md:w-[44vw] bg-[#15171c]/90 backdrop-blur-sm border-l border-[#2d313a]">
+        <div className="shrink-0 h-[8vh] min-h-[56px] w-full px-5 flex items-center justify-between border-b border-[#2d313a]">
           <div
             className="font-bold tracking-tight text-2xl 
                 mask-[linear-gradient(to_bottom,black_40%,transparent)] 
@@ -58,9 +56,11 @@ export default function BuildLayout({
           </TooltipProvider>
         </div>
 
-        <Fade triggerOnce className="w-full h-[92vh] overflow-y-auto">
-          <ResumePreview />
-        </Fade>
+        <div className="flex-1 w-full md:mt-[6vh] min-h-0">
+          <Fade triggerOnce className="h-full w-full">
+            <ResumePreview />
+          </Fade>
+        </div>
       </section>
 
       {/* Client-side components: Help widget and Guided tour */}

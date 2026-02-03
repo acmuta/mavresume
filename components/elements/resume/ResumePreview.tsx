@@ -52,7 +52,7 @@ export const ResumePreview = () => {
   );
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-3 ">
+    <div className="w-full min-h-full flex items-start justify-center p-3 pt-8">
       <section
         ref={containerRef}
         className={`relative flex flex-col gap-2

@@ -6,7 +6,7 @@ import { TechnicalSkillsSection } from "../../components/sections/technicalSkill
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
 import { ProjectsSection } from "../../components/sections/projects";
-import { Loader2, Settings2 } from "lucide-react";
+import { Loader2, Plus, Settings2, Edit } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Fade } from "react-awesome-reveal";
 import { useGuideStore } from "../../store/useGuideStore";
@@ -218,51 +218,33 @@ function BuilderPageContent() {
 
   return (
     <main className="relative text-white z-10 px-2 py-3 md:px-4 md:py-20 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 md:gap-5">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3">
         {/* Navigation controls */}
-        <Fade
-          triggerOnce
-          className="flex flex-col relative items-center justify-center p-2 md:p-3 rounded-2xl border-2 border-[#1b1d20]
-                bg-[#151618]/80 gap-2 md:gap-5 bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]"
-        >
-          <div className="flex relative flex-col items-center w-full">
-            {/* Header with title and manage button */}
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <h1 className="text-sm md:text-md font-bold">Navigation</h1>
-              {/* Manage Sections button - visible on all screen sizes */}
-              <Button
-                onClick={() => setIsSectionManagerOpen(true)}
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 md:h-10 md:w-10 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all duration-300"
-                aria-label="Manage sections"
-              >
-                <Settings2 className="w-4 h-4 md:w-5 md:h-5" />
-              </Button>
-            </div>
-            
-            {/* Horizontal scrollable navigation */}
-            <div className="w-full overflow-x-auto scrollbar-hide">
-              <nav className="flex items-center gap-2 min-w-max px-1 py-1 justify-center">
-                {sections.map((section, index) => (
-                  <button
-                    key={section.id}
-                    onClick={() => goToSection(index)}
-                    disabled={isTransitioning || currentSectionIndex === index}
-                    className={`py-2 px-4 md:py-1.5 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-all duration-300 ${
-                      activeSection === section.id
-                        ? "px-6 md:px-8 text-white bg-[#274cbc]"
-                        : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-                    } disabled:cursor-not-allowed`}
-                    aria-label={`Go to ${section.label} section`}
-                  >
-                    {section.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
+        <nav className="flex flex-wrap overflow-x-auto items-center gap-2 min-w-max px-1 py-1 justify-center ">
+          {sections.map((section, index) => (
+            <button
+              key={section.id}
+              onClick={() => goToSection(index)}
+              disabled={isTransitioning || currentSectionIndex === index}
+              className={`py-2 px-4 md:py-1.5 text-xs md:text-lg font-medium md:font-bold rounded-full whitespace-nowrap transition-all duration-300 ${
+                activeSection === section.id
+                  ? "px-6 md:px-8 text-white bg-[#274cbc]"
+                  : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
+              } disabled:cursor-not-allowed`}
+              aria-label={`Go to ${section.label} section`}
+            >
+              {section.label}
+            </button>
+          ))}
+          <div
+            className="py-2 px-4 flex items-center justify-center text-[#6d7895] hover:text-[#cfd3e1] bg-white/4 rounded-full cursor-pointer transition-all duration-300"
+            onClick={() => setIsSectionManagerOpen(true)}
+            aria-label="Add new section"
+          >
+            <Edit className="w-5 h-5" />
           </div>
-        </Fade>
+        </nav>
+
         <Fade triggerOnce>
           <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
             {/* background glow effects */}

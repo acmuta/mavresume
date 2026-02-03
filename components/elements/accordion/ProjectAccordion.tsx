@@ -7,7 +7,7 @@ export const ProjectAccordion = () => {
   const { projects } = useResumeStore();
 
   return (
-    <Accordion type="single" collapsible>
+    <Accordion type="single" collapsible defaultValue="Project-0">
       {projects.map((_, index) => {
         return (
           <ProjectAccordionItem key={index} index={index} projects={projects} />

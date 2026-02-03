@@ -6,7 +6,7 @@ import { ExperienceAccordionItem } from "./ExperienceAccordionItem";
 export const ExperienceAccordion = () => {
   const { experience } = useResumeStore();
   return (
-    <Accordion type="single" collapsible>
+    <Accordion type="single" collapsible defaultValue="Experience-0">
       {experience.map((_, index) => {
         return (
           <ExperienceAccordionItem
