@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { SectionId } from "./useResumeStore";
 
 /**
  * State management for info guides and help widget.
@@ -10,12 +11,8 @@ import { persist } from "zustand/middleware";
  * - Persists to localStorage via zustand/persist middleware
  */
 
-export type SectionId =
-  | "personal-info"
-  | "education"
-  | "technical-skills"
-  | "projects"
-  | "experience";
+// Re-export SectionId for backward compatibility
+export type { SectionId };
 
 export interface GuideState {
   // Help widget state

@@ -64,7 +64,7 @@ export const TechnicalSkillsAccordion = () => {
   ];
 
   return (
-    <Accordion type="single" collapsible>
+    <Accordion type="single" collapsible defaultValue="Languages">
       <AccordionItem value="Languages">
         <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
           Languages{" "}

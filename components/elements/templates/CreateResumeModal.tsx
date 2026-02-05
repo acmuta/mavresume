@@ -145,12 +145,6 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
             </div>
           )}
 
-          {/* Divider for future settings */}
-          <div className="border-t border-[#2d313a] pt-4">
-            <p className="text-xs text-[#6d7895] text-center">
-              More settings coming soon
-            </p>
-          </div>
         </div>
 
         <DialogFooter>
@@ -158,7 +152,7 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
             variant="outline"
             onClick={() => handleOpenChange(false)}
             disabled={isCreating}
-            className="border-[#2d313a] bg-transparent text-white hover:bg-[#1c1d21] hover:border-[#3d4353]"
+            className="hover:text-white bg-[#151618] border border-[#2d313a] hover:bg-[#1c1d21]"
           >
             Cancel
           </Button>
