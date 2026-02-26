@@ -45,6 +45,24 @@ export async function middleware(request: NextRequest) {
       redirectUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(redirectUrl);
     }
+    // Check role for access to admin and reviewer routes
+    const role = user.app_metadata?.user_role
+    // Redirect to dashboard if user is not admin or reviewer
+    if (request.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+
+    if (request.nextUrl.pathname.startsWith('/reviewer') && !['reviewer', 'admin'].includes(role)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    // Return 403 if user is not admin or reviewer
+    if (pathname.startsWith('/api/admin') && role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (pathname.startsWith('/api/reviewer') && !['reviewer', 'admin'].includes(role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
 
     // User is authenticated, allow access
     return response;

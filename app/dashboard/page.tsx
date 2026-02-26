@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { SubmitReviewModal } from '@/components/elements/resume/SubmitReviewModal'
 import {
   Loader2,
   Plus,
@@ -23,6 +24,7 @@ import {
   deleteResume,
   type ResumeMetadata,
 } from "@/lib/resumeService";
+import { uploadResume } from "@/lib/resume/uploadResume";
 
 // Sort configuration type
 type SortColumn = "name" | "template_type" | "updated_at";
@@ -117,18 +119,16 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
         {label}
         <span className="flex flex-col">
           <ChevronUp
-            className={`w-3 h-3 -mb-1 ${
-              isActive && sortConfig.direction === "asc"
-                ? "text-white"
-                : "text-[#3d4353]"
-            }`}
+            className={`w-3 h-3 -mb-1 ${isActive && sortConfig.direction === "asc"
+              ? "text-white"
+              : "text-[#3d4353]"
+              }`}
           />
           <ChevronDown
-            className={`w-3 h-3 ${
-              isActive && sortConfig.direction === "desc"
-                ? "text-white"
-                : "text-[#3d4353]"
-            }`}
+            className={`w-3 h-3 ${isActive && sortConfig.direction === "desc"
+              ? "text-white"
+              : "text-[#3d4353]"
+              }`}
           />
         </span>
       </div>
@@ -151,6 +151,8 @@ export default function DashboardPage() {
     column: "updated_at",
     direction: "desc",
   });
+
+  const [showSubmitReviewModal, setShowSubmitReviewModal] = useState(false)
 
   // Sync session store with Supabase
   useSessionSync();
@@ -427,9 +429,20 @@ export default function DashboardPage() {
         <div className="lg:w-1/3">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-medium text-[#cfd3e1]">Resume Reviews</h2>
-            <span className="inline-flex items-center rounded-md border border-[#2d313a] bg-[#1a1c22]/50 px-2.5 py-0.5 text-xs font-medium text-[#6d7895]">
-              Under Development
-            </span>
+            <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm"
+              onClick={() => setShowSubmitReviewModal(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              New Review
+            </Button>
+            {showSubmitReviewModal && (
+              <SubmitReviewModal
+                onClose={() => setShowSubmitReviewModal(false)}
+                onSubmitted={() => {
+                  setShowSubmitReviewModal(false)
+                  // TODO: Show success toast here
+                }}
+              />
+            )}
           </div>
 
           {/* Under Development Card */}
