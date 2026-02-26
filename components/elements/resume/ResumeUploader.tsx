@@ -37,9 +37,9 @@ export function ResumeUploader({ onUploadComplete, label }: Props) {
       const { versionId } = await uploadResume(file, label)
       setStatus('success')
       onUploadComplete(versionId) // pass version ID up to parent
-    } catch (err: any) {
+    } catch (err) {
       setStatus('error')
-      setErrorMsg(err.message)
+      setErrorMsg(err instanceof Error ? err.message : 'Upload failed')
     }
   }, [label, onUploadComplete])
 
