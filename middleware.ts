@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // For protected routes, check authentication
-    const { response, user } = await updateSession(request);
+    const { response, user, session } = await updateSession(request);
 
     // If user is not authenticated, redirect to login
     if (!user) {
@@ -46,7 +46,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
     // Check role for access to admin and reviewer routes
-    const role = user.app_metadata?.user_role
+    const accessToken = session?.access_token
+const payload = accessToken
+  ? JSON.parse(atob(accessToken.split('.')[1]))
+  : null
+const role = payload?.user_role
     // Redirect to dashboard if user is not admin or reviewer
     if (request.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', request.url))

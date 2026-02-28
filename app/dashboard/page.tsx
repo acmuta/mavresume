@@ -25,6 +25,7 @@ import {
   type ResumeMetadata,
 } from "@/lib/resumeService";
 import { uploadResume } from "@/lib/resume/uploadResume";
+import { getStudentReviewRequests, type StudentReviewRequest } from "@/lib/review/getStudentReviewRequests";
 
 // Sort configuration type
 type SortColumn = "name" | "template_type" | "updated_at";
@@ -91,6 +92,32 @@ const TableRowSkeleton: React.FC = () => (
 );
 
 /**
+ * Skeleton loader for review table rows
+ */
+const ReviewTableRowSkeleton: React.FC = () => (
+  <tr className="border-b border-[#2d313a]/50">
+    <td className="px-4 py-3">
+      <Skeleton className="h-5 w-32 bg-[#2d313a]" />
+    </td>
+    <td className="px-4 py-3">
+      <Skeleton className="h-6 w-24 rounded-full bg-[#2d313a]" />
+    </td>
+    <td className="px-4 py-3">
+      <Skeleton className="h-5 w-20 bg-[#2d313a]" />
+    </td>
+    <td className="px-4 py-3">
+      <Skeleton className="h-5 w-20 bg-[#2d313a]" />
+    </td>
+  </tr>
+);
+
+const statusLabels: Record<string, { label: string; color: string }> = {
+  pending: { label: "Pending Review", color: "text-yellow-600 bg-yellow-50" },
+  accepted: { label: "In Review", color: "text-blue-600 bg-blue-50" },
+  completed: { label: "Completed", color: "text-green-600 bg-green-50" },
+};
+
+/**
  * Sortable column header component
  */
 interface SortableHeaderProps {
@@ -154,6 +181,12 @@ export default function DashboardPage() {
 
   const [showSubmitReviewModal, setShowSubmitReviewModal] = useState(false)
 
+  // Review list state
+  const [reviews, setReviews] = useState<StudentReviewRequest[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+  const [loadReviewsError, setLoadReviewsError] = useState<string | null>(null);
+
+
   // Sync session store with Supabase
   useSessionSync();
 
@@ -179,6 +212,28 @@ export default function DashboardPage() {
     }
 
     fetchResumes();
+  }, [user?.id]);
+
+  // Fetch user's review requests on mount and refetch helper
+  const fetchReviews = async () => {
+    if (!user?.id) return;
+    setIsLoadingReviews(true);
+    setLoadReviewsError(null);
+    try {
+      const userReviews = await getStudentReviewRequests(user.id);
+      setReviews(userReviews);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+      setLoadReviewsError(
+        error instanceof Error ? error.message : "Failed to load reviews"
+      );
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
   }, [user?.id]);
 
   // Sort resumes based on current sort config
@@ -438,27 +493,140 @@ export default function DashboardPage() {
               <SubmitReviewModal
                 onClose={() => setShowSubmitReviewModal(false)}
                 onSubmitted={() => {
-                  setShowSubmitReviewModal(false)
-                  // TODO: Show success toast here
+                  setShowSubmitReviewModal(false);
+                  fetchReviews();
                 }}
               />
             )}
           </div>
 
-          {/* Under Development Card */}
-          <div className="rounded-xl border border-dashed border-[#2d313a] bg-[#15171c]/60 p-6 opacity-60 cursor-not-allowed">
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="flex w-12 h-12 items-center justify-center rounded-xl bg-[#1f2330]/80 text-[#3d4353] mb-4">
-                <ClipboardCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-sm font-medium text-[#6d7895] mb-2">
-                Resume Reviews Coming Soon
-              </h3>
-              <p className="text-xs text-[#4d5363] max-w-[200px]">
-                Submit your resumes for expert feedback and track review status all in one place.
-              </p>
-            </div>
+          {/* Resume Review Table */}
+          <div className="rounded-xl border border-[#2d313a] bg-[#15171c]/60 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-[#1a1c22]/80 border-b border-[#2d313a]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[120px]">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[120px]">
+                    Submitted
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[100px]">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Loading State */}
+                {isLoadingReviews && (
+                  <>
+                    <ReviewTableRowSkeleton />
+                    <ReviewTableRowSkeleton />
+                    <ReviewTableRowSkeleton />
+                  </>
+                )}
+
+                {/* Error State */}
+                {loadReviewsError && !isLoadingReviews && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-12 text-center">
+                      <p className="text-red-400 mb-2">{loadReviewsError}</p>
+                      <Button
+                        variant="ghost"
+                        onClick={() => fetchReviews()}
+                        className="text-[#6d7895] hover:text-white text-sm"
+                      >
+                        Try Again
+                      </Button>
+                    </td>
+                  </tr>
+                )}
+
+                {/* Empty State */}
+                {!isLoadingReviews && !loadReviewsError && reviews.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-16 text-center">
+                      <ClipboardCheck className="mx-auto w-10 h-10 text-[#3d4353] mb-3" />
+                      <p className="text-[#6d7895]">No Reviews Yet</p>
+                    </td>
+                  </tr>
+                )}
+
+                {/* Review Rows */}
+                {!isLoadingReviews &&
+                  !loadReviewsError &&
+                  reviews.map((request) => {
+                    // resume_versions is returned as object (many-to-one FK), not array
+                    const version = Array.isArray(request.resume_versions)
+                      ? request.resume_versions[0]
+                      : request.resume_versions;
+                    const displayName = version?.label ?? version?.file_name ?? "Untitled";
+                    const statusConfig = statusLabels[request.status] ?? statusLabels.pending;
+                    return (
+                      <tr
+                        key={request.id}
+                        className={`border-b border-[#2d313a]/50 transition-colors group ${
+                          request.status === "completed"
+                            ? "hover:bg-[#1a1c22]/50 cursor-pointer"
+                            : ""
+                        }`}
+                        onClick={
+                          request.status === "completed"
+                            ? () => router.push(`/review/${request.id}`)
+                            : undefined
+                        }
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex w-8 h-8 items-center justify-center rounded-lg bg-[#1f2330]/80 text-[#6d7895] group-hover:text-[#8fa5ff] transition-colors">
+                              <ClipboardCheck className="w-4 h-4" />
+                            </div>
+                            <span className="text-sm font-medium text-white truncate max-w-[200px]">
+                              {displayName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`text-xs font-semibold px-2 py-1 rounded-full ${statusConfig.color}`}
+                          >
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-[#6d7895]">
+                            {formatDate(request.created_at)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          {request.status === "completed" ? (
+                            <a
+                              href={`/review/${request.id}`}
+                              className="text-sm text-indigo-600 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              View Feedback
+                            </a>
+                          ) : (
+                            <span className="text-sm text-[#4d5363]">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
           </div>
+
+          {/* Review count */}
+          {!isLoadingReviews && !loadReviewsError && reviews.length > 0 && (
+            <p className="text-xs text-[#6d7895] mt-3">
+              {reviews.length} review{reviews.length !== 1 ? "s" : ""}
+            </p>
+          )}
         </div>
       </div>
     </div>
