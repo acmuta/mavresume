@@ -34,10 +34,7 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       // Handle API routes differently - return 401 instead of redirect
       if (pathname.startsWith("/api/")) {
-        return NextResponse.json(
-          { error: "Unauthorized" },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
       // For page routes, redirect to login with original destination
@@ -46,27 +43,32 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
     // Check role for access to admin and reviewer routes
-    const accessToken = session?.access_token
-const payload = accessToken
-  ? JSON.parse(atob(accessToken.split('.')[1]))
-  : null
-const role = payload?.user_role
+    const accessToken = session?.access_token;
+    const payload = accessToken
+      ? JSON.parse(atob(accessToken.split(".")[1]))
+      : null;
+    const role = payload?.user_role;
     // Redirect to dashboard if user is not admin or reviewer
-    if (request.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+    if (request.nextUrl.pathname.startsWith("/admin") && role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
-    if (request.nextUrl.pathname.startsWith('/reviewer') && !['reviewer', 'admin'].includes(role)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+    if (
+      request.nextUrl.pathname.startsWith("/reviewer") &&
+      !["reviewer", "admin"].includes(role)
+    ) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     // Return 403 if user is not admin or reviewer
-    if (pathname.startsWith('/api/admin') && role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (pathname.startsWith("/api/admin") && role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    if (pathname.startsWith('/api/reviewer') && !['reviewer', 'admin'].includes(role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (
+      pathname.startsWith("/api/reviewer") &&
+      !["reviewer", "admin"].includes(role)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-
 
     // User is authenticated, allow access
     return response;
@@ -83,10 +85,7 @@ const role = payload?.user_role
 
     // For protected routes, redirect to login on error (fail closed)
     if (pathname.startsWith("/api/")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const redirectUrl = new URL("/login", request.url);

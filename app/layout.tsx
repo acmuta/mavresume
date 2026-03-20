@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Montserrat } from "next/font/google";
+import 'react-pdf-highlighter-extended/dist/esm/style/pdf_viewer.css'
+import 'react-pdf-highlighter-extended/dist/esm/style/PdfHighlighter.css'
+import 'react-pdf-highlighter-extended/dist/esm/style/TextHighlight.css'
+import 'react-pdf-highlighter-extended/dist/esm/style/AreaHighlight.css'
+import 'react-pdf-highlighter-extended/dist/esm/style/MouseSelection.css'
 
 import { DeferredAnalytics } from "@/components/DeferredAnalytics";
 

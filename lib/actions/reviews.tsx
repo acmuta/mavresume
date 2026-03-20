@@ -12,10 +12,6 @@ export async function claimReview(reviewId: string): Promise<{ error: string | n
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthenticated' }
 
-    const { data: { session } } = await supabase.auth.getSession()
-    const role = getUserRole(user, session)
-    if (role !== 'reviewer' && role !== 'admin') return { error: 'Unauthorized' }
-
     // Update the review request
     const { error } = await supabase
         .from('review_requests')

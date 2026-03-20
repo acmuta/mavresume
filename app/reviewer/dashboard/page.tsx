@@ -10,8 +10,7 @@ export default async function ReviewerDashboardPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-8">Reviewer Dashboard</h1>
-
-      {/* ── My Active Reviews ───────────────────────── */}
+      
       <section className="mb-10">
         <h2 className="text-lg font-semibold mb-4">
           My Active Reviews
@@ -34,7 +33,6 @@ export default async function ReviewerDashboardPage() {
         )}
       </section>
 
-      {/* ── Pending Queue ───────────────────────────── */}
       <section>
         <h2 className="text-lg font-semibold mb-4">
           Pending Requests

@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-slot",
     ],
   },
+  transpilePackages: ['react-pdf-highlighter-extended'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

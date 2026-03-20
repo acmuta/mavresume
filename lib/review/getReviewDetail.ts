@@ -14,10 +14,10 @@ export type ReviewDetail = {
   resume_versions: {
     id: string
     label: string | null
+    pdf_path: string | null
     file_name: string | null
-    pdf_path: string
     created_at: string
-  }[] | null
+  } | null
 }
 
 export async function getReviewDetail(reviewId: string): Promise<ReviewDetail | null> {
@@ -34,5 +34,5 @@ export async function getReviewDetail(reviewId: string): Promise<ReviewDetail | 
     .single()
 
   if (error || !data) return null
-  return data as ReviewDetail
+  return data as unknown as ReviewDetail
 }

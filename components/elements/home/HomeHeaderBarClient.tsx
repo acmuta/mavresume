@@ -37,9 +37,8 @@ export function HomeHeaderBarClient() {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 w-full transition-opacity duration-300 ${
-        showHeader ? "opacity-100" : "opacity-0"
-      }`}
+      className={`fixed top-0 left-0 z-50 w-full transition-opacity duration-300 ${showHeader ? "opacity-100" : "opacity-0"
+        }`}
     >
       <div
         className="absolute inset-0 backdrop-blur-sm 
