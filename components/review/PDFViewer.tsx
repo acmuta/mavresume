@@ -70,8 +70,7 @@ export default function PDFViewer({
         reviewId,
         type,
         pageNumber:
-          position.boundingRect.pageNumber ??
-          (position.boundingRect as any)?.pageNumber ??
+          (position.boundingRect as Partial<{ pageNumber: number }>).pageNumber ??
           1,
         position,
         comment,
