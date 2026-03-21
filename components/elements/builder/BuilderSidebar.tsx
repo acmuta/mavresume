@@ -173,7 +173,7 @@ export const BuilderSidebar = () => {
             aria-label={user ? "Go to dashboard" : "MavResume home"}
           >
             <span
-              className={`absolute left-1/2 -translate-x-1/2 text-2xl transition-all duration-300 ${
+              className={`absolute left-1/2 -translate-x-1/2 text-2xl transition-all duration-300 [mask-image:linear-gradient(to_bottom,black_40%,transparent)] [mask-repeat:no-repeat] [mask-size:100%_100%] ${
                 isExpanded ? "opacity-0" : "opacity-100"
               }`}
             >

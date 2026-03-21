@@ -79,7 +79,7 @@ export default function Home() {
                 MAV<span className="font-extralight">RESUME</span>
               </p>
               <p className="mt-1 text-[11px] uppercase tracking-[0.24em] text-[#6d7895] sm:text-xs">
-                Built with ACM @ UTA
+                Developed By ACM @ UTA
               </p>
             </div>
 
@@ -210,6 +210,10 @@ export default function Home() {
           />
 
           <div className="mt-10">
+            <div className="relative hidden lg:block">
+              <div className="absolute left-0 right-0 top-6 h-px bg-[linear-gradient(90deg,rgba(39,76,188,0),rgba(39,76,188,0.85),rgba(25,200,255,0.35),rgba(39,76,188,0))]" />
+            </div>
+
             <div className="grid gap-8 lg:grid-cols-3 lg:gap-6">
               {workflowSteps.map((step, index) => (
                 <WorkflowStep key={step.number} step={step} index={index} />

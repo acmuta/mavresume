@@ -52,7 +52,7 @@ const SaveStatusIndicator: React.FC = () => {
 export const BuilderHeaderBar = () => {
   return (
     <div className="fixed inset-x-0 top-0 z-30 px-3 py-3 md:pl-[7.25rem] md:pr-5 xl:px-6 xl:pl-[7.5rem]">
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 rounded-full border border-[#2b3242] bg-[#0f1117]/82 px-4 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 rounded-full border border-[#2b3242] bg-[#0f1117]/82 px-7 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="flex md:hidden">
             <MobileSidebar />
