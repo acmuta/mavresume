@@ -1,16 +1,17 @@
-// src/components/review/HighlightContainer.tsx
 'use client'
 
 import { useState } from 'react'
 import {
-  useHighlightContainerContext,
-  usePdfHighlighterContext,
+  AreaHighlight,
   MonitoredHighlightContainer,
   TextHighlight,
-  AreaHighlight,
+  useHighlightContainerContext,
+  usePdfHighlighterContext,
 } from 'react-pdf-highlighter-extended'
+
+import { Button } from '@/components/ui/button'
+import { deleteAnnotation, updateAnnotation } from '@/lib/actions/annotations'
 import type { AnnotationHighlight } from '@/types/annotations'
-import { updateAnnotation, deleteAnnotation } from '@/lib/actions/annotations'
 
 type Props = {
   onEdit: (annotationId: string, newComment: string) => void
@@ -53,7 +54,7 @@ function AnnotationPopup({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64 text-sm">
+    <div className="w-64 max-w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-dashed border-[#2d313a] bg-[#111219]/95 p-4 text-sm text-white shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur-md sm:w-72">
       {editing ? (
         <>
           <textarea
@@ -61,39 +62,47 @@ function AnnotationPopup({
             value={editComment}
             onChange={(e) => setEditComment(e.target.value)}
             rows={3}
-            className="w-full border border-gray-200 rounded px-2 py-1 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full resize-none rounded-xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-3 py-2 text-sm text-white outline-none transition focus:border-[#274cbc]"
           />
-          <div className="flex justify-end gap-2 mt-2">
-            <button
-              onClick={() => { setEditing(false); setEditComment(highlight.comment) }}
-              className="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+          <div className="mt-3 flex justify-end gap-2">
+            <Button
+              onClick={() => {
+                setEditing(false)
+                setEditComment(highlight.comment)
+              }}
+              variant="ghost"
+              size="sm"
+              className="rounded-lg text-xs text-[#cfd3e1] hover:bg-white/5 hover:text-white"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSaveEdit}
               disabled={saving || !editComment.trim()}
-              className="text-xs px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+              size="sm"
+              className="rounded-lg bg-[#274cbc] text-xs font-semibold text-white hover:bg-[#315be1]"
             >
               {saving ? 'Saving...' : 'Save'}
-            </button>
+            </Button>
           </div>
         </>
       ) : (
         <>
-          <p className="text-gray-800 whitespace-pre-wrap">{highlight.comment}</p>
+          <p className="whitespace-pre-wrap leading-relaxed text-[#cfd3e1]">
+            {highlight.comment}
+          </p>
           {!isReadOnly && (
-            <div className="flex gap-2 mt-2 pt-2 border-t border-gray-100">
+            <div className="mt-3 flex gap-2 border-t border-[#20242d] pt-3">
               <button
                 onClick={() => setEditing(true)}
-                className="text-xs text-indigo-600 hover:underline"
+                className="text-xs font-medium uppercase tracking-[0.16em] text-[#89a5ff] transition hover:text-white"
               >
                 Edit
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                className="text-xs font-medium uppercase tracking-[0.16em] text-red-400 transition hover:text-red-300 disabled:opacity-50"
               >
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>
@@ -110,8 +119,6 @@ export default function HighlightContainer({ onEdit, onDelete, isReadOnly = fals
     highlight,
     isScrolledTo,
     highlightBindings,
-    viewportToScaled,
-    screenshot,
   } = useHighlightContainerContext<AnnotationHighlight>()
 
   const { toggleEditInProgress } = usePdfHighlighterContext()
@@ -122,15 +129,7 @@ export default function HighlightContainer({ onEdit, onDelete, isReadOnly = fals
     <AreaHighlight
       isScrolledTo={isScrolledTo}
       highlight={highlight}
-      onChange={(boundingRect) => {
-        // Fires when a reviewer resizes an area highlight box.
-        // We treat this as a position-only update; comment stays the same.
-        const updatedPosition = {
-          boundingRect: viewportToScaled(boundingRect),
-          rects: [],
-        }
-        // Note: position-resave is optional for MVP. The comment re-save here
-        // is a no-op that just keeps local state consistent.
+      onChange={() => {
         onEdit(highlight.annotationId, highlight.comment)
         toggleEditInProgress(false)
       }}

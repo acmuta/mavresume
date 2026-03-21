@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -8,11 +9,12 @@ import {
   FaDiscord,
   FaGraduationCap,
 } from "react-icons/fa";
-import { FileText } from "lucide-react";
+import { ClipboardCheck, FileText } from "lucide-react";
 import { IoMdHelpCircle } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
 
 import { signOut } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useSessionSync } from "@/lib/hooks/useSessionSync";
 
@@ -77,14 +79,79 @@ function getInitials(user: {
   return (local.slice(0, 2) || "?").toUpperCase();
 }
 
+function canAccessReviewerDashboard(user: User | null): boolean {
+  const role = user?.app_metadata?.["user_role"];
+  return role === "reviewer" || role === "admin";
+}
+
+function getRoleFromAccessToken(accessToken: string | undefined): string | null {
+  if (!accessToken) return null;
+
+  try {
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    const role = payload?.user_role;
+    return typeof role === "string" ? role : null;
+  } catch {
+    return null;
+  }
+}
+
 export const BuilderSidebar = () => {
   const router = useRouter();
   const { user } = useSessionStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [hasReviewerAccess, setHasReviewerAccess] = useState(false);
 
   useSessionSync();
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const syncRole = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const tokenRole = getRoleFromAccessToken(session?.access_token);
+      setHasReviewerAccess(
+        tokenRole === "reviewer" ||
+          tokenRole === "admin" ||
+          canAccessReviewerDashboard(user),
+      );
+    };
+
+    syncRole();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const tokenRole = getRoleFromAccessToken(session?.access_token);
+      setHasReviewerAccess(
+        tokenRole === "reviewer" ||
+          tokenRole === "admin" ||
+          canAccessReviewerDashboard(session?.user ?? user),
+      );
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
+
+  const visibleLinks = hasReviewerAccess
+    ? [
+        ...sidebarLinks.slice(0, 1),
+        {
+          href: "/reviewer/dashboard",
+          label: "Reviewer Queue",
+          icon: ClipboardCheck,
+          ariaLabel: "Open reviewer dashboard",
+          external: false,
+        },
+        ...sidebarLinks.slice(1),
+      ]
+    : sidebarLinks;
 
   return (
     <aside
@@ -147,7 +214,7 @@ export const BuilderSidebar = () => {
                      transition-all duration-300 ease-in-out
                      ${isExpanded ? "items-start" : "items-center"}`}
         >
-          {sidebarLinks.map((link, index) => {
+          {visibleLinks.map((link, index) => {
             const IconComponent = link.icon;
             const labelDelay = isExpanded ? 100 + index * 30 : 0;
             return (

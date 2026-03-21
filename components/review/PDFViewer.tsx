@@ -1,19 +1,16 @@
-// src/components/review/PDFViewer.tsx
 'use client'
 
-import { useRef, useState, useCallback } from 'react'
-import {
-  PdfLoader,
-  PdfHighlighter,
-} from 'react-pdf-highlighter-extended'
-import type { PdfHighlighterUtils, Highlight } from 'react-pdf-highlighter-extended'
-import type { AnnotationHighlight, AnnotationRecord } from '@/types/annotations'
+import { useCallback, useRef, useState } from 'react'
+import { Loader2, MessageSquareText, ScanSearch } from 'lucide-react'
+import { PdfHighlighter, PdfLoader } from 'react-pdf-highlighter-extended'
+import type { Highlight, PdfHighlighterUtils } from 'react-pdf-highlighter-extended'
+
 import { createAnnotation } from '@/lib/actions/annotations'
-import HighlightContainer from './HighlightContainer'
+import type { AnnotationHighlight, AnnotationRecord } from '@/types/annotations'
 import AnnotationSidebar from './AnnotationSidebar'
 import AnnotationTip from './AnnotationTip'
+import HighlightContainer from './HighlightContainer'
 
-// Convert a DB annotation record into the shape the library expects
 function recordToHighlight(record: AnnotationRecord): AnnotationHighlight {
   return {
     id: record.id,
@@ -45,12 +42,9 @@ export default function PDFViewer({
 
   const handleAddHighlight = useCallback(
     async (position: Highlight['position'], comment: string) => {
-      // Determine type from position shape:
-      // Text selections have `rects`, area drags have only `boundingRect`
       const type: 'text' | 'area' =
         position.rects && position.rects.length > 0 ? 'text' : 'area'
 
-      // Optimistically add to local state with a temporary id
       const tempId = `temp-${Date.now()}`
       const optimisticHighlight: AnnotationHighlight = {
         id: tempId,
@@ -61,11 +55,8 @@ export default function PDFViewer({
         content: {},
       }
       setHighlights((prev) => [...prev, optimisticHighlight])
-
-      // Dismiss the selection tip immediately so the UI feels snappy
       highlighterUtilsRef.current?.setTip(null)
 
-      // Save to Supabase
       const { id, error } = await createAnnotation({
         reviewId,
         type,
@@ -77,15 +68,17 @@ export default function PDFViewer({
       })
 
       if (error || !id) {
-        // Roll back the optimistic update if the save failed
-        setHighlights((prev) => prev.filter((h) => h.id !== tempId))
+        setHighlights((prev) => prev.filter((highlight) => highlight.id !== tempId))
         console.error('Failed to save annotation:', error)
         return
       }
 
-      // Swap the temp id for the real DB id
       setHighlights((prev) =>
-        prev.map((h) => (h.id === tempId ? { ...h, id, annotationId: id } : h))
+        prev.map((highlight) =>
+          highlight.id === tempId
+            ? { ...highlight, id, annotationId: id }
+            : highlight
+        )
       )
     },
     [reviewId]
@@ -94,8 +87,10 @@ export default function PDFViewer({
   const handleEditHighlight = useCallback(
     (annotationId: string, newComment: string) => {
       setHighlights((prev) =>
-        prev.map((h) =>
-          h.annotationId === annotationId ? { ...h, comment: newComment } : h
+        prev.map((highlight) =>
+          highlight.annotationId === annotationId
+            ? { ...highlight, comment: newComment }
+            : highlight
         )
       )
     },
@@ -103,17 +98,22 @@ export default function PDFViewer({
   )
 
   const handleDeleteHighlight = useCallback((annotationId: string) => {
-    setHighlights((prev) => prev.filter((h) => h.annotationId !== annotationId))
+    setHighlights((prev) =>
+      prev.filter((highlight) => highlight.annotationId !== annotationId)
+    )
   }, [])
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="w-[70%] h-full overflow-auto relative">
+    <div className="flex h-full min-h-[720px] flex-col overflow-visible xl:flex-row">
+      <div className="relative min-h-[520px] flex-1 overflow-visible bg-[#0f1117]">
         <PdfLoader
           document={pdfUrl}
           beforeLoad={() => (
-            <div className="flex items-center justify-center h-full min-h-96">
-              <p className="text-gray-400 text-sm">Loading PDF...</p>
+            <div className="flex h-full min-h-[520px] items-center justify-center">
+              <div className="flex items-center gap-3 rounded-full border border-[#2b3242] bg-[#111219]/90 px-4 py-2 text-sm text-[#cfd3e1]">
+                <Loader2 className="size-4 animate-spin text-[#89a5ff]" />
+                Loading PDF...
+              </div>
             </div>
           )}
         >
@@ -122,8 +122,8 @@ export default function PDFViewer({
               pdfDocument={pdfDocument}
               highlights={highlights}
               enableAreaSelection={(event) => event.altKey}
-              utilsRef={(_utils) => {
-                highlighterUtilsRef.current = _utils
+              utilsRef={(utils) => {
+                highlighterUtilsRef.current = utils
               }}
               selectionTip={
                 isReadOnly ? undefined : (
@@ -139,7 +139,7 @@ export default function PDFViewer({
                   />
                 )
               }
-              style={{ height: '100%' }}
+              style={{ height: '100%', overflowX: 'visible', overflowY: 'auto' }}
             >
               <HighlightContainer
                 onEdit={handleEditHighlight}
@@ -151,19 +151,28 @@ export default function PDFViewer({
         </PdfLoader>
       </div>
 
-      <div className="w-[30%] h-full border-l border-gray-200 overflow-y-auto bg-white flex flex-col">
-        <div className="p-3 border-b border-gray-200 shrink-0">
-          <h3 className="text-sm font-semibold text-gray-700">
-            Annotations
-            <span className="ml-1.5 text-xs font-normal text-gray-400">
+      <aside className="flex h-[320px] w-full flex-col border-t border-[#2d313a] bg-[#15171c]/95 xl:h-auto xl:w-[360px] xl:border-l xl:border-t-0">
+        <div className="shrink-0 border-b border-[#2d313a] p-4">
+          <div className="flex items-center gap-2 text-[#89a5ff]">
+            <MessageSquareText className="size-4" />
+            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#cfd3e1]">
+              Annotations
+            </h3>
+          </div>
+          <p className="mt-2 text-sm font-medium text-white">
+            Annotation list
+            <span className="ml-1.5 text-xs font-normal text-[#6d7895]">
               ({highlights.length})
             </span>
-          </h3>
+          </p>
           {!isReadOnly && (
-            <p className="text-xs text-gray-400 mt-0.5">
-              Select text · or{' '}
-              <kbd className="bg-gray-100 px-1 rounded">Alt</kbd>
-              +drag for area
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-[#6d7895]">
+              <ScanSearch className="size-3.5" />
+              Select text or use{' '}
+              <kbd className="rounded border border-[#3d4353] bg-[#1a1d24] px-1.5 py-0.5 text-[11px] text-[#cfd3e1]">
+                Alt
+              </kbd>
+              + drag for area notes
             </p>
           )}
         </div>
@@ -173,8 +182,7 @@ export default function PDFViewer({
             highlighterUtilsRef={highlighterUtilsRef}
           />
         </div>
-      </div>
-
+      </aside>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SubmitReviewModal } from '@/components/elements/resume/SubmitReviewModal'
@@ -24,7 +24,6 @@ import {
   deleteResume,
   type ResumeMetadata,
 } from "@/lib/resumeService";
-import { uploadResume } from "@/lib/resume/uploadResume";
 import { getStudentReviewRequests, type StudentReviewRequest } from "@/lib/review/getStudentReviewRequests";
 
 // Sort configuration type
@@ -112,9 +111,21 @@ const ReviewTableRowSkeleton: React.FC = () => (
 );
 
 const statusLabels: Record<string, { label: string; color: string }> = {
-  pending: { label: "Pending Review", color: "text-yellow-600 bg-yellow-50" },
-  accepted: { label: "In Review", color: "text-blue-600 bg-blue-50" },
-  completed: { label: "Completed", color: "text-green-600 bg-green-50" },
+  pending: {
+    label: "Pending Review",
+    color:
+      "border border-[#f59e0b]/30 bg-[#f59e0b]/12 text-[#f5c76b]",
+  },
+  accepted: {
+    label: "In Review",
+    color:
+      "border border-[#274cbc]/40 bg-[#274cbc]/15 text-[#8fa5ff]",
+  },
+  completed: {
+    label: "Completed",
+    color:
+      "border border-[#58f5c3]/30 bg-[#58f5c3]/12 text-[#58f5c3]",
+  },
 };
 
 /**
@@ -215,7 +226,7 @@ export default function DashboardPage() {
   }, [user?.id]);
 
   // Fetch user's review requests on mount and refetch helper
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     if (!user?.id) return;
     setIsLoadingReviews(true);
     setLoadReviewsError(null);
@@ -230,11 +241,11 @@ export default function DashboardPage() {
     } finally {
       setIsLoadingReviews(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     fetchReviews();
-  }, [user?.id]);
+  }, [fetchReviews]);
 
   // Sort resumes based on current sort config
   const sortedResumes = useMemo(() => {
@@ -482,8 +493,13 @@ export default function DashboardPage() {
 
         {/* Right Column - Resume Reviews (Under Development) */}
         <div className="lg:w-1/3">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-medium text-[#cfd3e1]">Resume Reviews</h2>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-medium text-[#cfd3e1]">Resume Reviews</h2>
+              <p className="mt-1 text-sm text-[#6d7895]">
+                Submit a PDF for feedback and track review progress here.
+              </p>
+            </div>
             <Button className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-lg h-9 px-4 text-sm"
               onClick={() => setShowSubmitReviewModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -501,14 +517,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Resume Review Table */}
-          <div className="rounded-xl border border-[#2d313a] bg-[#15171c]/60 overflow-hidden">
+          <div className="rounded-2xl border-2 border-dashed border-[#2d313a] bg-[#15171c]/70 overflow-hidden shadow-[0_20px_60px_rgba(9,10,12,0.28)]">
             <table className="w-full">
-              <thead className="bg-[#1a1c22]/80 border-b border-[#2d313a]">
+              <thead className="bg-[#111219]/90 border-b border-[#2d313a]">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[120px]">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[150px]">
                     Status
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-[#6d7895] uppercase tracking-wider w-[120px]">
@@ -550,7 +566,10 @@ export default function DashboardPage() {
                   <tr>
                     <td colSpan={4} className="px-4 py-16 text-center">
                       <ClipboardCheck className="mx-auto w-10 h-10 text-[#3d4353] mb-3" />
-                      <p className="text-[#6d7895]">No Reviews Yet</p>
+                      <p className="text-white font-medium">No reviews yet</p>
+                      <p className="mt-2 text-sm text-[#6d7895]">
+                        Submit a resume when you want reviewer feedback.
+                      </p>
                     </td>
                   </tr>
                 )}
@@ -591,7 +610,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`text-xs font-semibold px-2 py-1 rounded-full ${statusConfig.color}`}
+                            className={`inline-flex whitespace-nowrap text-xs font-semibold px-2 py-1 rounded-full ${statusConfig.color}`}
                           >
                             {statusConfig.label}
                           </span>
@@ -605,7 +624,7 @@ export default function DashboardPage() {
                           {request.status === "completed" ? (
                             <a
                               href={`/review/${request.id}`}
-                              className="text-sm text-indigo-600 hover:underline"
+                              className="text-sm font-medium text-[#89a5ff] hover:text-white hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >
                               View Feedback

@@ -1,14 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { ComponentProps } from 'react'
-import type PDFViewer from './PDFViewer'
 
 const PDFViewerClient = dynamic(() => import('./PDFViewer'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full bg-gray-50">
-      <p className="text-gray-400 text-sm">Loading PDF viewer...</p>
+    <div className="flex min-h-[720px] items-center justify-center bg-[#0f1117]">
+      <div className="rounded-full border border-[#2b3242] bg-[#111219]/90 px-4 py-2 text-sm text-[#cfd3e1]">
+        Loading PDF viewer...
+      </div>
     </div>
   ),
 })

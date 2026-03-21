@@ -1,15 +1,30 @@
+'use client'
+
 import { useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { ResumeUploader } from './ResumeUploader'
 
 type Props = {
   onClose: () => void
   onSubmitted: () => void
-  // Pass a pre-selected versionId if coming from the builder
   preSelectedVersionId?: string
 }
 
-export function SubmitReviewModal({ onClose, onSubmitted, preSelectedVersionId }: Props) {
+export function SubmitReviewModal({
+  onClose,
+  onSubmitted,
+  preSelectedVersionId,
+}: Props) {
   const supabase = createClient()
   const [versionId, setVersionId] = useState<string | null>(preSelectedVersionId ?? null)
   const [priority, setPriority] = useState<'low' | 'normal' | 'high'>('normal')
@@ -45,77 +60,86 @@ export function SubmitReviewModal({ onClose, onSubmitted, preSelectedVersionId }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Submit Resume for Review</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="w-[92vw] max-w-xl rounded-3xl border-2 border-dashed border-[#2d313a] bg-[#1c1d21] p-0 text-white shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
+        <div className="rounded-3xl border border-white/5 bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_55%),linear-gradient(180deg,_rgba(21,23,28,0.96),_rgba(13,14,18,0.96))] p-6">
+          <DialogHeader className="text-left">
+            <span className="inline-flex w-fit items-center rounded-full border border-[#2b3242] bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
+              Resume review
+            </span>
+            <DialogTitle className="mt-4 text-2xl font-semibold text-white">
+              Submit Resume for Review
+            </DialogTitle>
+            <DialogDescription className="text-sm text-[#6d7895]">
+              Upload the PDF you want reviewed, set the urgency, and add any context
+              that will help the reviewer focus their feedback.
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* Only show uploader if not coming from builder with a pre-selected version */}
-        {!preSelectedVersionId && (
-          <div className="mb-4">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
-              Upload Resume PDF
-            </label>
-            <ResumeUploader
-              onUploadComplete={(id) => setVersionId(id)}
+          {!preSelectedVersionId && (
+            <div className="mt-6 space-y-2">
+              <Label className="text-[#cfd3e1]">Upload Resume PDF</Label>
+              <ResumeUploader
+                onUploadComplete={(id) => setVersionId(id)}
+              />
+            </div>
+          )}
+
+          {preSelectedVersionId && (
+            <div className="mt-6 rounded-2xl border border-dashed border-[#274cbc]/40 bg-[#274cbc]/10 p-4 text-sm text-[#cfd3e1]">
+              Using your current builder resume for this review request.
+            </div>
+          )}
+
+          <div className="mt-6 space-y-2">
+            <Label htmlFor="review-priority" className="text-[#cfd3e1]">
+              Priority
+            </Label>
+            <select
+              id="review-priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as typeof priority)}
+              className="h-11 w-full rounded-xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-3 text-sm text-white outline-none transition focus:border-[#274cbc]"
+            >
+              <option value="low">Low</option>
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <Label htmlFor="review-notes" className="text-[#cfd3e1]">
+              Notes for reviewer <span className="text-[#6d7895]">(optional)</span>
+            </Label>
+            <textarea
+              id="review-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Applying for SWE internships, please focus on my projects and skills sections."
+              className="h-28 w-full resize-none rounded-2xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-4 py-3 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#274cbc]"
             />
           </div>
-        )}
 
-        {preSelectedVersionId && (
-          <p className="text-sm text-green-600 bg-green-50 rounded p-2 mb-4">
-            ✓ Using your current builder resume
-          </p>
-        )}
+          {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
-        {/* Priority selector */}
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as typeof priority)}
-            className="w-full border rounded-lg px-3 py-2 text-sm"
-          >
-            <option value="low">Low</option>
-            <option value="normal">Normal</option>
-            <option value="high">High</option>
-          </select>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="h-11 flex-1 rounded-xl border-dashed border-[#2f323a] bg-transparent text-[#cfd3e1] hover:border-[#4b4f5c] hover:bg-[#161920] hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!versionId || submitting}
+              className="h-11 flex-1 rounded-xl bg-[#274cbc] text-sm font-semibold text-white hover:bg-[#315be1]"
+            >
+              {submitting ? 'Submitting...' : 'Submit for Review'}
+            </Button>
+          </div>
         </div>
-
-        {/* Notes */}
-        <div className="mb-6">
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
-            Notes for reviewer <span className="text-gray-400">(optional)</span>
-          </label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="e.g. Applying for SWE internships, focus on my skills section"
-            className="w-full border rounded-lg px-3 py-2 text-sm h-24 resize-none"
-          />
-        </div>
-
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 border rounded-lg py-2 text-sm text-gray-600 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={!versionId || submitting}
-            className="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium
-                       disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700"
-          >
-            {submitting ? 'Submitting...' : 'Submit for Review'}
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

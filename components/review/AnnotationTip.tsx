@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { usePdfHighlighterContext } from 'react-pdf-highlighter-extended'
+
+import { Button } from '@/components/ui/button'
 
 type Props = {
   onConfirm: (comment: string) => void
@@ -13,10 +15,9 @@ export default function AnnotationTip({ onConfirm, onCancel }: Props) {
   const [saving, setSaving] = useState(false)
   const { updateTipPosition } = usePdfHighlighterContext()
 
-  // Re-position the tip if its height changes as the textarea grows
   useLayoutEffect(() => {
     updateTipPosition?.()
-  }, [comment])
+  }, [comment, updateTipPosition])
 
   async function handleConfirm() {
     if (!comment.trim()) return
@@ -26,35 +27,38 @@ export default function AnnotationTip({ onConfirm, onCancel }: Props) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 w-64">
+    <div className="w-64 max-w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-dashed border-[#2d313a] bg-[#111219]/95 p-4 text-white shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur-md sm:w-72">
       <textarea
         autoFocus
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Add a comment..."
         rows={3}
-        className="w-full text-sm border border-gray-200 rounded px-2 py-1 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        className="w-full resize-none rounded-xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-3 py-2 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#274cbc]"
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleConfirm()
           if (e.key === 'Escape') onCancel()
         }}
       />
-      <div className="flex justify-end gap-2 mt-2">
-        <button
+      <div className="mt-3 flex justify-end gap-2">
+        <Button
           onClick={onCancel}
-          className="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+          variant="ghost"
+          size="sm"
+          className="rounded-lg text-xs text-[#cfd3e1] hover:bg-white/5 hover:text-white"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleConfirm}
           disabled={!comment.trim() || saving}
-          className="text-xs px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          size="sm"
+          className="rounded-lg bg-[#274cbc] text-xs font-semibold text-white hover:bg-[#315be1]"
         >
           {saving ? 'Saving...' : 'Add'}
-        </button>
+        </Button>
       </div>
-      <p className="text-xs text-gray-400 mt-1">⌘+Enter to save · Esc to cancel</p>
+      <p className="mt-2 text-xs text-[#6d7895]">Cmd/Ctrl+Enter to save · Esc to cancel</p>
     </div>
   )
 }
