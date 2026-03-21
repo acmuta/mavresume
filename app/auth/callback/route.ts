@@ -1,9 +1,44 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+const SAFE_REDIRECT_PATHS = ["/dashboard", "/builder", "/templates"];
+const DEFAULT_REDIRECT = "/dashboard";
+
+/**
+ * Validates that a redirect path is safe (internal, known path only).
+ * Rejects protocol-relative URLs, absolute URLs, path traversal, and unknown paths.
+ */
+function getSafeRedirect(redirectTo: string | null): string {
+  if (!redirectTo) return DEFAULT_REDIRECT;
+
+  // Reject protocol-relative URLs, absolute URLs, and javascript: URIs
+  if (
+    redirectTo.startsWith("//") ||
+    redirectTo.startsWith("http") ||
+    redirectTo.includes("..") ||
+    redirectTo.includes(":\\") ||
+    redirectTo.toLowerCase().startsWith("javascript:")
+  ) {
+    return DEFAULT_REDIRECT;
+  }
+
+  // Ensure it starts with /
+  if (!redirectTo.startsWith("/")) {
+    return DEFAULT_REDIRECT;
+  }
+
+  // Check against allowlist of known safe paths
+  const pathOnly = redirectTo.split("?")[0].split("#")[0];
+  if (!SAFE_REDIRECT_PATHS.some((safe) => pathOnly === safe || pathOnly.startsWith(safe + "/"))) {
+    return DEFAULT_REDIRECT;
+  }
+
+  return redirectTo;
+}
+
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const redirectTo = request.nextUrl.searchParams.get("redirect") || "/dashboard";
+  const redirectTo = getSafeRedirect(request.nextUrl.searchParams.get("redirect"));
 
   if (!code) {
     // No code parameter, redirect to login

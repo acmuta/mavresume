@@ -23,7 +23,8 @@ function getLimiter(): Ratelimit | null {
 /**
  * Checks the refinement rate limit for the given user ID (Supabase user.id).
  * Uses a fixed window; only requests that would call OpenAI (cache miss) should
- * invoke this. On Redis or Ratelimit errors, fails open (returns success: true).
+ * invoke this. On Redis or Ratelimit errors, fails closed (returns success: false)
+ * to prevent unlimited API access during outages.
  * Config: REFINE_RATELIMIT_REQUESTS (default 20), REFINE_RATELIMIT_WINDOW (default "30 m").
  *
  * @param userId - Supabase user.id (sole identifier; no IP or other identity).
@@ -36,19 +37,23 @@ export async function checkRefinementLimit(userId: string): Promise<{
   reset: number;
 }> {
   const limiter = getLimiter();
-  if (!limiter) return { success: true, limit: 0, remaining: 999, reset: 0 };
+  if (!limiter) {
+    console.warn("Rate limiter unavailable (Redis not configured). Denying request.");
+    return { success: false, limit: 0, remaining: 0, reset: 0 };
+  }
   try {
     const { success, limit, remaining, reset } = await limiter.limit(userId);
     return { success, limit, remaining, reset };
-  } catch {
-    return { success: true, limit: 0, remaining: 999, reset: 0 };
+  } catch (error) {
+    console.warn("Rate limiter error, failing closed:", error);
+    return { success: false, limit: 0, remaining: 0, reset: 0 };
   }
 }
 
 /**
  * Returns the current refinement rate limit status without consuming.
  * Use for displaying usage to the user or on cache hits.
- * When Redis/limiter is unavailable, returns limit: 0 (treat as unlimited).
+ * When Redis/limiter is unavailable, returns remaining: 0.
  */
 export async function getRefinementLimitStatus(userId: string): Promise<{
   limit: number;
@@ -56,11 +61,12 @@ export async function getRefinementLimitStatus(userId: string): Promise<{
   reset: number;
 }> {
   const limiter = getLimiter();
-  if (!limiter) return { limit: 0, remaining: 999, reset: 0 };
+  if (!limiter) return { limit: 0, remaining: 0, reset: 0 };
   try {
     return await limiter.getRemaining(userId);
-  } catch {
-    return { limit: 0, remaining: 999, reset: 0 };
+  } catch (error) {
+    console.warn("Rate limit status check error:", error);
+    return { limit: 0, remaining: 0, reset: 0 };
   }
 }
 
@@ -85,11 +91,14 @@ export async function checkRefinementLimitBatch(
   reset: number;
 }> {
   if (count <= 0) {
-    return { success: true, limit: 0, remaining: 999, reset: 0 };
+    return { success: true, limit: 0, remaining: 0, reset: 0 };
   }
 
   const limiter = getLimiter();
-  if (!limiter) return { success: true, limit: 0, remaining: 999, reset: 0 };
+  if (!limiter) {
+    console.warn("Rate limiter unavailable (Redis not configured). Denying batch request.");
+    return { success: false, limit: 0, remaining: 0, reset: 0 };
+  }
 
   try {
     // First check if we have enough remaining credits
@@ -105,7 +114,7 @@ export async function checkRefinementLimitBatch(
 
     // Consume credits by calling limit() count times
     // We do this sequentially to ensure accurate counting
-    let lastResult = { success: true, limit: 0, remaining: 999, reset: 0 };
+    let lastResult = { success: true, limit: 0, remaining: 0, reset: 0 };
     for (let i = 0; i < count; i++) {
       const result = await limiter.limit(userId);
       lastResult = {
@@ -121,8 +130,9 @@ export async function checkRefinementLimitBatch(
     }
 
     return lastResult;
-  } catch {
-    // Fail open on errors
-    return { success: true, limit: 0, remaining: 999, reset: 0 };
+  } catch (error) {
+    // Fail closed on errors — deny requests when rate limiter is unavailable
+    console.warn("Rate limiter batch error, failing closed:", error);
+    return { success: false, limit: 0, remaining: 0, reset: 0 };
   }
 }
