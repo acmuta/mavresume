@@ -3,19 +3,18 @@ import { NoteBox } from "../elements/feedback/NoteBox";
 import { TechnicalSkillsAccordion } from "../elements/accordion/TechnicalSkillsAccordion";
 
 export function TechnicalSkillsSection() {
-
   return (
-    <div className="flex w-full h-full items-center justify-center">
-      <div className="md:flex flex-col md:p-7 w-full">
-        {/* Title and Description */}
+    <div className="flex w-full items-center justify-center">
+      <div className="flex w-full flex-col gap-6 px-2 py-2 sm:px-3 sm:py-3">
         <CustomSectionTitle
           title="Technical Skills"
-          description="Highlight the tools, technologies, and strengths you bring to the table."
+          description="List the tools, languages, and technologies that should show up on your resume."
         />
-        <section className="mt-4 flex flex-col gap-3 p-4">
+
+        <section className="grid gap-4">
           <NoteBox
             icon="Lightbulb"
-            note="Based on your previous courses, we've identified languages and technologies to highlight on your resume!"
+            note="We use your coursework to suggest languages and technologies you may want to include."
           />
           <TechnicalSkillsAccordion />
         </section>

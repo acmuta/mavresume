@@ -1,24 +1,23 @@
 "use client";
-import { useState, useEffect, Suspense, useMemo } from "react";
+
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ClipboardCheck, Edit3, Loader2, Plus, Settings2 } from "lucide-react";
+
 import { PersonalInfoSection } from "../../components/sections/personalInfo";
 import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
 import { EducationSection } from "../../components/sections/education";
 import { ExperienceSection } from "../../components/sections/experience";
 import { ProjectsSection } from "../../components/sections/projects";
-import { Loader2, Plus, Settings2, Edit } from "lucide-react";
 import { Button } from "../../components/ui/button";
-import { Fade } from "react-awesome-reveal";
+import { SubmitReviewModal } from "../../components/elements/resume/SubmitReviewModal";
 import { useGuideStore } from "../../store/useGuideStore";
 import { useResumeStore, type SectionId } from "../../store/useResumeStore";
 import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
 
-/**
- * Section configuration map.
- * Maps section IDs to their components and display labels.
- */
 const SECTION_CONFIG: Record<string, { Component: React.FC; label: string }> = {
   "personal-info": { Component: PersonalInfoSection, label: "Personal Info" },
   education: { Component: EducationSection, label: "Education" },
@@ -39,24 +38,21 @@ function BuilderPageContent() {
     sectionOrder,
   } = useResumeStore();
 
-  // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  // Track current section index for single-section display
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Section manager modal state
   const [isSectionManagerOpen, setIsSectionManagerOpen] = useState(false);
+  const [resumeName, setResumeName] = useState("Resume");
+  const [showSubmitReviewModal, setShowSubmitReviewModal] = useState(false);
+  const [submitSuccessMessage, setSubmitSuccessMessage] = useState<
+    string | null
+  >(null);
 
-  // Enable auto-save when resume is loaded
   useAutoSave(!!currentResumeId);
 
-  // Load resume from database on mount
   useEffect(() => {
     async function loadResume() {
-      // If no resume ID, redirect to templates
       if (!resumeId) {
         router.replace("/templates");
         return;
@@ -70,15 +66,13 @@ function BuilderPageContent() {
 
         if (!resumeWithData) {
           setLoadError("Resume not found");
-          // Redirect to dashboard after a short delay
           setTimeout(() => router.replace("/dashboard"), 2000);
           return;
         }
 
-        // Set the current resume ID
         setCurrentResumeId(resumeId);
+        setResumeName(resumeWithData.name || "Resume");
 
-        // Hydrate the store with database data
         if (resumeWithData.resume_data) {
           setResumeFromDatabase({
             personal_info: resumeWithData.resume_data.personal_info,
@@ -101,18 +95,11 @@ function BuilderPageContent() {
     }
 
     loadResume();
-
-    // Cleanup: reset store when leaving builder
-    return () => {
-      // Only reset if we're actually navigating away (not just re-rendering)
-      // This is handled by the component unmount
-    };
   }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
 
-  // Build dynamic sections array from sectionOrder
   const sections = useMemo(() => {
     return sectionOrder
-      .filter((id) => SECTION_CONFIG[id]) // Only include sections that have a config
+      .filter((id) => SECTION_CONFIG[id])
       .map((id) => ({
         Component: SECTION_CONFIG[id].Component,
         id: id as SectionId,
@@ -120,14 +107,12 @@ function BuilderPageContent() {
       }));
   }, [sectionOrder]);
 
-  // Clamp currentSectionIndex if sections are removed
   useEffect(() => {
     if (currentSectionIndex >= sections.length && sections.length > 0) {
       setCurrentSectionIndex(sections.length - 1);
     }
   }, [sections.length, currentSectionIndex]);
 
-  // Update guide store when section changes (for contextual help)
   useEffect(() => {
     const sectionId = sections[currentSectionIndex]?.id;
     if (sectionId) {
@@ -145,35 +130,38 @@ function BuilderPageContent() {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentSectionIndex(targetIndex);
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 50);
-      }, 250);
+        setTimeout(() => setIsTransitioning(false), 60);
+      }, 180);
     }
   };
 
   const activeSection = sections[currentSectionIndex]?.id || "personal-info";
+  const CurrentSection =
+    sections[currentSectionIndex]?.Component || PersonalInfoSection;
+  const builderFileName = `${resumeName || "Resume"}.pdf`;
 
-  // Loading state
   if (isLoading) {
     return (
-      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 min-h-[50vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#274cbc]" />
-          <p className="text-[#a4a7b5]">Loading your resume...</p>
+      <main className="relative z-10 px-1 py-2 md:px-2">
+        <div className="mx-auto flex min-h-[60vh] max-w-5xl flex-col items-center justify-center gap-4">
+          <div className="flex size-16 items-center justify-center rounded-full border border-[#2b3242] bg-[#111319]/80 text-[#89a5ff] shadow-[0_0_40px_rgba(39,76,188,0.15)]">
+            <Loader2 className="h-7 w-7 animate-spin" />
+          </div>
+          <p className="text-sm uppercase tracking-[0.24em] text-[#6d7895]">
+            Loading builder
+          </p>
         </div>
       </main>
     );
   }
 
-  // Error state
   if (loadError) {
     return (
-      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 min-h-[50vh]">
-          <div className="rounded-md bg-red-500/10 border border-red-500/30 px-6 py-4 text-center">
-            <p className="text-red-400">{loadError}</p>
-            <p className="text-sm text-[#6d7895] mt-2">
+      <main className="relative z-10 px-1 py-2 md:px-2">
+        <div className="mx-auto flex min-h-[60vh] max-w-5xl items-center justify-center">
+          <div className="rounded-[2rem] border border-red-500/30 bg-red-500/10 px-8 py-8 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+            <p className="text-base font-medium text-red-300">{loadError}</p>
+            <p className="mt-3 text-sm text-[#a4a7b5]">
               Redirecting to dashboard...
             </p>
           </div>
@@ -182,25 +170,26 @@ function BuilderPageContent() {
     );
   }
 
-  // Handle empty sections state
   if (sections.length === 0) {
     return (
-      <main className="relative text-white z-10 md:px-4 py-5 md:py-20 lg:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-6 min-h-[50vh]">
-          <div className="rounded-2xl border-2 border-dashed border-[#2d313a] bg-[#151618]/80 px-8 py-12 text-center">
-            <Settings2 className="w-12 h-12 text-[#3d4353] mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">
-              No Sections Added
+      <main className="relative z-10 px-1 py-2 md:px-2">
+        <div className="mx-auto flex min-h-[60vh] max-w-5xl items-center justify-center">
+          <div className="w-full max-w-xl rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_45%),linear-gradient(180deg,_rgba(21,23,28,0.94),_rgba(11,12,16,0.96))] px-8 py-10 text-center shadow-[0_30px_80px_rgba(3,4,7,0.42)]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full border border-[#2b3242] bg-[#151923] text-[#89a5ff]">
+              <Settings2 className="h-7 w-7" />
+            </div>
+            <h2 className="mt-6 text-2xl font-semibold text-white">
+              Start by adding sections
             </h2>
-            <p className="text-[#6d7895] mb-6 max-w-md">
-              Your resume doesn&apos;t have any sections yet. Add sections to
-              start building your resume.
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#cfd3e1]">
+              Your resume is empty right now. Add the sections you want, then
+              start filling them in.
             </p>
             <Button
               onClick={() => setIsSectionManagerOpen(true)}
-              className="bg-[#274cbc] text-white hover:bg-[#315be1] rounded-xl px-6"
+              className="mt-6 h-11 rounded-full bg-[#274cbc] px-6 text-sm font-semibold text-white hover:bg-[#315be1]"
             >
-              <Settings2 className="w-4 h-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Manage Sections
             </Button>
           </div>
@@ -213,64 +202,116 @@ function BuilderPageContent() {
     );
   }
 
-  const CurrentSection =
-    sections[currentSectionIndex]?.Component || PersonalInfoSection;
-
   return (
-    <main className="relative text-white z-10 px-2 py-3 md:px-4 md:py-20 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3">
-        {/* Navigation controls */}
-        <nav className="flex flex-wrap overflow-x-auto items-center gap-2 min-w-max px-1 py-1 justify-center ">
-          {sections.map((section, index) => (
-            <button
-              key={section.id}
-              onClick={() => goToSection(index)}
-              disabled={isTransitioning || currentSectionIndex === index}
-              className={`py-2 px-4 md:py-1.5 text-xs md:text-lg font-medium md:font-bold rounded-full whitespace-nowrap transition-all duration-300 ${
-                activeSection === section.id
-                  ? "px-6 md:px-8 text-white bg-[#274cbc]"
-                  : "text-[#6d7895] hover:text-[#cfd3e1] hover:bg-white/5 cursor-pointer"
-              } disabled:cursor-not-allowed`}
-              aria-label={`Go to ${section.label} section`}
-            >
-              {section.label}
-            </button>
-          ))}
-          <div
-            className="py-2 px-4 flex items-center justify-center text-[#6d7895] hover:text-[#cfd3e1] bg-white/4 rounded-full cursor-pointer transition-all duration-300"
-            onClick={() => setIsSectionManagerOpen(true)}
-            aria-label="Add new section"
-          >
-            <Edit className="w-5 h-5" />
+    <main className="relative z-10 px-1 py-2 md:px-2">
+      <div className="mx-auto flex max-w-[980px] flex-col gap-5">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="relative overflow-hidden rounded-[1.6rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top_left,_rgba(39,76,188,0.16),_transparent_42%),linear-gradient(180deg,_rgba(18,20,27,0.92),_rgba(11,12,16,0.96))] px-3 py-3 shadow-[0_24px_60px_rgba(3,4,7,0.34)] sm:px-4"
+        >
+          <div className="absolute inset-0 opacity-65">
+            <div className="absolute left-0 top-0 h-24 w-24 rounded-full bg-[#274cbc]/18 blur-[65px]" />
+            <div className="absolute bottom-0 right-0 h-20 w-20 rounded-full bg-[#19c8ff]/10 blur-[55px]" />
           </div>
-        </nav>
 
-        <Fade triggerOnce>
-          <section className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[#2c3037] bg-[radial-gradient(circle_at_top,#1c2233,#101113_70%)] shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
-            {/* background glow effects */}
-            <div className="absolute inset-0 opacity-40 pointer-events-none">
-              <div className="absolute -top-24 left-16 h-64 w-64 rounded-full bg-[#274cbc]/20 blur-[100px]" />
-              <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-[#19c8ff]/15 blur-[80px]" />
+          <div className="relative flex w-full flex-col gap-3 px-3 py-3 sm:px-4 sm:py-3.5">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-col gap-1.5 xl:flex-row xl:items-center xl:gap-3">
+                  <h1 className="text-[1.45rem] font-semibold tracking-tight text-white sm:text-[1.7rem]">
+                    {sections[currentSectionIndex]?.label}
+                  </h1>
+                </div>
+                <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[#cfd3e1]">
+                  Edit this section and watch the final document update beside
+                  the form.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 xl:justify-end">
+                <Button
+                  onClick={() => {
+                    setSubmitSuccessMessage(null);
+                    setShowSubmitReviewModal(true);
+                  }}
+                  className="h-10 rounded-full bg-[#274cbc] px-4 text-sm font-semibold text-white hover:bg-[#315be1]"
+                >
+                  <ClipboardCheck className="mr-2 h-4 w-4" />
+                  Submit for Review
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsSectionManagerOpen(true)}
+                  className="h-10 rounded-full border-[#2b3242] bg-[#10121a]/70 px-4 text-sm text-[#cfd3e1] shadow-none hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                >
+                  <Edit3 className="mr-2 h-4 w-4" />
+                  Manage Sections
+                </Button>
+              </div>
             </div>
 
-            {/* Section content with fade transition */}
-            <div
-              key={currentSectionIndex}
-              className={`relative transition-opacity duration-500 ease-in-out ${
-                isTransitioning ? "opacity-0" : "opacity-100"
-              }`}
-            >
-              <CurrentSection />
+            {submitSuccessMessage && (
+              <div className="inline-flex w-fit items-center rounded-full border border-[#58f5c3]/30 bg-[#58f5c3]/12 px-3 py-1.5 text-sm text-[#c8ffe7]">
+                {submitSuccessMessage}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              {sections.map((section, index) => (
+                <button
+                  key={section.id}
+                  onClick={() => goToSection(index)}
+                  disabled={isTransitioning || currentSectionIndex === index}
+                  className={`inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium transition-all ${
+                    activeSection === section.id
+                      ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
+                      : "border-[#2b3242] bg-[#10121a]/70 text-[#a4a7b5] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                  } disabled:cursor-not-allowed`}
+                >
+                  <span className="mr-2 text-[11px] uppercase tracking-[0.18em] opacity-70">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {section.label}
+                </button>
+              ))}
             </div>
-          </section>
-        </Fade>
+          </div>
+        </motion.section>
+
+        <AnimatePresence mode="wait">
+          <motion.section
+            key={activeSection}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: isTransitioning ? 0 : 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="relative"
+          >
+            <CurrentSection />
+          </motion.section>
+        </AnimatePresence>
       </div>
 
-      {/* Section Manager Modal */}
       <SectionManagerModal
         open={isSectionManagerOpen}
         onOpenChange={setIsSectionManagerOpen}
       />
+      {showSubmitReviewModal && (
+        <SubmitReviewModal
+          mode="builder"
+          builderLabel={resumeName}
+          builderFileName={builderFileName}
+          onClose={() => setShowSubmitReviewModal(false)}
+          onSubmitted={() => {
+            setShowSubmitReviewModal(false);
+            setSubmitSuccessMessage(
+              "Review request submitted from your current builder resume.",
+            );
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -32,9 +32,9 @@ export const OverflowWarningBadge = ({
       className={`
         absolute bottom-3 left-3 z-10
         flex items-center gap-1.5
-        px-2.5 py-1.5
+        px-3 py-1.5
         rounded-full
-        text-[0.65rem] font-medium
+        text-[0.68rem] font-medium
         backdrop-blur-sm
         shadow-lg
         animate-in fade-in duration-300
@@ -56,8 +56,8 @@ export const OverflowWarningBadge = ({
         className={`w-3 h-3 ${isOverflowing ? "text-red-400" : "text-amber-400"}`}
       />
       <span>
-        {isOverflowing ? "Overflowing" : "Near limit"}
-        <span className="ml-1 opacity-70">({percentage}%)</span>
+        {isOverflowing ? "Page overflow" : "Page fill"}
+        <span className="ml-1 opacity-75">{percentage}%</span>
       </span>
     </div>
   );

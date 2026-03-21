@@ -1,4 +1,7 @@
 // src/lib/resume/uploadResume.ts
+import { pdf } from "@react-pdf/renderer";
+
+import { ResumeDoc } from "@/components/elements/resume/ResumeDoc";
 import { createClient } from '@/lib/supabase/client'
 
 type UploadResult = {
@@ -6,9 +9,15 @@ type UploadResult = {
   pdfPath: string
 }
 
-export async function uploadResume(
+async function createResumeVersionFromFile(
   file: File,
-  label?: string
+  {
+    label,
+    source = "upload",
+  }: {
+    label?: string;
+    source?: "upload";
+  } = {},
 ): Promise<UploadResult> {
   const supabase = createClient() 
 
@@ -41,7 +50,7 @@ export async function uploadResume(
       file_name: file.name,
       file_size: file.size,
       label: label ?? file.name.replace('.pdf', ''),
-      source: 'upload',
+      source,
     })
     .select()
     .single()
@@ -53,4 +62,30 @@ export async function uploadResume(
   }
 
   return { versionId: version.id, pdfPath }
+}
+
+export async function uploadResume(
+  file: File,
+  label?: string
+): Promise<UploadResult> {
+  return createResumeVersionFromFile(file, {
+    label,
+    source: "upload",
+  });
+}
+
+export async function uploadCurrentBuilderResume(
+  fileName: string,
+  label?: string,
+): Promise<UploadResult> {
+  const blob = await pdf(<ResumeDoc />).toBlob();
+  const file = new File([blob], fileName, {
+    type: "application/pdf",
+    lastModified: Date.now(),
+  });
+
+  return createResumeVersionFromFile(file, {
+    label,
+    source: "upload",
+  });
 }

@@ -16,13 +16,13 @@ export const SectionReorderButton = () => {
     <>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="rounded-full px-5 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all"
-            aria-label="Manage sections"
-            onClick={() => setIsOpen(true)}
-          >
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="h-10 w-10 rounded-full border border-transparent text-[#6d7895] transition-all hover:border-[#2b3242] hover:bg-[#161b25] hover:text-white"
+          aria-label="Manage sections"
+          onClick={() => setIsOpen(true)}
+        >
             <Settings2 className="w-7 h-7" />
           </Button>
         </TooltipTrigger>

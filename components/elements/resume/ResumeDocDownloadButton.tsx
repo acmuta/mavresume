@@ -30,7 +30,7 @@ export const ResumeDocDownloadButton = () => {
           <Button
             variant="ghost"
             size="icon-sm"
-            className="rounded-full px-5 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all"
+            className="h-10 w-10 rounded-full border border-transparent text-[#6d7895] transition-all hover:border-[#2b3242] hover:bg-[#161b25] hover:text-white"
             aria-label="Download PDF"
             disabled
           >
@@ -52,7 +52,7 @@ export const ResumeDocDownloadButton = () => {
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-full px-5 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all"
+              className="h-10 w-10 rounded-full border border-transparent text-[#6d7895] transition-all hover:border-[#2b3242] hover:bg-[#161b25] hover:text-white"
               aria-label="Download PDF"
               disabled={loading}
             >

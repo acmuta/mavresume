@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
  * @param bulletText - The original bullet point text to refine
  * @param onRefinedPreview - Callback invoked with refined text when API call succeeds (shows preview)
  * @param context - Optional context (title, technologies) passed to AI for better refinement
- * @param size - Button size variant (defaults to "icon" for compact UI)
  * @param className - Additional CSS classes
  * @param isExternalLoading - Optional external loading state (e.g., when "Refine All" is active)
  */
@@ -28,7 +27,6 @@ interface BulletRefinementButtonProps {
     title?: string;
     technologies?: string[];
   };
-  size?: "sm" | "default" | "icon";
   className?: string;
   isExternalLoading?: boolean;
 }
@@ -44,7 +42,6 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
   bulletText,
   onRefinedPreview,
   context,
-  size = "icon",
   className,
   isExternalLoading = false,
 }) => {
@@ -98,13 +95,19 @@ export const BulletRefinementButton: React.FC<BulletRefinementButtonProps> = ({
         type="button"
         onClick={handleRefine}
         disabled={showLoading || !bulletText || bulletText.trim().length === 0}
-        className={`inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-2 py-1.5 text-[#3c67eb] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-[#2b3242] bg-[#151923] px-3 text-[#89a5ff] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
         title="Refine bullet point with AI"
       >
         {showLoading ? (
-          <Loader2 className="size-4 animate-spin" />
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            <span className="text-sm font-medium">Refining</span>
+          </>
         ) : (
-          <Wand2 className="size-4" />
+          <>
+            <Wand2 className="size-4" />
+            <span className="text-sm font-medium">Refine</span>
+          </>
         )}
       </button>
 

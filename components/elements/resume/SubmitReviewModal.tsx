@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Loader2 } from "lucide-react";
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,18 +13,25 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
+import { uploadCurrentBuilderResume } from '@/lib/resume/uploadResume'
 import { ResumeUploader } from './ResumeUploader'
 
 type Props = {
   onClose: () => void
   onSubmitted: () => void
   preSelectedVersionId?: string
+  mode?: 'upload' | 'builder'
+  builderLabel?: string
+  builderFileName?: string
 }
 
 export function SubmitReviewModal({
   onClose,
   onSubmitted,
   preSelectedVersionId,
+  mode = 'upload',
+  builderLabel,
+  builderFileName = 'Resume.pdf',
 }: Props) {
   const supabase = createClient()
   const [versionId, setVersionId] = useState<string | null>(preSelectedVersionId ?? null)
@@ -31,19 +39,47 @@ export function SubmitReviewModal({
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const isBuilderMode = mode === 'builder'
 
   const handleSubmit = async () => {
-    if (!versionId) return
     setSubmitting(true)
     setError('')
 
     const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      setError('Not authenticated')
+      setSubmitting(false)
+      return
+    }
+
+    let resolvedVersionId = versionId
+
+    if (isBuilderMode && !resolvedVersionId) {
+      try {
+        const uploadResult = await uploadCurrentBuilderResume(
+          builderFileName,
+          builderLabel,
+        )
+        resolvedVersionId = uploadResult.versionId
+        setVersionId(uploadResult.versionId)
+      } catch (uploadError) {
+        setError(uploadError instanceof Error ? uploadError.message : 'Failed to generate and upload resume PDF')
+        setSubmitting(false)
+        return
+      }
+    }
+
+    if (!resolvedVersionId) {
+      setError('Please upload a PDF before submitting for review.')
+      setSubmitting(false)
+      return
+    }
 
     const { error: submitError } = await supabase
       .from('review_requests')
       .insert({
-        student_id: session!.user.id,
-        resume_version_id: versionId,
+        student_id: session.user.id,
+        resume_version_id: resolvedVersionId,
         priority,
         student_notes: notes || null,
         status: 'pending',
@@ -71,12 +107,13 @@ export function SubmitReviewModal({
               Submit Resume for Review
             </DialogTitle>
             <DialogDescription className="text-sm text-[#6d7895]">
-              Upload the PDF you want reviewed, set the urgency, and add any context
-              that will help the reviewer focus their feedback.
+              {isBuilderMode
+                ? 'Submit the current builder PDF, set the urgency, and add any context that will help the reviewer focus their feedback.'
+                : 'Upload the PDF you want reviewed, set the urgency, and add any context that will help the reviewer focus their feedback.'}
             </DialogDescription>
           </DialogHeader>
 
-          {!preSelectedVersionId && (
+          {!preSelectedVersionId && !isBuilderMode && (
             <div className="mt-6 space-y-2">
               <Label className="text-[#cfd3e1]">Upload Resume PDF</Label>
               <ResumeUploader
@@ -85,9 +122,11 @@ export function SubmitReviewModal({
             </div>
           )}
 
-          {preSelectedVersionId && (
+          {(preSelectedVersionId || isBuilderMode) && (
             <div className="mt-6 rounded-2xl border border-dashed border-[#274cbc]/40 bg-[#274cbc]/10 p-4 text-sm text-[#cfd3e1]">
-              Using your current builder resume for this review request.
+              {isBuilderMode
+                ? 'We will generate and upload the current builder PDF when you confirm this review request.'
+                : 'Using your current builder resume for this review request.'}
             </div>
           )}
 
@@ -132,10 +171,15 @@ export function SubmitReviewModal({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!versionId || submitting}
+              disabled={submitting || (!isBuilderMode && !versionId)}
               className="h-11 flex-1 rounded-xl bg-[#274cbc] text-sm font-semibold text-white hover:bg-[#315be1]"
             >
-              {submitting ? 'Submitting...' : 'Submit for Review'}
+              {submitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isBuilderMode ? 'Preparing PDF...' : 'Submitting...'}
+                </>
+              ) : 'Submit for Review'}
             </Button>
           </div>
         </div>

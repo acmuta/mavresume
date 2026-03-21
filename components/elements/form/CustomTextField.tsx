@@ -22,9 +22,12 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
   required = false,
 }) => {
   return (
-    <div className="grid w-fit max-w-sm items-center gap-1 h-fit">
+    <div className="grid w-full items-center gap-2">
       {label && (
-        <label htmlFor={id} className="font-semibold">
+        <label
+          htmlFor={id}
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#89a5ff]"
+        >
           {label}
         </label>
       )}
@@ -35,10 +38,10 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
         onChange={onChange}
         type={type}
         placeholder={placeholder}
-        className="bg-[#1F2023] text-sm min-w-[5rem] max-w-[30rem] border py-2 px-3 rounded-lg border-dashed border-[#6F748B] focus:outline-none focus:border-white hover:text-white hover:border-white transition"
+        className="h-12 w-full rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#4b5a82] focus:bg-[#161b25] hover:border-[#3f4a67]"
       />
       {description && (
-        <label htmlFor={id} className="text-sm text-gray-500">
+        <label htmlFor={id} className="text-sm leading-relaxed text-[#6d7895]">
           {description}
         </label>
       )}

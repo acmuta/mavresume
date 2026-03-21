@@ -1,5 +1,8 @@
 "use client";
+
 import React, { useRef } from "react";
+import { motion } from "framer-motion";
+
 import { PersonalInfoPreview } from "../../previews/PersonalInfoPreview";
 import { EducationPreview } from "../../previews/EducationPreview";
 import { TechnicalSkillsPreview } from "../../previews/TechnicalSkillsPreview";
@@ -9,81 +12,65 @@ import { useResumeStore } from "../../../store/useResumeStore";
 import { useContentOverflow } from "../../../lib/hooks/useContentOverflow";
 import { OverflowWarningBadge } from "./OverflowWarningBadge";
 
-/**
- * Live resume preview component displayed in builder sidebar.
- *
- * This component:
- * - Composes preview sections in resume order (matches PDF structure)
- * - Renders sections dynamically based on sectionOrder from store
- * - All child preview components read from Zustand store via useResumeStore()
- * - Updates reactively when store changes (form inputs trigger re-renders)
- * - Styled to match A4 aspect ratio (1:1.414 or 210mm:297mm) for accurate preview
- * - Displays overflow warning when content approaches page boundary
- *
- * Data flow: Form input → store update → preview components re-render → UI updates
- */
-
+const PDF_PAGE_PADDING_PERCENT = `${(32 / 595.28) * 100}%`;
 
 export const ResumePreview = () => {
   const { sectionOrder, showBorder } = useResumeStore();
 
-  // Refs for overflow detection
   const containerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Track content overflow relative to container
   const { fillPercentage, isNearOverflow, isOverflowing } = useContentOverflow(
     containerRef,
-    contentRef
+    contentRef,
   );
 
-  // Map section IDs to their preview components
   const sectionMap: Record<string, React.ComponentType> = {
     "personal-info": PersonalInfoPreview,
-    "education": EducationPreview,
+    education: EducationPreview,
     "technical-skills": TechnicalSkillsPreview,
-    "projects": ProjectsPreview,
-    "experience": ExperiencePreview,
+    projects: ProjectsPreview,
+    experience: ExperiencePreview,
   };
 
-  // Get reorderable sections (excluding personal-info which is always first)
-  const reorderableSections = sectionOrder.filter(
-    (id) => id !== "personal-info"
-  );
+  const reorderableSections = sectionOrder.filter((id) => id !== "personal-info");
 
   return (
-    <div className="w-full min-h-full flex items-start justify-center p-3 pt-8">
-      <section
+    <div className="flex h-full w-full items-start justify-center px-2 pb-2 pt-1 md:px-3 md:pb-3">
+      <motion.section
         ref={containerRef}
-        className={`relative flex flex-col gap-2
-             w-[clamp(20rem,37vw,35rem)]
-             aspect-[1/1.414] text-white scale-120
-             px-6 py-2 text-[0.9vw] md:text-[0.45vw]
-             overflow-hidden border transition-all duration-300 ${
-               showBorder ? "border-[#2d313a]" : "border-transparent"
-             }`}
+        initial={{ opacity: 0, y: 14, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className={`relative aspect-[1/1.414] w-full max-w-[46rem] overflow-hidden rounded-[1.5rem] border bg-[#111] text-white shadow-[0_24px_60px_rgba(0,0,0,0.28)] transition-all duration-300 ${
+          showBorder ? "border-[#2d313a]" : "border-transparent"
+        }`}
       >
-        {/* Content wrapper for overflow measurement */}
-        <div ref={contentRef} className="flex flex-col gap-2">
-          {/* Personal Info is always rendered first */}
-          <PersonalInfoPreview />
+        <div
+          className="absolute inset-0"
+          style={{ padding: PDF_PAGE_PADDING_PERCENT }}
+        >
+          <div
+            ref={contentRef}
+            className="flex flex-col gap-[0.9em] text-[0.44rem] sm:text-[0.5rem] md:text-[0.56rem] xl:text-[0.6rem]"
+          >
+            <PersonalInfoPreview />
 
-          {/* Render other sections in the order specified by sectionOrder */}
-          {reorderableSections.map((sectionId) => {
-            const SectionComponent = sectionMap[sectionId];
-            if (!SectionComponent) return null;
-            return <SectionComponent key={sectionId} />;
-          })}
+            {reorderableSections.map((sectionId) => {
+              const SectionComponent = sectionMap[sectionId];
+              if (!SectionComponent) return null;
+              return <SectionComponent key={sectionId} />;
+            })}
+          </div>
         </div>
 
-        {/* Overflow warning badge - appears when content approaches page limit */}
         {isNearOverflow && (
           <OverflowWarningBadge
             percentage={fillPercentage}
             isOverflowing={isOverflowing}
           />
         )}
-      </section>
+      </motion.section>
     </div>
   );
 };

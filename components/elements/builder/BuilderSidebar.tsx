@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  FaGithub,
-  FaDiscord,
-  FaGraduationCap,
-} from "react-icons/fa";
+import { FaGithub, FaDiscord, FaGraduationCap } from "react-icons/fa";
 import { ClipboardCheck, FileText } from "lucide-react";
 import { IoMdHelpCircle } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
@@ -62,7 +58,7 @@ const sidebarLinks: SidebarLink[] = [
     ariaLabel: "Documentation",
     external: true,
   },
-];
+] as const;
 
 function getInitials(user: {
   user_metadata?: { full_name?: string };
@@ -71,8 +67,9 @@ function getInitials(user: {
   const name = user.user_metadata?.full_name?.trim();
   if (name) {
     const parts = name.split(/\s+/);
-    if (parts.length >= 2)
+    if (parts.length >= 2) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
     return (parts[0].slice(0, 2) || "?").toUpperCase();
   }
   const local = user.email?.split("@")[0] ?? "";
@@ -155,97 +152,72 @@ export const BuilderSidebar = () => {
 
   return (
     <aside
-      className={`hidden md:flex fixed left-0 top-0 h-full z-30
-                 ${isExpanded ? "w-55" : "w-25"}
-                 bg-[#15171c]/90 backdrop-blur-md
-                 border-r border-[#2d313a]
-                 transition-all duration-300 ease-in-out
-                 overflow-hidden
-                 flex-col`}
+      className={`fixed bottom-5 left-4 top-22 z-20 hidden overflow-hidden rounded-[2rem] border border-[#2b3242] bg-[#0f1117]/82 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-in-out md:flex ${
+        isExpanded ? "w-64" : "w-20"
+      }`}
       role="navigation"
       aria-label="Builder navigation sidebar"
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <div className="flex flex-col h-full w-full">
-        {/* Logo Section */}
-        <div className="px-4 py-4 border-b border-[#2d313a] relative h-[8vh] flex items-center">
+      <div className="absolute inset-0 opacity-70">
+        <div className="absolute left-2 top-0 h-24 w-24 rounded-full bg-[#274cbc]/12 blur-[55px]" />
+        <div className="absolute bottom-6 right-0 h-20 w-20 rounded-full bg-[#19c8ff]/8 blur-[45px]" />
+      </div>
+
+      <div className="relative flex h-full w-full flex-col">
+        <div className="flex h-18 items-center border-b border-[#242a37] px-4">
           <Link
             href={user ? "/dashboard" : "/"}
-            className="flex items-center font-bold tracking-tight text-3xl
-                       mask-[linear-gradient(to_bottom,black_40%,transparent)] 
-                       mask-size-[100%_100%] mask-no-repeat
-                       text-white hover:text-white transition-colors duration-300
-                       relative w-full justify-center"
+            className="relative flex w-full items-center justify-center font-bold tracking-tight text-white"
             aria-label={user ? "Go to dashboard" : "MavResume home"}
           >
-            {/* Collapsed logo */}
             <span
-              className={`absolute left-1/2 -translate-x-1/2 
-                         transition-all duration-300 ease-in-out whitespace-nowrap
-                         ${
-                           isExpanded
-                             ? "opacity-0  pointer-events-none"
-                             : "opacity-100 "
-                         }`}
+              className={`absolute left-1/2 -translate-x-1/2 text-2xl transition-all duration-300 ${
+                isExpanded ? "opacity-0" : "opacity-100"
+              }`}
             >
               M
             </span>
-            {/* Expanded logo */}
             <span
-              className={`transition-all duration-300 ease-in-out whitespace-nowrap
-                         ${
-                           isExpanded
-                             ? "opacity-100 "
-                             : "opacity-0  pointer-events-none"
-                         }`}
-              style={{
-                transitionDelay: isExpanded ? "50ms" : "0ms",
-              }}
+              className={`whitespace-nowrap text-2xl [mask-image:linear-gradient(to_bottom,black_40%,transparent)] [mask-repeat:no-repeat] [mask-size:100%_100%] transition-all duration-300 ${
+                isExpanded ? "opacity-100" : "opacity-0"
+              }`}
             >
               MAV<span className="font-extralight">RESUME</span>
             </span>
           </Link>
         </div>
 
-        {/* Links Section */}
         <div
-          className={`flex-1 flex flex-col gap-3 px-3 py-4 overflow-y-auto
-                     transition-all duration-300 ease-in-out
-                     ${isExpanded ? "items-start" : "items-center"}`}
+          className={`flex flex-1 flex-col gap-3 overflow-y-auto px-3 py-4 transition-all duration-300 ${
+            isExpanded ? "items-stretch" : "items-center"
+          }`}
         >
           {visibleLinks.map((link, index) => {
             const IconComponent = link.icon;
-            const labelDelay = isExpanded ? 100 + index * 30 : 0;
+            const labelDelay = isExpanded ? 100 + index * 25 : 0;
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noreferrer" : undefined}
-                className={`flex items-center relative w-11 h-11
-                           rounded-full border border-[#2b3242] bg-[#10121a]
-                           text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white
-                           transition-all duration-300 ease-in-out
-                           ${
-                             isExpanded
-                               ? "gap-3 px-3 py-2 w-full"
-                               : "justify-center p-0"
-                           }`}
+                className={`group relative flex h-12 items-center overflow-hidden rounded-2xl border border-[#2b3242] bg-[#10121a]/82 text-[#cfd3e1] transition-all duration-300 hover:border-[#3f4a67] hover:text-white ${
+                  isExpanded ? "w-full gap-3 px-3" : "w-12 justify-center"
+                }`}
                 aria-label={link.ariaLabel}
               >
-                <IconComponent className="w-6 h-6 shrink-0" />
+                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_left,_rgba(39,76,188,0.22),_transparent_50%)]" />
+                <IconComponent className="relative z-10 h-5 w-5 shrink-0" />
                 <span
-                  className={`text-xs font-medium whitespace-nowrap
-                             transition-all duration-300 ease-in-out
-                             ${
-                               isExpanded
-                                 ? "opacity-100 translate-x-0 max-w-full"
-                                 : "opacity-0 -translate-x-1 w-0 overflow-hidden"
-                             }`}
-                  style={{
-                    transitionDelay: `${labelDelay}ms`,
-                  }}
+                  className={`relative z-10 whitespace-nowrap text-sm font-medium transition-all duration-300 ${
+                    isExpanded
+                      ? "max-w-full translate-x-0 opacity-100"
+                      : "w-0 -translate-x-1 overflow-hidden opacity-0"
+                  }`}
+                  style={{ transitionDelay: `${labelDelay}ms` }}
                 >
                   {link.label}
                 </span>
@@ -254,66 +226,28 @@ export const BuilderSidebar = () => {
           })}
         </div>
 
-        {/* Profile Section */}
-        <div className="px-3 py-4 border-t border-[#2d313a]/50 relative min-h-15">
-          {/* Collapsed: Initials or LogIn icon */}
+        <div className="border-t border-[#242a37] px-3 py-4">
           <div
-            className={`absolute inset-0 flex items-center justify-center
-                       transition-all duration-300 ease-in-out
-                       ${
-                         isExpanded
-                           ? "opacity-0 scale-90 pointer-events-none"
-                           : "opacity-100 scale-100"
-                       }`}
+            className={`rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/78 p-3 transition-all duration-300 ${
+              isExpanded ? "opacity-100" : "opacity-0"
+            }`}
           >
-            {user ? (
-              <span
-                className="flex w-8 h-8 items-center justify-center rounded-full
-                           bg-[#1f2330] text-[#89a5ff] text-xs font-medium shrink-0"
-              >
-                {getInitials(user)}
-              </span>
-            ) : (
-              <IoLogIn className="w-4 h-4 text-[#89a5ff] shrink-0" />
-            )}
-          </div>
-
-          {/* Expanded: Profile card or Sign in CTA */}
-          <div
-            className={`flex flex-col gap-3
-                       transition-all duration-300 ease-in-out
-                       ${
-                         isExpanded
-                           ? "opacity-100 translate-y-0"
-                           : "opacity-0 translate-y-1 pointer-events-none"
-                       }`}
-            style={{
-              transitionDelay: isExpanded ? "150ms" : "0ms",
-            }}
-          >
-            {user ? (
-              <div
-                className="rounded-2xl border border-dashed border-[#2d313a]
-                           bg-[#10121a] p-3 flex flex-col gap-3"
-              >
+            {isExpanded && user ? (
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <span
-                    className="flex w-10 h-10 items-center justify-center rounded-full
-                               bg-[#1f2330] text-[#89a5ff] text-sm font-medium shrink-0"
-                  >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1f2330] text-sm font-medium text-[#89a5ff]">
                     {getInitials(user)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#cfd3e1] truncate">
+                    <p className="truncate text-sm font-medium text-[#cfd3e1]">
                       {user.user_metadata?.full_name ||
                         user.email?.split("@")[0] ||
                         "User"}
                     </p>
-                    <p className="text-xs text-[#a4a7b5] truncate">
-                      {user.email}
-                    </p>
+                    <p className="truncate text-xs text-[#6d7895]">{user.email}</p>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   onClick={async () => {
@@ -325,34 +259,36 @@ export const BuilderSidebar = () => {
                     router.refresh();
                   }}
                   disabled={isSigningOut || isRedirecting}
-                  className="w-full rounded-xl border border-dashed border-[#2f323a]
-                             bg-transparent py-2 text-xs font-medium text-white
-                             hover:border-[#4b4f5c] hover:bg-[#161920]
-                             disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[#2b3242] bg-transparent px-4 text-sm font-medium text-white transition hover:border-[#4b5a82] hover:bg-[#161b25] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSigningOut
                     ? "Signing out…"
                     : isRedirecting
-                      ? "Redirecting to home…"
+                      ? "Redirecting…"
                       : "Sign out"}
                 </button>
               </div>
-            ) : (
-              <div
-                className="rounded-2xl border border-dashed border-[#2d313a]
-                           bg-[#10121a] p-3 flex flex-col gap-3"
-              >
-                <p className="text-xs text-[#a4a7b5]">
-                  Sign in to save your progress.
+            ) : isExpanded ? (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm leading-relaxed text-[#6d7895]">
+                  Sign in to save progress and manage your resumes.
                 </p>
                 <Link
                   href="/login"
-                  className="w-full rounded-xl border border-dashed border-[#2f323a]
-                             bg-transparent py-2 text-xs font-medium text-white text-center
-                             hover:border-[#4b4f5c] hover:bg-[#161920] transition-colors"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-[#2b3242] bg-transparent px-4 text-sm font-medium text-white transition hover:border-[#4b5a82] hover:bg-[#161b25]"
                 >
                   Sign in
                 </Link>
+              </div>
+            ) : user ? (
+              <div className="flex items-center justify-center">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1f2330] text-sm font-medium text-[#89a5ff]">
+                  {getInitials(user)}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center">
+                <IoLogIn className="h-5 w-5 text-[#89a5ff]" />
               </div>
             )}
           </div>

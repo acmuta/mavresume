@@ -9,14 +9,6 @@ interface CustomSectionTitleProps {
   description: string;
 }
 
-/**
- * CustomSectionTitle Component
- *
- * Displays the section title with description and a help button.
- * The help button now opens the floating help widget instead of a modal,
- * providing a better UX that doesn't interrupt the workflow.
- */
-
 export const CustomSectionTitle: React.FC<CustomSectionTitleProps> = ({
   title,
   description,
@@ -29,27 +21,29 @@ export const CustomSectionTitle: React.FC<CustomSectionTitleProps> = ({
   };
 
   return (
-    <section className="h-fit relative p-6 sm:p-8 flex flex-col text-start">
-      <div className="w-full flex items-start justify-between gap-4">
-        <div className="flex-1 space-y-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl md:text-5xl font-bold leading-tight text-white">
-              {title}
-            </h1>
-            <button
-              onClick={handleOpenHelp}
-              className="rounded-full p-2 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all"
-              aria-label="Open help for this section"
-              title="View tips and guides for this section"
-            >
-              <HelpCircle className="w-6 h-6 md:w-7 md:h-7" />
-            </button>
-          </div>
-
-          <p className="text-base md:text-xl text-[#cfd3e1] max-w-3xl">
+    <section className="relative overflow-hidden px-1 py-1">
+      <div className="absolute left-0 top-0 h-20 w-20 rounded-full bg-[#274cbc]/14 blur-[55px]" />
+      <div className="relative flex items-start justify-between gap-4">
+        <div className="max-w-3xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#89a5ff]">
+            Builder section
+          </p>
+          <h1 className="mt-2 text-[1.8rem] font-semibold tracking-tight text-white sm:text-[2.15rem]">
+            {title}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#cfd3e1] sm:text-[0.95rem]">
             {description}
           </p>
         </div>
+
+        <button
+          onClick={handleOpenHelp}
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#2b3242] bg-[#10121a]/78 text-[#6d7895] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+          aria-label="Open help for this section"
+          title="View tips and guides for this section"
+        >
+          <HelpCircle className="h-5 w-5" />
+        </button>
       </div>
     </section>
   );
