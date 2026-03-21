@@ -212,216 +212,239 @@ export const ExperienceAccordionItem: React.FC<
 
   return (
     <AccordionItem value={`Experience-${index}`}>
-      <AccordionTrigger className="text-lg flex items-center font-semibold no-underline">
-        <span className="flex-1 text-left">
-          Experience #{index + 1}
-          {experience[index]?.position && ` - ${experience[index].position}`}
-        </span>
-        {experience.length > 1 && (
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDeleteDialog(true);
-            }}
-            className="ml-2 p-1 rounded hover:bg-[#2d313a] transition-colors opacity-70 hover:opacity-100"
-            aria-label="Delete experience entry"
-          >
-            <X className="size-4" />
+      <AccordionTrigger className="text-lg font-semibold no-underline">
+        <div className="flex flex-1 items-center justify-between gap-4 pr-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
+              Experience {index + 1}
+            </p>
+            <p className="mt-2 text-left text-lg font-semibold text-white">
+              {experience[index]?.position || "New experience entry"}
+            </p>
           </div>
-        )}
+          {experience.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteDialog(true);
+              }}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#2b3242] bg-[#10121a]/70 text-[#6d7895] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+              aria-label="Delete experience entry"
+            >
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
       </AccordionTrigger>
       <AccordionContent>
-        <div className="w-full font-semibold flex gap-4 justify-center items-center overflow-auto">
-          <div className="w-9/10 flex flex-col gap-2">
-            <div className="flex w-full flex-col gap-2 items-center">
-              <div className="flex w-full gap-2 items-center">
-                <label>Position:</label>
-                <CustomTextField
-                  id="position"
-                  placeholder="Position Title"
-                  value={experience[index].position}
-                  onChange={(e) => {
-                    updateExperience(index, { position: e.target.value });
-                  }}
-                />
-                <label>at</label>
-                <CustomTextField
-                  id="company"
-                  placeholder="Company Name"
-                  value={experience[index].company}
-                  onChange={(e) => {
-                    updateExperience(index, { company: e.target.value });
-                  }}
-                />
-                <input
-                  type="checkbox"
-                  checked={experience[index].isCurrent}
-                  onChange={(e) => {
-                    updateExperience(index, { isCurrent: e.target.checked });
-                  }}
-                  className="checkbox border border-[#6F748B] hover:border-white transition"
-                />
-                <Label>Current Position</Label>
-              </div>
+        <div className="grid gap-4">
+          <div className="grid gap-5 md:grid-cols-2">
+            <CustomTextField
+              id={`position-${index}`}
+              label="Position"
+              placeholder="Position Title"
+              value={experience[index].position}
+              onChange={(e) => {
+                updateExperience(index, { position: e.target.value });
+              }}
+            />
+            <CustomTextField
+              id={`company-${index}`}
+              label="Company"
+              placeholder="Company Name"
+              value={experience[index].company}
+              onChange={(e) => {
+                updateExperience(index, { company: e.target.value });
+              }}
+            />
 
-              <div className="flex w-full gap-2 items-center">
-                <label>Date:</label>
-
+            <div className="grid gap-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#89a5ff]">
+                Start date
+              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Combobox
                   items={months}
-                  placeholder="Select Month"
+                  placeholder="Select month"
+                  value={experience[index].startMonth}
                   onChange={(val) =>
                     updateExperience(index, { startMonth: val as string })
                   }
                 />
                 <Combobox
                   items={years}
-                  placeholder="Select Year"
+                  placeholder="Select year"
+                  value={experience[index].startYear}
                   onChange={(val) =>
                     updateExperience(index, { startYear: val as string })
                   }
                 />
-                <label> - </label>
-                {!experience[index].isCurrent ? (
-                  <div className="flex gap-2">
-                    <Combobox
-                      items={months}
-                      placeholder="Select Month"
-                      onChange={(val) =>
-                        updateExperience(index, { endMonth: val as string })
-                      }
-                    />
-                    <Combobox
-                      items={years}
-                      placeholder="Select Year"
-                      onChange={(val) =>
-                        updateExperience(index, { endYear: val as string })
-                      }
-                    />
-                  </div>
-                ) : (
-                  <Label>Present</Label>
-                )}
-              </div>
-              <div className="flex flex-col w-full gap-2 items-start">
-                <div className="flex items-center justify-between w-full">
-                  <label htmlFor="" className="text-lg">
-                    Describe your role and achievements:
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleRefineAll}
-                    disabled={
-                      isRefiningAll ||
-                      !experience[index].bulletPoints.some(
-                        (bp) => bp && bp.trim().length > 0
-                      )
-                    }
-                    className="inline-flex items-center gap-2 rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-3 py-1.5 text-sm text-[#3c67eb] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Refine all bullet points with AI"
-                  >
-                    {isRefiningAll ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        <span>Refining...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Wand2 className="size-4" />
-                        <span>Refine All</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {experience[index].bulletPoints.map((bp, bpIndex) => (
-                  <div key={bpIndex} className="flex flex-col w-full gap-2">
-                    <div className="flex items-center w-full gap-2">
-                      <p className="text-2xl">&bull;</p>
-                      <input
-                        className="flex flex-wrap text-sm w-full border-b py-2 border-[#6F748B] 
-                             focus:outline-none focus:border-white hover:text-white 
-                             hover:border-white transition"
-                        placeholder={`Bullet Point #${bpIndex + 1}`}
-                        value={bp}
-                        onChange={(e) => {
-                          const newBulletPoints = [
-                            ...experience[index].bulletPoints,
-                          ];
-                          newBulletPoints[bpIndex] = e.target.value;
-                          updateExperience(index, {
-                            bulletPoints: newBulletPoints,
-                          });
-                        }}
-                      />
-                      <BulletRefinementButton
-                        bulletText={bp}
-                        onRefinedPreview={(refinedText) => {
-                          // Show preview box instead of updating store immediately
-                          setPreviewTexts((prev) => ({
-                            ...prev,
-                            [bpIndex]: refinedText,
-                          }));
-                        }}
-                        context={{
-                          title: `${experience[index].position} at ${experience[index].company}`,
-                        }}
-                        isExternalLoading={isRefiningAll}
-                      />
-                      {experience[index].bulletPoints.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteBulletPoint(bpIndex)}
-                          className="inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-2 py-1.5 text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
-                          title="Delete bullet point"
-                        >
-                          <X className="size-4" />
-                        </button>
-                      )}
-                    </div>
-                    {previewTexts[bpIndex] && (
-                      <BulletRefinementPreview
-                        refinedText={previewTexts[bpIndex]}
-                        originalText={bp}
-                        onAccept={() => {
-                          // Update store with refined text
-                          const newBulletPoints = [
-                            ...experience[index].bulletPoints,
-                          ];
-                          newBulletPoints[bpIndex] = previewTexts[bpIndex];
-                          updateExperience(index, {
-                            bulletPoints: newBulletPoints,
-                          });
-                          // Remove from preview state
-                          setPreviewTexts((prev) => {
-                            const updated = { ...prev };
-                            delete updated[bpIndex];
-                            return updated;
-                          });
-                        }}
-                        onDecline={() => {
-                          // Remove from preview state (don't update store)
-                          setPreviewTexts((prev) => {
-                            const updated = { ...prev };
-                            delete updated[bpIndex];
-                            return updated;
-                          });
-                        }}
-                      />
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleAddBulletPoint}
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#2b3242] bg-[#1a1d24]/80 px-3 py-1.5 text-sm text-[#6d7895] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
-                  title="Add bullet point"
-                >
-                  <Plus className="size-4" />
-                  <span>Add Bullet Point</span>
-                </button>
               </div>
             </div>
+
+            <div className="grid gap-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#89a5ff]">
+                End date
+              </label>
+              {!experience[index].isCurrent ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Combobox
+                    items={months}
+                    placeholder="Select month"
+                    value={experience[index].endMonth}
+                    onChange={(val) =>
+                      updateExperience(index, { endMonth: val as string })
+                    }
+                  />
+                  <Combobox
+                    items={years}
+                    placeholder="Select year"
+                    value={experience[index].endYear}
+                    onChange={(val) =>
+                      updateExperience(index, { endYear: val as string })
+                    }
+                  />
+                </div>
+              ) : (
+                <div className="inline-flex h-12 items-center rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 text-sm text-[#cfd3e1]">
+                  Present
+                </div>
+              )}
+            </div>
+
+            <div className="md:col-span-2 flex flex-wrap items-center gap-3 rounded-full bg-[#10121a]/72 px-4 py-3 ring-1 ring-inset ring-[#2b3242]">
+              <input
+                type="checkbox"
+                checked={experience[index].isCurrent}
+                onChange={(e) => {
+                  updateExperience(index, { isCurrent: e.target.checked });
+                }}
+                className="checkbox border border-[#6F748B] hover:border-white transition"
+              />
+              <Label className="text-[#cfd3e1]">Current Position</Label>
+            </div>
+          </div>
+
+          <div className="grid gap-4 rounded-[1.35rem] bg-[#10121a]/58 p-4 ring-1 ring-inset ring-[#2b3242]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#89a5ff]">
+                  Bullet points
+                </p>
+                <p className="mt-2 text-sm text-[#6d7895]">
+                  Describe your role and achievements.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRefineAll}
+                disabled={
+                  isRefiningAll ||
+                  !experience[index].bulletPoints.some(
+                    (bp) => bp && bp.trim().length > 0,
+                  )
+                }
+                className="inline-flex h-11 items-center gap-2 rounded-full border border-[#2b3242] bg-[#151923] px-4 text-sm text-[#89a5ff] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                title="Refine all bullet points with AI"
+              >
+                {isRefiningAll ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Refining...</span>
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="size-4" />
+                    <span>Refine All</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="grid gap-3">
+              {experience[index].bulletPoints.map((bp, bpIndex) => (
+                <div key={bpIndex} className="flex flex-col gap-2">
+                  <div className="flex items-start gap-2">
+                    <span className="mt-3 h-2 w-2 shrink-0 rounded-full bg-[#58f5c3]" />
+                    <input
+                      className="h-12 w-full rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#4b5a82] focus:bg-[#161b25]"
+                      placeholder={`Bullet Point #${bpIndex + 1}`}
+                      value={bp}
+                      onChange={(e) => {
+                        const newBulletPoints = [
+                          ...experience[index].bulletPoints,
+                        ];
+                        newBulletPoints[bpIndex] = e.target.value;
+                        updateExperience(index, {
+                          bulletPoints: newBulletPoints,
+                        });
+                      }}
+                    />
+                    <BulletRefinementButton
+                      bulletText={bp}
+                      onRefinedPreview={(refinedText) => {
+                        setPreviewTexts((prev) => ({
+                          ...prev,
+                          [bpIndex]: refinedText,
+                        }));
+                      }}
+                      context={{
+                        title: `${experience[index].position} at ${experience[index].company}`,
+                      }}
+                      isExternalLoading={isRefiningAll}
+                    />
+                    {experience[index].bulletPoints.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteBulletPoint(bpIndex)}
+                        className="inline-flex h-12 items-center justify-center rounded-2xl border border-[#2b3242] bg-[#151923] px-3 text-[#6d7895] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                        title="Delete bullet point"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                  {previewTexts[bpIndex] && (
+                    <BulletRefinementPreview
+                      refinedText={previewTexts[bpIndex]}
+                      originalText={bp}
+                      onAccept={() => {
+                        const newBulletPoints = [
+                          ...experience[index].bulletPoints,
+                        ];
+                        newBulletPoints[bpIndex] = previewTexts[bpIndex];
+                        updateExperience(index, {
+                          bulletPoints: newBulletPoints,
+                        });
+                        setPreviewTexts((prev) => {
+                          const updated = { ...prev };
+                          delete updated[bpIndex];
+                          return updated;
+                        });
+                      }}
+                      onDecline={() => {
+                        setPreviewTexts((prev) => {
+                          const updated = { ...prev };
+                          delete updated[bpIndex];
+                          return updated;
+                        });
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddBulletPoint}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a]/80 px-4 text-sm font-medium text-[#cfd3e1] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+              title="Add bullet point"
+            >
+              <Plus className="size-4" />
+              <span>Add Bullet Point</span>
+            </button>
           </div>
         </div>
       </AccordionContent>
@@ -437,7 +460,7 @@ export const ExperienceAccordionItem: React.FC<
       />
 
       <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
-        <DialogContent className="bg-[#151618] border-[#1c1d21] text-white">
+        <DialogContent className="rounded-[2rem] border border-[#2b3242] bg-[#111319]/96 text-white">
           <DialogHeader>
             <DialogTitle className="text-red-400">Refinement Error</DialogTitle>
             <DialogDescription className="text-[#a4a7b5]">
@@ -447,7 +470,7 @@ export const ExperienceAccordionItem: React.FC<
           <div className="flex justify-end">
             <Button
               onClick={() => setShowErrorDialog(false)}
-              className="bg-[#274CBC] hover:bg-[#315be1]"
+              className="rounded-full bg-[#274CBC] hover:bg-[#315be1]"
             >
               Close
             </Button>
@@ -456,7 +479,7 @@ export const ExperienceAccordionItem: React.FC<
       </Dialog>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-[#151618] w-[30vw] border-[#1c1d21] text-white">
+        <DialogContent className="w-[92vw] max-w-lg rounded-[2rem] border border-[#2b3242] bg-[#111319]/96 text-white">
           <DialogHeader>
             <DialogTitle>Delete Experience Entry?</DialogTitle>
             <DialogDescription className="text-[#a4a7b5]">
@@ -467,13 +490,13 @@ export const ExperienceAccordionItem: React.FC<
             <Button
               onClick={() => setShowDeleteDialog(false)}
               variant="outline"
-              className="hover:text-white bg-[#151618] border border-[#2d313a] hover:bg-[#1c1d21]"
+              className="rounded-full border-[#2d313a] bg-transparent hover:bg-[#161b25] hover:text-white"
             >
               Cancel
             </Button>
             <Button
               onClick={handleDelete}
-              className="border border-[#2d313a] hover:bg-[#1c1d21]"
+              className="rounded-full bg-[#274cbc] text-white hover:bg-[#315be1]"
             >
               Delete
             </Button>

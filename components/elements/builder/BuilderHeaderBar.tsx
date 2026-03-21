@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { Loader2, Check, AlertCircle, Cloud } from "lucide-react";
 import { MobileResumePreviewDrawer } from "../resume/MobileResumePreviewDrawer";
@@ -6,84 +7,74 @@ import { MobileSidebar } from "./MobileSidebar";
 import { RateLimitStatus } from "../refinement/RateLimitStatus";
 import { useResumeStore } from "@/store/useResumeStore";
 
-/**
- * Save status indicator component.
- * Displays the current save state with appropriate icon and text.
- */
 const SaveStatusIndicator: React.FC = () => {
   const { saveStatus, currentResumeId } = useResumeStore();
 
-  // Don't show indicator if no resume is loaded
   if (!currentResumeId) {
     return null;
   }
 
   const statusConfig = {
     idle: {
-      icon: <Cloud className="w-4 h-4 text-[#6d7895]" />,
-      text: "Auto-save enabled",
+      icon: <Cloud className="h-4 w-4 text-[#6d7895]" />,
+      text: "Auto-save",
       className: "text-[#6d7895]",
     },
     saving: {
-      icon: <Loader2 className="w-4 h-4 animate-spin text-[#6d7895]" />,
-      text: "Saving...",
-      className: "text-[#6d7895]",
+      icon: <Loader2 className="h-4 w-4 animate-spin text-[#89a5ff]" />,
+      text: "Saving",
+      className: "text-[#89a5ff]",
     },
     saved: {
-      icon: <Check className="w-4 h-4 text-[#274cbc]" />,
+      icon: <Check className="h-4 w-4 text-[#58f5c3]" />,
       text: "Saved",
-      className: "text-[#274cbc]",
+      className: "text-[#58f5c3]",
     },
     error: {
-      icon: <AlertCircle className="w-4 h-4 text-red-400" />,
+      icon: <AlertCircle className="h-4 w-4 text-red-400" />,
       text: "Save failed",
       className: "text-red-400",
     },
-  };
+  } as const;
 
   const config = statusConfig[saveStatus];
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-full border border-[#2b3242] bg-[#1a1d24]/80 px-2 md:px-3 py-1 text-xs ${config.className}`}
+      className={`inline-flex items-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a]/80 px-3 py-1.5 text-xs font-medium ${config.className}`}
     >
       {config.icon}
-      <span className="hidden sm:inline text-xs font-medium">{config.text}</span>
+      <span>{config.text}</span>
     </div>
   );
 };
 
 export const BuilderHeaderBar = () => {
   return (
-    <div className="w-full fixed top-0 left-0 z-20 h-[8vh] md:ml-25 border-b bg-[#15171c]/90 border-[#2d313a] backdrop-blur-md">
-      <div className="flex h-full items-center justify-between gap-2 md:gap-4 px-3 md:px-5 md:mr-[44vw] md:pr-28">
-        {/* Left section: Mobile menu + Logo */}
-        <div className="flex items-center gap-2 md:gap-4">
-          {/* Mobile hamburger menu */}
+    <div className="fixed inset-x-0 top-0 z-30 px-3 py-3 md:pl-[7.25rem] md:pr-5 xl:px-6 xl:pl-[7.5rem]">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3 rounded-full border border-[#2b3242] bg-[#0f1117]/82 px-4 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+        <div className="flex items-center gap-3">
           <div className="flex md:hidden">
             <MobileSidebar />
           </div>
-          
-          {/* Logo */}
-          <div
-            className="font-bold tracking-tight text-lg md:text-2xl 
-                mask-[linear-gradient(to_bottom,black_40%,transparent)] 
-                mask-size-[100%_100%] mask-no-repeat pointer-events-none"
-          >
-            RESUME<span className="font-extralight">BUILDER</span>
+
+          <div>
+            <p className="font-bold tracking-tight text-xl sm:text-2xl [mask-image:linear-gradient(to_bottom,black_40%,transparent)] [mask-repeat:no-repeat] [mask-size:100%_100%]">
+              RESUME<span className="font-extralight">BUILDER</span>
+            </p>
+            <p className="hidden text-[11px] uppercase tracking-[0.22em] text-[#6d7895] sm:block">
+              Guided editing workspace
+            </p>
           </div>
         </div>
 
-        {/* Center/Right section: Status indicators + Mobile preview */}
-        <div className="flex items-center gap-2 md:gap-3">
-          {/* Save Status Indicator */}
-          <div className="hidden md:flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden items-center gap-2 lg:flex">
             <SaveStatusIndicator />
             <RateLimitStatus />
           </div>
-          
-          {/* Mobile Preview Button */}
-          <div className="flex md:hidden">
+
+          <div className="flex lg:hidden">
             <MobileResumePreviewDrawer />
           </div>
         </div>

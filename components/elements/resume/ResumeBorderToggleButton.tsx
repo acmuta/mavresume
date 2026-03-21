@@ -23,10 +23,10 @@ export const ResumeBorderToggleButton = ({
         <Button
           variant="ghost"
           size="icon-sm"
-          className={`rounded-full px-5 transition-all ${
+          className={`h-10 w-10 rounded-full transition-all ${
             showBorder
-              ? "text-white bg-white/10"
-              : "text-[#6d7895] hover:text-white hover:bg-white/10"
+              ? "border border-[#4b5a82] bg-[#161b25] text-white"
+              : "border border-transparent text-[#6d7895] hover:border-[#2b3242] hover:bg-[#161b25] hover:text-white"
           }`}
           aria-label="Toggle border"
           onClick={onToggle}
