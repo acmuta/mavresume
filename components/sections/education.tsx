@@ -1,28 +1,28 @@
+import { Plus } from "lucide-react";
+
 import { utaEngineeringCourses } from "../../data/university-data";
 import { useResumeStore } from "../../store/useResumeStore";
 import { CustomSectionTitle } from "../elements/form/CustomSectionTitle";
 import { NoteBox } from "../elements/feedback/NoteBox";
 import { Combobox } from "../ui/combobox";
-import { Plus } from "lucide-react";
 import { EducationAccordion } from "../elements/accordion/EducationAccordion";
 
 export function EducationSection() {
   const { addEducation, relevantCourses } = useResumeStore();
 
   return (
-    <div className="flex w-full h-full items-center justify-center">
-      <div className="md:flex flex-col md:p-7 w-full">
-        {/* Title and Description */}
+    <div className="flex w-full items-center justify-center">
+      <div className="flex w-full flex-col gap-6 px-2 py-2 sm:px-3 sm:py-3">
         <CustomSectionTitle
           title="Education"
-          description="Show what your studying and courses you've taken. Include your degree, school, major, and graduation date."
+          description="Add your school, degree, major, graduation date, and any coursework that supports the rest of your resume."
         />
 
-        <section className="mt-4 flex flex-col gap-3  p-4">
+        <section className="grid gap-4">
           <EducationAccordion />
 
           <button
-            className="w-full py-4 flex justify-center items-center text-sm bg-[#282a2f]/20 font-semibold text-[#51545c] hover:text-white transition rounded-2xl border-[2px] border-dashed border-[#41444c]"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a]/80 px-5 text-sm font-medium text-[#cfd3e1] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
             onClick={() =>
               addEducation({
                 school: "",
@@ -33,21 +33,29 @@ export function EducationSection() {
                 graduationYear: "",
               })
             }
+            type="button"
           >
-            <Plus className="mr-1" />
-            <p>Add Education</p>
+            <Plus className="h-4 w-4" />
+            Add Education
           </button>
+        </section>
 
-          <div className="divider m-0"></div>
-
+        <section className="grid gap-4">
           <NoteBox
             icon="Info"
-            note="Don't skip this! Adding coursework helps us identify related skills
-          and projects to put on your resume."
+            note="Adding coursework helps us suggest related skills and technologies to include elsewhere in the resume."
           />
 
-          <div className="flex w-fit font-semibold flex-wrap gap-2 items-center">
-            <label htmlFor="">Add All Relevant Coursework: </label>
+          <div className="grid gap-3 rounded-[1.5rem] bg-[#10121a]/72 p-4 ring-1 ring-inset ring-[#2b3242]">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
+                Relevant coursework
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[#6d7895]">
+                Select the courses that best support your skills and projects.
+              </p>
+            </div>
+
             <Combobox
               items={utaEngineeringCourses}
               value={relevantCourses}
@@ -56,11 +64,11 @@ export function EducationSection() {
                   relevantCourses: Array.isArray(selected)
                     ? selected
                     : selected
-                    ? [selected]
-                    : undefined,
+                      ? [selected]
+                      : undefined,
                 })
               }
-              placeholder="Select Courses..."
+              placeholder="Select courses..."
               multiSelect
             />
           </div>

@@ -1,62 +1,62 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTrigger,
-} from "../../ui/drawer";
+import React from "react";
+import { EyeIcon } from "lucide-react";
+
+import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from "../../ui/drawer";
 import { ResumePreview } from "./ResumePreview";
 import { ResumeDocPreview } from "./ResumeDocPreview";
 import { ResumeDocDownloadButton } from "./ResumeDocDownloadButton";
 import { SectionReorderButton } from "./SectionReorderButton";
 import { ResumeBorderToggleButton } from "./ResumeBorderToggleButton";
 import { TooltipProvider } from "../../ui/tooltip";
-import { EyeIcon } from "lucide-react";
 import { Button } from "../../ui/button";
-
+import { useResumeStore } from "../../../store/useResumeStore";
 
 export const MobileResumePreviewDrawer = () => {
-   const [showBorder, setShowBorder] = useState(false);
-   
+  const { showBorder = false, setShowBorder } = useResumeStore();
+
   return (
     <Drawer direction="bottom">
       <DrawerTrigger asChild>
         <Button
           variant="ghost"
           size="icon-sm"
-          className="rounded-full px-5 text-[#6d7895] hover:text-white hover:bg-white/10 transition-all"
+          className="rounded-full border border-[#2b3242] px-5 text-[#cfd3e1] transition-all hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
           aria-label="Preview Resume"
         >
-          <EyeIcon className="w-7 h-7 mr-2" />
+          <EyeIcon className="mr-2 h-5 w-5" />
           <span className="text-sm">Preview</span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="bg-[#15171c]/90 backdrop-blur-sm border-t border-[#2d313a] max-h-[90vh]">
-        <DrawerHeader className="h-[8vh] px-5 flex items-center justify-between border-b border-[#2d313a]">
-          <div
-            className="font-bold tracking-tight text-2xl 
-                mask-[linear-gradient(to_bottom,black_40%,transparent)] 
-                mask-size-[100%_100%] mask-no-repeat pointer-events-none"
-          >
-            RESUME<span className="font-extralight">PREVIEW</span>
-          </div>
-          {/* Resume Preview Controls */}
-          <TooltipProvider>
-            <div className="flex justify-center items-center border rounded-3xl px-1 py-1 gap-1 bg-[#1a1c22] border-[#2d313a]">
-              <SectionReorderButton />
-              <ResumeBorderToggleButton
-                showBorder={showBorder}
-                onToggle={() => setShowBorder(!showBorder)}
-              />
-              <ResumeDocPreview />
-              <ResumeDocDownloadButton />
+      <DrawerContent className="max-h-[90vh] border-t border-[#2d313a] bg-[#111319]/94 backdrop-blur-xl">
+        <DrawerHeader className="px-4 pb-2 pt-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
+                Live preview
+              </p>
+              <div className="mt-1 text-sm text-[#6d7895]">
+                PDF-sized output
+              </div>
             </div>
-          </TooltipProvider>
+            <TooltipProvider>
+              <div className="flex items-center gap-1 rounded-full border border-[#2b3242] bg-[#0f1117]/78 p-1.5">
+                <SectionReorderButton />
+                <ResumeBorderToggleButton
+                  showBorder={showBorder}
+                  onToggle={() => setShowBorder?.(!showBorder)}
+                />
+                <ResumeDocPreview />
+                <ResumeDocDownloadButton />
+              </div>
+            </TooltipProvider>
+          </div>
         </DrawerHeader>
-        <div className="w-full h-[calc(90vh-8vh)] overflow-y-auto">
-          <ResumePreview />
+        <div className="overflow-y-auto px-2 pb-3">
+          <div className="rounded-[1.75rem] border border-[#222733] bg-[#0d0f14]/72">
+            <ResumePreview />
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

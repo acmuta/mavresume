@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaGithub, FaDiscord, FaGraduationCap } from "react-icons/fa";
-import { FileText, Menu, X } from "lucide-react";
+import { ClipboardCheck, FileText, Menu, X } from "lucide-react";
 import { IoMdHelpCircle } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
 
 import { signOut } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useSessionSync } from "@/lib/hooks/useSessionSync";
 import { Button } from "@/components/ui/button";
@@ -81,6 +83,23 @@ function getInitials(user: {
   return (local.slice(0, 2) || "?").toUpperCase();
 }
 
+function canAccessReviewerDashboard(user: User | null): boolean {
+  const role = user?.app_metadata?.["user_role"];
+  return role === "reviewer" || role === "admin";
+}
+
+function getRoleFromAccessToken(accessToken: string | undefined): string | null {
+  if (!accessToken) return null;
+
+  try {
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    const role = payload?.user_role;
+    return typeof role === "string" ? role : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Mobile sidebar component with slide-in drawer from the left.
  * Triggered by a hamburger menu icon in the header.
@@ -91,8 +110,56 @@ export const MobileSidebar = () => {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasReviewerAccess, setHasReviewerAccess] = useState(false);
 
   useSessionSync();
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const syncRole = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const tokenRole = getRoleFromAccessToken(session?.access_token);
+      setHasReviewerAccess(
+        tokenRole === "reviewer" ||
+          tokenRole === "admin" ||
+          canAccessReviewerDashboard(user),
+      );
+    };
+
+    syncRole();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const tokenRole = getRoleFromAccessToken(session?.access_token);
+      setHasReviewerAccess(
+        tokenRole === "reviewer" ||
+          tokenRole === "admin" ||
+          canAccessReviewerDashboard(session?.user ?? user),
+      );
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
+
+  const visibleLinks = hasReviewerAccess
+    ? [
+        ...sidebarLinks.slice(0, 1),
+        {
+          href: "/reviewer/dashboard",
+          label: "Reviewer Queue",
+          icon: ClipboardCheck,
+          ariaLabel: "Open reviewer dashboard",
+          external: false,
+        },
+        ...sidebarLinks.slice(1),
+      ]
+    : sidebarLinks;
 
   return (
     <Drawer direction="left" open={isOpen} onOpenChange={setIsOpen}>
@@ -131,7 +198,7 @@ export const MobileSidebar = () => {
 
         {/* Navigation Links */}
         <div className="flex-1 flex flex-col gap-2 px-4 py-4 overflow-y-auto">
-          {sidebarLinks.map((link) => {
+          {visibleLinks.map((link) => {
             const IconComponent = link.icon;
             return (
               <Link
