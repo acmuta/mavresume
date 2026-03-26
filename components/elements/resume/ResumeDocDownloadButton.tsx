@@ -9,7 +9,7 @@ import { useResumeStore } from "../../../store/useResumeStore";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 export const ResumeDocDownloadButton = () => {
-  const { personalInfo, sectionOrder } = useResumeStore();
+  const { personalInfo, sectionOrder, pdfSettings } = useResumeStore();
   const [isClient, setIsClient] = useState(false);
   
   // Ensure this only renders on the client side
@@ -47,7 +47,11 @@ export const ResumeDocDownloadButton = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <PDFDownloadLink key={sectionOrder.join("-")} document={<ResumeDoc />} fileName={fileName}>
+        <PDFDownloadLink
+          key={`${sectionOrder.join("-")}-${JSON.stringify(pdfSettings)}`}
+          document={<ResumeDoc />}
+          fileName={fileName}
+        >
           {({ loading }) => (
             <Button
               variant="ghost"

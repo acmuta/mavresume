@@ -5,15 +5,23 @@ import { Skeleton } from "../ui/skeleton";
 
 export const TechnicalSkillsPreview = () => {
   const resume = useResumeStore();
+  const sectionHeadingStyle: React.CSSProperties = {
+    fontSize: "var(--resume-heading-size)",
+    fontWeight: "var(--resume-heading-weight)",
+  };
 
   return (
     <div className="w-full flex flex-col ">
-      <h1 className="border-b text-[2em] font-bold">Technical Skills</h1>
+      <h1 className="border-b" style={sectionHeadingStyle}>
+        Technical Skills
+      </h1>
       <div className="flex flex-wrap items-center mt-1">
-        <h2 className="font-bold text-[1.3em] mr-1">Languages:</h2>
+        <h2 className="font-bold mr-1" style={{ fontSize: "var(--resume-label-size)" }}>
+          Languages:
+        </h2>
         {resume.skills.languagesList.length > 0 ? (
           resume.skills.languagesList.map((lang, index) => (
-            <p key={index} className="text-[1.2em] mr-1">
+            <p key={index} className="mr-1" style={{ fontSize: "var(--resume-body-size)" }}>
               {lang}
               {index !== resume.skills.languagesList.length - 1 ? ", " : ""}
             </p>
@@ -29,10 +37,12 @@ export const TechnicalSkillsPreview = () => {
         )}
       </div>
       <div className="flex flex-wrap items-center mt-1">
-        <h2 className="font-bold text-[1.3em] mr-1">Technologies:</h2>
+        <h2 className="font-bold mr-1" style={{ fontSize: "var(--resume-label-size)" }}>
+          Technologies:
+        </h2>
         {resume.skills.technologiesList.length > 0 ? (
           resume.skills.technologiesList.map((tech, index) => (
-            <p key={index} className="text-[1.2em] mr-1">
+            <p key={index} className="mr-1" style={{ fontSize: "var(--resume-body-size)" }}>
               {tech}
               {index !== resume.skills.technologiesList.length - 1 ? ", " : ""}
             </p>

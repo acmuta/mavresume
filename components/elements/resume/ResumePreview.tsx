@@ -11,11 +11,21 @@ import { ExperiencePreview } from "../../previews/ExperiencePreview";
 import { useResumeStore } from "../../../store/useResumeStore";
 import { useContentOverflow } from "../../../lib/hooks/useContentOverflow";
 import { OverflowWarningBadge } from "./OverflowWarningBadge";
+import {
+  computePreviewTypography,
+  resolvePdfMarginPaddingPx,
+  toPreviewFontFamily,
+} from "@/lib/resume/pdfSettings";
 
-const PDF_PAGE_PADDING_PERCENT = `${(32 / 595.28) * 100}%`;
+const BASE_PADDING_PERCENT = 100 / 595.28;
+const SECTION_GAP_MAP: Record<string, string> = {
+  tight: "0.65em",
+  normal: "0.9em",
+  relaxed: "1.15em",
+};
 
 export const ResumePreview = () => {
-  const { sectionOrder, showBorder } = useResumeStore();
+  const { sectionOrder, showBorder, pdfSettings } = useResumeStore();
 
   const containerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -34,6 +44,9 @@ export const ResumePreview = () => {
   };
 
   const reorderableSections = sectionOrder.filter((id) => id !== "personal-info");
+  const pagePaddingPercent = `${resolvePdfMarginPaddingPx(pdfSettings) * BASE_PADDING_PERCENT}%`;
+  const sectionGap = SECTION_GAP_MAP[pdfSettings.sectionSpacingDensity] ?? "0.9em";
+  const previewTypography = computePreviewTypography(pdfSettings);
 
   return (
     <div className="flex h-full w-full items-start justify-center px-2 pb-2 pt-1 md:px-3 md:pb-3">
@@ -48,11 +61,25 @@ export const ResumePreview = () => {
       >
         <div
           className="absolute inset-0"
-          style={{ padding: PDF_PAGE_PADDING_PERCENT }}
+          style={{ padding: pagePaddingPercent }}
         >
           <div
             ref={contentRef}
-            className="flex flex-col gap-[0.9em] text-[0.44rem] sm:text-[0.5rem] md:text-[0.56rem] xl:text-[0.6rem]"
+            className="flex flex-col text-[0.44rem] sm:text-[0.5rem] md:text-[0.56rem] xl:text-[0.6rem]"
+            style={{
+              gap: sectionGap,
+              fontSize: `${previewTypography.scale * 100}%`,
+              lineHeight: pdfSettings.lineHeight,
+              fontFamily: toPreviewFontFamily(pdfSettings),
+              ["--resume-heading-size" as string]: `${previewTypography.headingEm}em`,
+              ["--resume-subheading-size" as string]: `${previewTypography.subheadingEm}em`,
+              ["--resume-label-size" as string]: `${previewTypography.labelEm}em`,
+              ["--resume-body-size" as string]: `${previewTypography.bodyEm}em`,
+              ["--resume-name-size" as string]: `${previewTypography.nameEm}em`,
+              ["--resume-heading-weight" as string]: String(
+                pdfSettings.sectionHeadingWeight,
+              ),
+            }}
           >
             <PersonalInfoPreview />
 

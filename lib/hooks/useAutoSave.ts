@@ -31,6 +31,7 @@ export function useAutoSave(
     experience,
     skills,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   } = useResumeStore();
@@ -50,6 +51,7 @@ export function useAutoSave(
         experience,
         skills,
         section_order: sectionOrder,
+        pdf_settings: pdfSettings,
       });
 
       // Only update status if component is still mounted
@@ -86,6 +88,7 @@ export function useAutoSave(
     experience,
     skills,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   ]);
@@ -122,6 +125,7 @@ export function useAutoSave(
     experience,
     skills,
     sectionOrder,
+    pdfSettings,
     debounceMs,
     saveToDatabase,
   ]);
@@ -151,6 +155,7 @@ export function useManualSave(): () => Promise<void> {
     experience,
     skills,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   } = useResumeStore();
@@ -171,6 +176,7 @@ export function useManualSave(): () => Promise<void> {
         experience,
         skills,
         section_order: sectionOrder,
+        pdf_settings: pdfSettings,
       });
 
       setSaveStatus("saved");
@@ -199,6 +205,7 @@ export function useManualSave(): () => Promise<void> {
     experience,
     skills,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   ]);

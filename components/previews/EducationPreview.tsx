@@ -5,20 +5,28 @@ import { Skeleton } from "../ui/skeleton";
 
 export const EducationPreview = () => {
   const resume = useResumeStore();
+  const sectionHeadingStyle: React.CSSProperties = {
+    fontSize: "var(--resume-heading-size)",
+    fontWeight: "var(--resume-heading-weight)",
+  };
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <h1 className="border-b text-[2em] font-bold">Education</h1>
+      <h1 className="border-b" style={sectionHeadingStyle}>
+        Education
+      </h1>
       {resume.education.map((edu, index) => (
         <section key={index} className="flex flex-col">
           <div className="flex justify-between items-center font-bold">
             {edu.school ? (
-              <p className="text-[1.5em]">{edu.school}</p>
+              <p style={{ fontSize: "var(--resume-subheading-size)" }}>
+                {edu.school}
+              </p>
             ) : (
               <Skeleton className="h-[2.5em] w-48" />
             )}
 
-            <div className="text-[1.5em]">
+            <div style={{ fontSize: "var(--resume-subheading-size)" }}>
               {edu.graduationMonth && edu.graduationYear ? (
                 <p>
                   {edu.graduationMonth} {edu.graduationYear}
@@ -31,7 +39,7 @@ export const EducationPreview = () => {
           <div className="flex justify-between items-center">
             <div className="flex">
               {edu.degree || edu.major ? (
-                <p className="text-[1.2em]">
+                <p style={{ fontSize: "var(--resume-body-size)" }}>
                   {edu.degree && edu.major
                     ? `${edu.degree} In ${edu.major}`
                     : edu.degree || edu.major}
@@ -43,7 +51,9 @@ export const EducationPreview = () => {
             <div>
               {edu.includeGPA ? (
                 edu.gpa ? (
-                  <p className="text-[1.2em]">GPA: {edu.gpa}</p>
+                  <p style={{ fontSize: "var(--resume-body-size)" }}>
+                    GPA: {edu.gpa}
+                  </p>
                 ) : (
                   <Skeleton className="h-[2.2em] w-20" />
                 )
@@ -54,7 +64,7 @@ export const EducationPreview = () => {
       ))}
       <div>
         {resume.relevantCourses && (
-          <p className="text-[1.2em] pl-4 -indent-2">
+          <p className="pl-4 -indent-2" style={{ fontSize: "var(--resume-body-size)" }}>
             <span className="font-bold">• Relevant Coursework</span>:{" "}
             {resume.relevantCourses.join(", ")}
           </p>

@@ -3,6 +3,7 @@ import { SectionReorderButton } from "./SectionReorderButton";
 import { ResumeBorderToggleButton } from "./ResumeBorderToggleButton";
 import { ResumeDocPreview } from "./ResumeDocPreview";
 import { ResumeDocDownloadButton } from "./ResumeDocDownloadButton";
+import { ResumeSettingsControlButton } from "./ResumeSettingsControlButton";
 import { useResumeStore } from "../../../store/useResumeStore";
 
 export const ResumePreviewControls = () => {
@@ -15,6 +16,7 @@ export const ResumePreviewControls = () => {
         showBorder={showBorder!}
         onToggle={() => setShowBorder && setShowBorder(!showBorder)}
       />
+      <ResumeSettingsControlButton />
       <ResumeDocPreview />
       <ResumeDocDownloadButton />
     </>

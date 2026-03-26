@@ -1,4 +1,9 @@
 import { create } from "zustand";
+import {
+  DEFAULT_PDF_SETTINGS,
+  normalizePdfSettings,
+  type PdfSettings,
+} from "@/lib/resume/pdfSettings";
 
 /**
  * Centralized state management for resume data using Zustand.
@@ -78,6 +83,7 @@ export interface DatabaseResumeData {
   experience?: Experience[];
   skills?: Skills;
   section_order?: string[];
+  pdf_settings?: Partial<PdfSettings> | null;
 }
 
 /**
@@ -101,9 +107,11 @@ export interface ResumeState {
   skills: Skills;
   experience: Experience[];
   sectionOrder: string[];
+  pdfSettings: PdfSettings;
 
   // UI state
   showBorder?: boolean;
+  isResumeSettingsOpen: boolean;
 
   // Database sync actions
   setCurrentResumeId: (id: string | null) => void;
@@ -114,6 +122,7 @@ export interface ResumeState {
 
   // UI actions
   setShowBorder?: (show: boolean) => void;
+  setIsResumeSettingsOpen: (open: boolean) => void;
 
   // Resume data actions
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
@@ -130,6 +139,9 @@ export interface ResumeState {
   updateSectionOrder: (order: string[]) => void;
   addSection: (sectionId: string) => void;
   removeSection: (sectionId: string) => void;
+  setPdfSettings: (settings: Partial<PdfSettings> | null | undefined) => void;
+  updatePdfSettings: (settings: Partial<PdfSettings>) => void;
+  resetPdfSettings: () => void;
 }
 
 // Default initial state for a new/reset resume
@@ -174,6 +186,7 @@ const initialResumeState = {
     "projects",
     "experience",
   ],
+  pdfSettings: { ...DEFAULT_PDF_SETTINGS },
 };
 
 /**
@@ -193,6 +206,7 @@ export const useResumeStore = create<ResumeState>()((set) => ({
 
   // UI state
   showBorder: false,
+  isResumeSettingsOpen: false,
 
   // Database sync actions
   setCurrentResumeId: (id) =>
@@ -234,6 +248,7 @@ export const useResumeStore = create<ResumeState>()((set) => ({
           : initialResumeState.experience,
       skills: data.skills ?? initialResumeState.skills,
       sectionOrder: data.section_order ?? initialResumeState.sectionOrder,
+      pdfSettings: normalizePdfSettings(data.pdf_settings),
       // Reset save status after loading
       saveStatus: "idle",
     })),
@@ -248,12 +263,18 @@ export const useResumeStore = create<ResumeState>()((set) => ({
       saveStatus: "idle",
       lastSavedAt: null,
       ...initialResumeState,
+      pdfSettings: { ...DEFAULT_PDF_SETTINGS },
     })),
 
   // UI actions
   setShowBorder: (show: boolean) =>
     set(() => ({
       showBorder: show,
+    })),
+
+  setIsResumeSettingsOpen: (open: boolean) =>
+    set(() => ({
+      isResumeSettingsOpen: open,
     })),
 
   // Resume data update actions
@@ -396,4 +417,22 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         sectionOrder: state.sectionOrder.filter((id) => id !== sectionId),
       };
     }),
+
+  setPdfSettings: (settings) =>
+    set(() => ({
+      pdfSettings: normalizePdfSettings(settings),
+    })),
+
+  updatePdfSettings: (settings) =>
+    set((state) => ({
+      pdfSettings: normalizePdfSettings({
+        ...state.pdfSettings,
+        ...settings,
+      }),
+    })),
+
+  resetPdfSettings: () =>
+    set(() => ({
+      pdfSettings: { ...DEFAULT_PDF_SETTINGS },
+    })),
 }));

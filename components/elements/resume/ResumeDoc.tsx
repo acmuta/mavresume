@@ -2,6 +2,12 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { useResumeStore } from "../../../store/useResumeStore";
+import {
+  resolvePdfMarginPaddingPx,
+  resolvePdfSectionSpacingPx,
+  toReactPdfFontFamily,
+  type PdfSettings,
+} from "@/lib/resume/pdfSettings";
 
 /**
  * PDF document component using @react-pdf/renderer.
@@ -19,80 +25,81 @@ import { useResumeStore } from "../../../store/useResumeStore";
  * Data flow: Store update → component re-render → PDF re-generation
  */
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 32,
-    fontFamily: "Times-Roman",
-    fontSize: 11,
-    lineHeight: 1.4,
-    color: "#000",
-  },
+const getStyles = (pdfSettings: PdfSettings) =>
+  StyleSheet.create({
+    page: {
+      padding: resolvePdfMarginPaddingPx(pdfSettings),
+      fontFamily: toReactPdfFontFamily(pdfSettings),
+      fontSize: pdfSettings.baseFontSize,
+      lineHeight: pdfSettings.lineHeight,
+      color: "#000",
+    },
 
-  name: {
-    fontSize: 22,
-    fontWeight: 700,
-    textAlign: "center",
-    marginBottom: 8,
-  },
+    name: {
+      fontSize: Math.round(pdfSettings.baseFontSize * 2),
+      fontWeight: 700,
+      textAlign: "center",
+      marginBottom: 8,
+    },
 
-  contactRow: {
-    fontSize: 10,
-    textAlign: "center",
-    marginBottom: 14,
-  },
+    contactRow: {
+      fontSize: Math.max(pdfSettings.baseFontSize - 1, 9),
+      textAlign: "center",
+      marginBottom: 14,
+    },
 
-  section: {
-    marginTop: 3,
-    marginBottom: 3,
-  },
+    section: {
+      marginTop: resolvePdfSectionSpacingPx(pdfSettings),
+      marginBottom: resolvePdfSectionSpacingPx(pdfSettings),
+    },
 
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: 700,
-    marginBottom: 4,
-    textTransform: "uppercase",
-    borderBottom: "1px solid #000",
-    paddingBottom: 2,
-  },
+    sectionTitle: {
+      fontSize: pdfSettings.sectionHeadingSize,
+      fontWeight: pdfSettings.sectionHeadingWeight,
+      marginBottom: 4,
+      textTransform: "uppercase",
+      borderBottom: "1px solid #000",
+      paddingBottom: 2,
+    },
 
-  bold: {
-    fontWeight: 700,
-  },
+    bold: {
+      fontWeight: 700,
+    },
 
-  jobHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 2,
-  },
+    jobHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 2,
+    },
 
-  projectHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 2,
-  },
+    projectHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 2,
+    },
 
-  smallText: {
-    fontSize: 10,
-  },
+    smallText: {
+      fontSize: Math.max(pdfSettings.baseFontSize - 1, 9),
+    },
 
-  bullets: {
-    marginLeft: 12,
-    marginTop: 2,
-  },
+    bullets: {
+      marginLeft: 12,
+      marginTop: 2,
+    },
 
-  bulletPoint: {
-    flexDirection: "row",
-    marginBottom: 2,
-  },
+    bulletPoint: {
+      flexDirection: "row",
+      marginBottom: 2,
+    },
 
-  bulletSymbol: {
-    width: 10,
-  },
+    bulletSymbol: {
+      width: 10,
+    },
 
-  bulletText: {
-    flex: 1,
-  },
-});
+    bulletText: {
+      flex: 1,
+    },
+  });
 
 /**
  * Formats month and year into a readable date string.
@@ -128,7 +135,9 @@ export const ResumeDoc = () => {
     projects,
     relevantCourses,
     sectionOrder,
+    pdfSettings,
   } = useResumeStore();
+  const styles = getStyles(pdfSettings);
 
   // Helper function to render Education section
   const renderEducationSection = () => (

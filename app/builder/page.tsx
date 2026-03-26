@@ -17,6 +17,7 @@ import { useResumeStore, type SectionId } from "../../store/useResumeStore";
 import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
+import { ResumeSettingsModal } from "../../components/elements/resume/ResumeSettingsModal";
 
 const SECTION_CONFIG: Record<string, { Component: React.FC; label: string }> = {
   "personal-info": { Component: PersonalInfoSection, label: "Personal Info" },
@@ -36,6 +37,8 @@ function BuilderPageContent() {
     setCurrentResumeId,
     setResumeFromDatabase,
     sectionOrder,
+    isResumeSettingsOpen,
+    setIsResumeSettingsOpen,
   } = useResumeStore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -81,6 +84,7 @@ function BuilderPageContent() {
             experience: resumeWithData.resume_data.experience,
             skills: resumeWithData.resume_data.skills,
             section_order: resumeWithData.resume_data.section_order,
+            pdf_settings: resumeWithData.resume_data.pdf_settings,
           });
         }
 
@@ -297,6 +301,10 @@ function BuilderPageContent() {
       <SectionManagerModal
         open={isSectionManagerOpen}
         onOpenChange={setIsSectionManagerOpen}
+      />
+      <ResumeSettingsModal
+        open={isResumeSettingsOpen}
+        onOpenChange={(open) => setIsResumeSettingsOpen(open)}
       />
       {showSubmitReviewModal && (
         <SubmitReviewModal

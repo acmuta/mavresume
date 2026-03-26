@@ -1,5 +1,9 @@
 import { createClient } from "./supabase/client";
 import type { PersonalInfo, Education, Project, Experience, Skills } from "@/store/useResumeStore";
+import {
+  DEFAULT_PDF_SETTINGS,
+  type PdfSettings,
+} from "@/lib/resume/pdfSettings";
 
 /**
  * Resume Service - Supabase CRUD operations for user resumes.
@@ -81,6 +85,7 @@ export interface ResumeData {
   experience: Experience[];
   skills: Skills;
   section_order: string[];
+  pdf_settings: PdfSettings | null;
   updated_at: string;
 }
 
@@ -164,6 +169,7 @@ export async function createResume(
         customTechnologies: [],
       },
       section_order: sectionOrder,
+      pdf_settings: DEFAULT_PDF_SETTINGS,
     })
     .select()
     .single();

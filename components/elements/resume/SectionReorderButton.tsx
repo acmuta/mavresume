@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Settings2 } from "lucide-react";
+import { ArrowUpDown, Edit3 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SectionManagerModal } from "./SectionManagerModal";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
@@ -23,7 +23,7 @@ export const SectionReorderButton = () => {
           aria-label="Manage sections"
           onClick={() => setIsOpen(true)}
         >
-            <Settings2 className="w-7 h-7" />
+            <Edit3 className="w-7 h-7" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

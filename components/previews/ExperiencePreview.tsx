@@ -2,26 +2,29 @@
 import React from "react";
 import { useResumeStore } from "../../store/useResumeStore";
 import { Skeleton } from "../ui/skeleton";
-import { Ephesis } from "next/font/google";
 
 export const ExperiencePreview = () => {
   const resume = useResumeStore();
+  const sectionHeadingStyle: React.CSSProperties = {
+    fontSize: "var(--resume-heading-size)",
+    fontWeight: "var(--resume-heading-weight)",
+  };
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <h1 className="border-b text-[2em] font-bold">Experience</h1>
+      <h1 className="border-b" style={sectionHeadingStyle}>Experience</h1>
       {resume.experience.map((exp, index) => (
         <section key={index} className="flex flex-col">
           <div className="flex justify-between items-center ">
             {exp.company || exp.position ? (
-              <p className="text-[1.5em] font-bold">
+              <p className="font-bold" style={{ fontSize: "var(--resume-subheading-size)" }}>
                 {exp.company && `${exp.company} -`} {exp.position}
               </p>
             ) : (
               <Skeleton className="h-[1.5em] w-56" />
             )}
 
-            <div className="text-[1.2em]">
+            <div style={{ fontSize: "var(--resume-body-size)" }}>
               {exp.startMonth && exp.startYear ? (
                 <p>
                   {exp.startMonth} {exp.startYear} -{" "}
@@ -40,7 +43,7 @@ export const ExperiencePreview = () => {
             <div className="flex flex-col">
               {exp.bulletPoints.map((point, idx) =>
                 point ? (
-                  <p key={idx} className="text-[1.2em] pl-4 -indent-2">
+                  <p key={idx} className="pl-4 -indent-2" style={{ fontSize: "var(--resume-body-size)" }}>
                     • {point}
                   </p>
                 ) : (
