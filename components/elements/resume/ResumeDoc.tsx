@@ -208,7 +208,9 @@ export const ResumeDoc = () => {
             </Text>
             <Text>
               {formatDate(job.startMonth, job.startYear)} –{" "}
-              {job.isCurrent ? "Present" : formatDate(job.endMonth, job.endYear)}
+              {job.isCurrent
+                ? "Present"
+                : formatDate(job.endMonth, job.endYear)}
             </Text>
           </View>
           <View style={styles.bullets}>
@@ -253,15 +255,15 @@ export const ResumeDoc = () => {
 
   // Map section IDs to their render functions
   const sectionRenderMap: Record<string, () => React.ReactElement> = {
-    "education": renderEducationSection,
+    education: renderEducationSection,
     "technical-skills": renderTechnicalSkillsSection,
-    "experience": renderExperienceSection,
-    "projects": renderProjectsSection,
+    experience: renderExperienceSection,
+    projects: renderProjectsSection,
   };
 
   // Get reorderable sections (excluding personal-info which is always first)
   const reorderableSections = sectionOrder.filter(
-    (id) => id !== "personal-info"
+    (id) => id !== "personal-info",
   );
 
   return (
@@ -278,7 +280,9 @@ export const ResumeDoc = () => {
             personalInfo.linkedin
               ? `linkedin.com/in/${personalInfo.linkedin}`
               : "",
-            ...(personalInfo.customContacts || []).filter((x) => x.trim() !== ""),
+            ...(personalInfo.customContacts || []).filter(
+              (x) => x.trim() !== "",
+            ),
           ]
             .filter((x) => x)
             .join("  •  ")}
@@ -288,7 +292,9 @@ export const ResumeDoc = () => {
         {reorderableSections.map((sectionId) => {
           const renderSection = sectionRenderMap[sectionId];
           if (!renderSection) return null;
-          return <React.Fragment key={sectionId}>{renderSection()}</React.Fragment>;
+          return (
+            <React.Fragment key={sectionId}>{renderSection()}</React.Fragment>
+          );
         })}
       </Page>
     </Document>

@@ -49,7 +49,9 @@ const isFontFamily = (value: unknown): value is PdfFontFamily =>
 const isMarginPreset = (value: unknown): value is MarginPreset =>
   value === "compact" || value === "standard" || value === "comfortable";
 
-const isSectionSpacingDensity = (value: unknown): value is SectionSpacingDensity =>
+const isSectionSpacingDensity = (
+  value: unknown,
+): value is SectionSpacingDensity =>
   value === "tight" || value === "normal" || value === "relaxed";
 
 const toNumber = (value: unknown, fallback: number): number => {
@@ -93,7 +95,10 @@ export function normalizePdfSettings(
       MAX_LINE_HEIGHT,
     ),
     sectionHeadingSize: clamp(
-      toNumber(value.sectionHeadingSize, DEFAULT_PDF_SETTINGS.sectionHeadingSize),
+      toNumber(
+        value.sectionHeadingSize,
+        DEFAULT_PDF_SETTINGS.sectionHeadingSize,
+      ),
       MIN_HEADING_SIZE,
       MAX_HEADING_SIZE,
     ),
@@ -151,10 +156,13 @@ export interface PreviewTypography {
   nameEm: number;
 }
 
-export function computePreviewTypography(settings: PdfSettings): PreviewTypography {
+export function computePreviewTypography(
+  settings: PdfSettings,
+): PreviewTypography {
   const PREVIEW_SCALE_TUNING = 0.6;
   const baseScale = settings.baseFontSize / DEFAULT_PDF_SETTINGS.baseFontSize;
-  const headingScale = settings.sectionHeadingSize / DEFAULT_PDF_SETTINGS.sectionHeadingSize;
+  const headingScale =
+    settings.sectionHeadingSize / DEFAULT_PDF_SETTINGS.sectionHeadingSize;
 
   return {
     scale: baseScale * PREVIEW_SCALE_TUNING,

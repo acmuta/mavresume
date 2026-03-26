@@ -43,9 +43,12 @@ export const ResumePreview = () => {
     experience: ExperiencePreview,
   };
 
-  const reorderableSections = sectionOrder.filter((id) => id !== "personal-info");
+  const reorderableSections = sectionOrder.filter(
+    (id) => id !== "personal-info",
+  );
   const pagePaddingPercent = `${resolvePdfMarginPaddingPx(pdfSettings) * BASE_PADDING_PERCENT}%`;
-  const sectionGap = SECTION_GAP_MAP[pdfSettings.sectionSpacingDensity] ?? "0.9em";
+  const sectionGap =
+    SECTION_GAP_MAP[pdfSettings.sectionSpacingDensity] ?? "0.9em";
   const previewTypography = computePreviewTypography(pdfSettings);
 
   return (

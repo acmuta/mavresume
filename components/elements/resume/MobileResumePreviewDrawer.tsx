@@ -3,7 +3,12 @@
 import React from "react";
 import { EyeIcon } from "lucide-react";
 
-import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from "../../ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "../../ui/drawer";
 import { ResumePreview } from "./ResumePreview";
 import { ResumePreviewControls } from "./ResumePreviewControls";
 import { TooltipProvider } from "../../ui/tooltip";

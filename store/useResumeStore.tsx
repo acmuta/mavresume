@@ -73,7 +73,12 @@ export const AVAILABLE_SECTIONS = [
 ] as const;
 
 // Section IDs type
-export type SectionId = "personal-info" | "education" | "technical-skills" | "projects" | "experience";
+export type SectionId =
+  | "personal-info"
+  | "education"
+  | "technical-skills"
+  | "projects"
+  | "experience";
 
 // Type for database resume data (used by setResumeFromDatabase)
 export interface DatabaseResumeData {
@@ -377,10 +382,13 @@ export const useResumeStore = create<ResumeState>()((set) => ({
           id === "education" ||
           id === "technical-skills" ||
           id === "projects" ||
-          id === "experience"
+          id === "experience",
       );
       const personalInfoFirst = validOrder.includes("personal-info")
-        ? ["personal-info", ...validOrder.filter((id) => id !== "personal-info")]
+        ? [
+            "personal-info",
+            ...validOrder.filter((id) => id !== "personal-info"),
+          ]
         : validOrder;
       return { sectionOrder: personalInfoFirst };
     }),
@@ -392,8 +400,16 @@ export const useResumeStore = create<ResumeState>()((set) => ({
   addSection: (sectionId) =>
     set((state) => {
       // Don't add if section already exists or is invalid
-      const validIds = ["education", "technical-skills", "projects", "experience"];
-      if (!validIds.includes(sectionId) || state.sectionOrder.includes(sectionId)) {
+      const validIds = [
+        "education",
+        "technical-skills",
+        "projects",
+        "experience",
+      ];
+      if (
+        !validIds.includes(sectionId) ||
+        state.sectionOrder.includes(sectionId)
+      ) {
         return state;
       }
       // Ensure personal-info stays first

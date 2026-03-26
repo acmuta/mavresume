@@ -15,9 +15,9 @@ export const PersonalInfoPreview = () => {
     : null;
 
   const customContacts = (personalInfo.customContacts || []).filter(
-    (contact) => contact.trim() !== ""
+    (contact) => contact.trim() !== "",
   );
-  
+
   const contactMethods = [
     { value: personalInfo.email, width: "w-22" },
     { value: personalInfo.phone, width: "w-20" },
@@ -41,7 +41,10 @@ export const PersonalInfoPreview = () => {
   return (
     <div className="w-full text-center mt-2">
       {personalInfo.name ? (
-        <p className="font-bold" style={{ fontSize: "var(--resume-name-size)" }}>
+        <p
+          className="font-bold"
+          style={{ fontSize: "var(--resume-name-size)" }}
+        >
           {personalInfo.name}
         </p>
       ) : (

@@ -1,5 +1,11 @@
 import { createClient } from "./supabase/client";
-import type { PersonalInfo, Education, Project, Experience, Skills } from "@/store/useResumeStore";
+import type {
+  PersonalInfo,
+  Education,
+  Project,
+  Experience,
+  Skills,
+} from "@/store/useResumeStore";
 import {
   DEFAULT_PDF_SETTINGS,
   type PdfSettings,
@@ -20,10 +26,10 @@ import {
  * Used to initialize section_order based on template type.
  */
 const sectionNameToId: Record<string, string> = {
-  "Education": "education",
+  Education: "education",
   "Technical Skills": "technical-skills",
-  "Projects": "projects",
-  "Experience": "experience",
+  Projects: "projects",
+  Experience: "experience",
 };
 
 /**
@@ -41,9 +47,14 @@ function getSectionOrderForTemplate(templateType?: string): string[] {
   // Map predefined template sections
   // Currently only computer-science is available
   const templateSections: Record<string, string[]> = {
-    "computer-science": ["Education", "Technical Skills", "Projects", "Experience"],
+    "computer-science": [
+      "Education",
+      "Technical Skills",
+      "Projects",
+      "Experience",
+    ],
     "data-science": ["Education", "Technical Skills", "Projects", "Experience"],
-    "cybersecurity": ["Education", "Technical Skills", "Projects", "Experience"],
+    cybersecurity: ["Education", "Technical Skills", "Projects", "Experience"],
   };
 
   const sections = templateSections[templateType];
@@ -110,7 +121,7 @@ export type ResumeDataUpdate = Partial<
 export async function createResume(
   userId: string,
   name: string = "Untitled Resume",
-  templateType?: string
+  templateType?: string,
 ): Promise<{ resume: ResumeMetadata; resumeData: ResumeData }> {
   const supabase = createClient();
 
@@ -181,7 +192,10 @@ export async function createResume(
     throw new Error(`Failed to create resume data: ${dataError.message}`);
   }
 
-  return { resume: resume as ResumeMetadata, resumeData: resumeData as ResumeData };
+  return {
+    resume: resume as ResumeMetadata,
+    resumeData: resumeData as ResumeData,
+  };
 }
 
 /**
@@ -191,7 +205,9 @@ export async function createResume(
  * @param userId - The authenticated user's ID
  * @returns Array of resume metadata records
  */
-export async function getUserResumes(userId: string): Promise<ResumeMetadata[]> {
+export async function getUserResumes(
+  userId: string,
+): Promise<ResumeMetadata[]> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -217,7 +233,7 @@ export async function getUserResumes(userId: string): Promise<ResumeMetadata[]> 
  * @returns Resume metadata with nested resume_data, or null if not found
  */
 export async function getResumeWithData(
-  resumeId: string
+  resumeId: string,
 ): Promise<ResumeWithData | null> {
   const supabase = createClient();
 
@@ -227,7 +243,7 @@ export async function getResumeWithData(
       `
       *,
       resume_data (*)
-    `
+    `,
     )
     .eq("id", resumeId)
     .single();
@@ -244,7 +260,7 @@ export async function getResumeWithData(
   // Supabase returns resume_data as an array due to the relationship
   // Since we have a unique constraint, we take the first item
   const resumeData = Array.isArray(data.resume_data)
-    ? data.resume_data[0] ?? null
+    ? (data.resume_data[0] ?? null)
     : data.resume_data;
 
   return {
@@ -262,7 +278,7 @@ export async function getResumeWithData(
  */
 export async function updateResumeData(
   resumeId: string,
-  data: ResumeDataUpdate
+  data: ResumeDataUpdate,
 ): Promise<void> {
   const supabase = createClient();
 
@@ -285,7 +301,7 @@ export async function updateResumeData(
  */
 export async function updateResumeMetadata(
   resumeId: string,
-  data: Partial<Pick<ResumeMetadata, "name" | "template_type">>
+  data: Partial<Pick<ResumeMetadata, "name" | "template_type">>,
 ): Promise<void> {
   const supabase = createClient();
 

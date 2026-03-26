@@ -12,12 +12,17 @@ export const ProjectsPreview = () => {
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <h1 className="border-b" style={sectionHeadingStyle}>Projects</h1>
+      <h1 className="border-b" style={sectionHeadingStyle}>
+        Projects
+      </h1>
       {resume.projects.map((proj, index) => (
         <section key={index} className="flex flex-col">
           <div className="flex justify-between items-center ">
             {proj.title ? (
-              <p className="font-bold" style={{ fontSize: "var(--resume-subheading-size)" }}>
+              <p
+                className="font-bold"
+                style={{ fontSize: "var(--resume-subheading-size)" }}
+              >
                 {proj.title}
               </p>
             ) : (
@@ -40,15 +45,16 @@ export const ProjectsPreview = () => {
             <div className="flex flex-col">
               {proj.bulletPoints.map((point, idx) =>
                 point ? (
-                  <p key={idx} className="pl-4 -indent-2" style={{ fontSize: "var(--resume-body-size)" }}>
+                  <p
+                    key={idx}
+                    className="pl-4 -indent-2"
+                    style={{ fontSize: "var(--resume-body-size)" }}
+                  >
                     • {point}
                   </p>
                 ) : (
-                  <Skeleton
-                    key={idx}
-                    className={`h-[1.2em] pl-4 mt-1 w-5/6`}
-                  />
-                )
+                  <Skeleton key={idx} className={`h-[1.2em] pl-4 mt-1 w-5/6`} />
+                ),
               )}
             </div>
           </div>

@@ -17,7 +17,7 @@ import { updateResumeData } from "@/lib/resumeService";
  */
 export function useAutoSave(
   enabled: boolean = true,
-  debounceMs: number = 2000
+  debounceMs: number = 2000,
 ): void {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);

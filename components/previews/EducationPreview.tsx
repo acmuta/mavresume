@@ -64,7 +64,10 @@ export const EducationPreview = () => {
       ))}
       <div>
         {resume.relevantCourses && (
-          <p className="pl-4 -indent-2" style={{ fontSize: "var(--resume-body-size)" }}>
+          <p
+            className="pl-4 -indent-2"
+            style={{ fontSize: "var(--resume-body-size)" }}
+          >
             <span className="font-bold">• Relevant Coursework</span>:{" "}
             {resume.relevantCourses.join(", ")}
           </p>

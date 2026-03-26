@@ -152,7 +152,8 @@ export const ResumeSettingsModal: React.FC<ResumeSettingsModalProps> = ({
                   htmlFor="baseFontSize"
                   className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a4a7b5]"
                 >
-                  Base font size: {clamp(Math.round(draftSettings.baseFontSize), 10, 13)}
+                  Base font size:{" "}
+                  {clamp(Math.round(draftSettings.baseFontSize), 10, 13)}
                 </Label>
                 <Input
                   id="baseFontSize"
@@ -207,7 +208,8 @@ export const ResumeSettingsModal: React.FC<ResumeSettingsModalProps> = ({
                   htmlFor="headingSize"
                   className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a4a7b5]"
                 >
-                  Section heading size: {clamp(Math.round(draftSettings.sectionHeadingSize), 11, 16)}
+                  Section heading size:{" "}
+                  {clamp(Math.round(draftSettings.sectionHeadingSize), 11, 16)}
                 </Label>
                 <Input
                   id="headingSize"

@@ -7,7 +7,7 @@ import { ResumeSettingsControlButton } from "./ResumeSettingsControlButton";
 import { useResumeStore } from "../../../store/useResumeStore";
 
 export const ResumePreviewControls = () => {
-    const { showBorder, setShowBorder } = useResumeStore()
+  const { showBorder, setShowBorder } = useResumeStore();
 
   return (
     <>
@@ -22,5 +22,3 @@ export const ResumePreviewControls = () => {
     </>
   );
 };
-
-
