@@ -14,6 +14,7 @@ export interface ResumeTemplate {
   available: boolean;
   route?: string; // e.g., "computer-science" for /builder?type=computer-science
   sections: string[]; // Sections included in this template (e.g., ["Education", "Technical Skills", "Software Projects", "Experience"])
+  roles: string[]; // Common roles for this major (e.g., ["Software Engineer", "Data Scientist", "Product Manager"])
 }
 
 /**
@@ -53,11 +54,18 @@ export const resumeTemplates: ResumeTemplate[] = [
   // Tech & Engineering
   {
     id: "computer-science",
-    name: "CS/CE Resume",
+    name: "Computer Science Resume",
     description: "Perfect for Computer Science and Computer Engineering majors focusing on software development, hardware projects, algorithms, and programming.",
     available: true,
     route: "computer-science",
     sections: ["Education", "Technical Skills", "Projects", "Experience"],
+    roles: [
+      "Software Engineer",
+      "Frontend Engineer",
+      "Backend Engineer",
+      "Full Stack Engineer",
+      "DevOps Engineer",
+    ],
   },
   {
     id: "data-science",
@@ -66,6 +74,13 @@ export const resumeTemplates: ResumeTemplate[] = [
     available: false,
     route: "data-science",
     sections: ["Education", "Technical Skills", "Projects", "Research", "Experience"],
+    roles: [
+      "Data Analyst",
+      "Data Scientist",
+      "Machine Learning Engineer",
+      "Data Engineer",
+      "Business Intelligence Analyst",
+    ],
   },
   {
     id: "cybersecurity",
@@ -74,6 +89,13 @@ export const resumeTemplates: ResumeTemplate[] = [
     available: false,
     route: "cybersecurity",
     sections: ["Education", "Technical Skills", "Projects", "Certifications", "Experience"],
+    roles: [
+      "Information Security Analyst",
+      "SOC Analyst",
+      "Cybersecurity Engineer",
+      "Network Security Analyst",
+      "Penetration Tester",
+    ],
   },
   {
     id: "mechanical-engineering",
@@ -81,7 +103,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Crafted for Mechanical Engineering majors focusing on design, manufacturing, and lab work.",
     available: false,
     route: "mechanical-engineering",
-    sections: ["Education", "Technical Skills", "Design Projects", "Lab Experience", "Experience"],
+    sections: ["Education", "Technical Skills", "Projects", "Experience", "Coursework"],
+    roles: [
+      "Mechanical Engineer",
+      "Design Engineer",
+      "Manufacturing Engineer",
+      "Aerospace Engineer",
+      "Product Development Engineer",
+    ],
   },
   // Business & Analytics
   {
@@ -90,7 +119,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Perfect for Finance, Economics, and Investment-focused majors emphasizing financial analysis.",
     available: false,
     route: "finance",
-    sections: ["Education", "Experience", "Projects", "Certifications", "Skills"],
+    sections: ["Education", "Experience", "Projects", "Skills", "Leadership & Activities"],
+    roles: [
+      "Financial Analyst",
+      "Investment Banking Analyst",
+      "Risk Analyst",
+      "Corporate Finance Analyst",
+      "Financial Advisor",
+    ],
   },
   {
     id: "marketing",
@@ -98,7 +134,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Designed for Marketing, Communications, Advertising, and Public Relations majors.",
     available: false,
     route: "marketing",
-    sections: ["Education", "Experience", "Campaigns", "Portfolio", "Skills"],
+    sections: ["Education", "Experience", "Projects", "Skills", "Leadership & Activities"],
+    roles: [
+      "Marketing Coordinator",
+      "Digital Marketing Specialist",
+      "Social Media Coordinator",
+      "Content Marketing Specialist",
+      "Marketing Analyst",
+    ],
   },
   {
     id: "business-administration",
@@ -107,6 +150,13 @@ export const resumeTemplates: ResumeTemplate[] = [
     available: false,
     route: "business-administration",
     sections: ["Education", "Experience", "Leadership", "Projects", "Skills"],
+    roles: [
+      "Business Analyst",
+      "Operations Analyst",
+      "Human Resources Specialist",
+      "Sales Representative",
+      "Management Trainee",
+    ],
   },
   {
     id: "accounting",
@@ -114,7 +164,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Crafted for Accounting majors focusing on financial reporting, auditing, and certifications.",
     available: false,
     route: "accounting",
-    sections: ["Education", "Experience", "Projects", "Certifications", "Skills"],
+    sections: ["Education", "Experience", "Skills", "Certifications", "Leadership & Activities"],
+    roles: [
+      "Staff Accountant",
+      "Audit Associate",
+      "Tax Associate",
+      "Accounts Payable Analyst",
+      "Financial Analyst",
+    ],
   },
   // Design & Media
   {
@@ -123,7 +180,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Perfect for Graphic Design, Visual Communication, and Creative Design majors.",
     available: false,
     route: "graphic-design",
-    sections: ["Education", "Portfolio", "Projects", "Skills", "Experience"],
+    sections: ["Education", "Experience", "Projects", "Skills", "Awards"],
+    roles: [
+      "Graphic Designer",
+      "Brand Designer",
+      "Visual Designer",
+      "Production Designer",
+      "Motion Graphics Designer",
+    ],
   },
   {
     id: "ux-ui-design",
@@ -131,7 +195,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Optimized for UX/UI Design, Human-Computer Interaction, and User Experience majors.",
     available: false,
     route: "ux-ui-design",
-    sections: ["Education", "Portfolio", "Projects", "Case Studies", "Skills"],
+    sections: ["Education", "Experience", "Case Studies", "Skills", "Tools"],
+    roles: [
+      "UX Designer",
+      "Product Designer",
+      "UI Designer",
+      "UX Researcher",
+      "Interaction Designer",
+    ],
   },
   // Health & Service
   {
@@ -141,6 +212,13 @@ export const resumeTemplates: ResumeTemplate[] = [
     available: false,
     route: "nursing",
     sections: ["Education", "Clinical Experience", "Certifications", "Volunteer Work", "Skills"],
+    roles: [
+      "Registered Nurse",
+      "Medical-Surgical Nurse",
+      "Critical Care Nurse",
+      "Emergency Department Nurse",
+      "Pediatric Nurse",
+    ],
   },
   {
     id: "pre-med",
@@ -148,7 +226,14 @@ export const resumeTemplates: ResumeTemplate[] = [
     description: "Tailored for Pre-Med, Biology, Chemistry, Biochemistry, and other pre-medical track students.",
     available: false,
     route: "pre-med",
-    sections: ["Education", "Clinical Experience", "Research", "Volunteer Work", "Certifications"],
+    sections: ["Education", "Clinical Experience", "Research", "Volunteer Work", "Leadership & Activities"],
+    roles: [
+      "Medical Scribe",
+      "Clinical Research Coordinator",
+      "Research Assistant",
+      "Emergency Medical Technician",
+      "Patient Care Technician",
+    ],
   },
   {
     id: "education",
@@ -157,5 +242,12 @@ export const resumeTemplates: ResumeTemplate[] = [
     available: false,
     route: "education",
     sections: ["Education", "Teaching Experience", "Certifications", "Volunteer Work", "Skills"],
+    roles: [
+      "Elementary School Teacher",
+      "High School Teacher",
+      "Special Education Teacher",
+      "School Counselor",
+      "Instructional Coordinator",
+    ],
   },
 ];
