@@ -29,8 +29,14 @@ export const TechnicalSkillsAccordion = () => {
       languages: allLanguages.filter(
         (lang) => !skills.languagesList.includes(lang),
       ),
-      technologies: allTechnologies.filter(
-        (tech) => !skills.technologiesList.includes(tech),
+      frameworks: allTechnologies.filter(
+        (tech) => !skills.frameworksList.includes(tech),
+      ),
+      tools: allTechnologies.filter(
+        (tech) => !skills.toolsList.includes(tech),
+      ),
+      platforms: allTechnologies.filter(
+        (tech) => !skills.platformsList.includes(tech),
       ),
     };
   })();
@@ -44,16 +50,28 @@ export const TechnicalSkillsAccordion = () => {
   };
 
   const customLanguages = skills.customLanguages || [];
-  const customTechnologies = skills.customTechnologies || [];
+  const customFrameworks = skills.customFrameworks || [];
+  const customTools = skills.customTools || [];
+  const customPlatforms = skills.customPlatforms || [];
 
   const languagesItems = [
     ...Technologies,
     ...customLanguages.filter((lang) => !Technologies.includes(lang)),
   ];
 
-  const technologiesItems = [
+  const frameworksItems = [
     ...Technologies,
-    ...customTechnologies.filter((tech) => !Technologies.includes(tech)),
+    ...customFrameworks.filter((tech) => !Technologies.includes(tech)),
+  ];
+
+  const toolsItems = [
+    ...Technologies,
+    ...customTools.filter((tech) => !Technologies.includes(tech)),
+  ];
+
+  const platformsItems = [
+    ...Technologies,
+    ...customPlatforms.filter((tech) => !Technologies.includes(tech)),
   ];
 
   return (
@@ -78,9 +96,15 @@ export const TechnicalSkillsAccordion = () => {
               onAdd={(lang) =>
                 addSkills({
                   languagesList: [...skills.languagesList, lang],
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
                   technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
             />
@@ -94,9 +118,15 @@ export const TechnicalSkillsAccordion = () => {
               onChange={(val) =>
                 addSkills({
                   languagesList: val as string[],
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
                   technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
               onCreateItem={(value) => {
@@ -104,18 +134,30 @@ export const TechnicalSkillsAccordion = () => {
                 if (!currentCustom.includes(value)) {
                   addSkills({
                     languagesList: skills.languagesList,
+                    frameworksList: skills.frameworksList,
+                    toolsList: skills.toolsList,
+                    platformsList: skills.platformsList,
                     technologiesList: skills.technologiesList,
                     customLanguages: [...currentCustom, value],
                     customTechnologies: skills.customTechnologies,
+                    customFrameworks: skills.customFrameworks,
+                    customTools: skills.customTools,
+                    customPlatforms: skills.customPlatforms,
                   });
                 }
               }}
               onRemove={(lang) =>
                 addSkills({
                   languagesList: skills.languagesList.filter((l) => l !== lang),
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
                   technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
             />
@@ -123,66 +165,268 @@ export const TechnicalSkillsAccordion = () => {
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="Technologies">
+      <AccordionItem value="Frameworks">
         <AccordionTrigger className="text-left no-underline">
           <div className="pr-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
-              Technologies
+              Frameworks
             </p>
             <p className="mt-2 text-base font-medium text-white">
-              {formatSkillsPreview(skills.technologiesList)}
+              {formatSkillsPreview(skills.frameworksList)}
             </p>
           </div>
         </AccordionTrigger>
         <AccordionContent>
           <div className="grid gap-4">
             <SkillBlock
-              title="Recommended technologies"
+              title="Recommended frameworks"
               description="Use course-based recommendations as a starting point."
-              items={recommendations.technologies}
+              items={recommendations.frameworks}
               onAdd={(tech) =>
                 addSkills({
                   languagesList: skills.languagesList,
-                  technologiesList: [...skills.technologiesList, tech],
+                  frameworksList: [...skills.frameworksList, tech],
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
             />
 
             <SkillSelector
-              title="Your technologies"
+              title="Your frameworks"
               description="Select to add more, or click a selected chip to remove it."
-              items={technologiesItems}
-              selected={skills.technologiesList}
-              placeholder="Add technologies..."
+              items={frameworksItems}
+              selected={skills.frameworksList}
+              placeholder="Add frameworks..."
               onChange={(val) =>
                 addSkills({
                   languagesList: skills.languagesList,
-                  technologiesList: val as string[],
+                  frameworksList: val as string[],
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
               onCreateItem={(value) => {
-                const currentCustom = skills.customTechnologies || [];
+                const currentCustom = skills.customFrameworks || [];
                 if (!currentCustom.includes(value)) {
                   addSkills({
                     languagesList: skills.languagesList,
+                    frameworksList: skills.frameworksList,
+                    toolsList: skills.toolsList,
+                    platformsList: skills.platformsList,
                     technologiesList: skills.technologiesList,
                     customLanguages: skills.customLanguages,
-                    customTechnologies: [...currentCustom, value],
+                    customTechnologies: skills.customTechnologies,
+                    customFrameworks: [...currentCustom, value],
+                    customTools: skills.customTools,
+                    customPlatforms: skills.customPlatforms,
                   });
                 }
               }}
               onRemove={(tech) =>
                 addSkills({
-                  technologiesList: skills.technologiesList.filter(
+                  frameworksList: skills.frameworksList.filter(
                     (t) => t !== tech,
                   ),
                   languagesList: skills.languagesList,
+                  toolsList: skills.toolsList,
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
                   customLanguages: skills.customLanguages,
                   customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+            />
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="Tools">
+        <AccordionTrigger className="text-left no-underline">
+          <div className="pr-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
+              Tools
+            </p>
+            <p className="mt-2 text-base font-medium text-white">
+              {formatSkillsPreview(skills.toolsList)}
+            </p>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="grid gap-4">
+            <SkillBlock
+              title="Recommended tools"
+              description="Use course-based recommendations as a starting point."
+              items={recommendations.tools}
+              onAdd={(tool) =>
+                addSkills({
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  toolsList: [...skills.toolsList, tool],
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+            />
+
+            <SkillSelector
+              title="Your tools"
+              description="Select to add more, or click a selected chip to remove it."
+              items={toolsItems}
+              selected={skills.toolsList}
+              placeholder="Add tools..."
+              onChange={(val) =>
+                addSkills({
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  toolsList: val as string[],
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+              onCreateItem={(value) => {
+                const currentCustom = skills.customTools || [];
+                if (!currentCustom.includes(value)) {
+                  addSkills({
+                    languagesList: skills.languagesList,
+                    frameworksList: skills.frameworksList,
+                    toolsList: skills.toolsList,
+                    platformsList: skills.platformsList,
+                    technologiesList: skills.technologiesList,
+                    customLanguages: skills.customLanguages,
+                    customTechnologies: skills.customTechnologies,
+                    customFrameworks: skills.customFrameworks,
+                    customTools: [...currentCustom, value],
+                    customPlatforms: skills.customPlatforms,
+                  });
+                }
+              }}
+              onRemove={(tool) =>
+                addSkills({
+                  toolsList: skills.toolsList.filter((t) => t !== tool),
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  platformsList: skills.platformsList,
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+            />
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="Platforms">
+        <AccordionTrigger className="text-left no-underline">
+          <div className="pr-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
+              Platforms
+            </p>
+            <p className="mt-2 text-base font-medium text-white">
+              {formatSkillsPreview(skills.platformsList)}
+            </p>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="grid gap-4">
+            <SkillBlock
+              title="Recommended platforms"
+              description="Use course-based recommendations as a starting point."
+              items={recommendations.platforms}
+              onAdd={(platform) =>
+                addSkills({
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  platformsList: [...skills.platformsList, platform],
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+            />
+
+            <SkillSelector
+              title="Your platforms"
+              description="Select to add more, or click a selected chip to remove it."
+              items={platformsItems}
+              selected={skills.platformsList}
+              placeholder="Add platforms..."
+              onChange={(val) =>
+                addSkills({
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  platformsList: val as string[],
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
+                })
+              }
+              onCreateItem={(value) => {
+                const currentCustom = skills.customPlatforms || [];
+                if (!currentCustom.includes(value)) {
+                  addSkills({
+                    languagesList: skills.languagesList,
+                    frameworksList: skills.frameworksList,
+                    toolsList: skills.toolsList,
+                    platformsList: skills.platformsList,
+                    technologiesList: skills.technologiesList,
+                    customLanguages: skills.customLanguages,
+                    customTechnologies: skills.customTechnologies,
+                    customFrameworks: skills.customFrameworks,
+                    customTools: skills.customTools,
+                    customPlatforms: [...currentCustom, value],
+                  });
+                }
+              }}
+              onRemove={(platform) =>
+                addSkills({
+                  platformsList: skills.platformsList.filter((p) => p !== platform),
+                  languagesList: skills.languagesList,
+                  frameworksList: skills.frameworksList,
+                  toolsList: skills.toolsList,
+                  technologiesList: skills.technologiesList,
+                  customLanguages: skills.customLanguages,
+                  customTechnologies: skills.customTechnologies,
+                  customFrameworks: skills.customFrameworks,
+                  customTools: skills.customTools,
+                  customPlatforms: skills.customPlatforms,
                 })
               }
             />

@@ -12,6 +12,7 @@ import {
 import { Button } from "../../ui/button";
 import { ResumeTemplate } from "../../../data/resume-templates";
 import { CreateResumeModal } from "./CreateResumeModal";
+import { getSectionLabelById } from "@/lib/resume/sections";
 
 interface TemplateCardProps {
   template: ResumeTemplate;
@@ -39,12 +40,12 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
           )}
           {/* Section Tags */}
           <div className="flex flex-wrap gap-2 mt-4">
-            {template.sections.map((section) => (
+            {template.sectionIds.map((sectionId) => (
               <span
-                key={section}
+                key={sectionId}
                 className="inline-flex items-center rounded-md border border-[#2d313a] bg-[#1a1c22]/50 px-2.5 py-0.5 text-xs font-medium text-[#cfd3e1]"
               >
-                {section}
+                {getSectionLabelById(sectionId)}
               </span>
             ))}
           </div>

@@ -23,14 +23,7 @@ import { GripVertical, Plus, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { useResumeStore, AVAILABLE_SECTIONS } from "../../../store/useResumeStore";
-
-const sectionDisplayNames: Record<string, string> = {
-  "personal-info": "Personal Info",
-  education: "Education",
-  "technical-skills": "Technical Skills",
-  projects: "Projects",
-  experience: "Experience",
-};
+import { CORE_SECTION_ID, getSectionLabelById } from "@/lib/resume/sections";
 
 interface SortableSectionItemProps {
   id: string;
@@ -113,11 +106,11 @@ export const SectionManagerModal: React.FC<{
   const { sectionOrder, addSection, removeSection, updateSectionOrder } =
     useResumeStore();
 
-  const selectedSections = sectionOrder.filter((id) => id !== "personal-info");
+  const selectedSections = sectionOrder.filter((id) => id !== CORE_SECTION_ID);
   const [items, setItems] = useState<string[]>(selectedSections);
 
   useEffect(() => {
-    const selected = sectionOrder.filter((id) => id !== "personal-info");
+    const selected = sectionOrder.filter((id) => id !== CORE_SECTION_ID);
     setItems(selected);
   }, [sectionOrder]);
 
@@ -141,7 +134,7 @@ export const SectionManagerModal: React.FC<{
       const newItems = arrayMove(items, oldIndex, newIndex);
 
       setItems(newItems);
-      updateSectionOrder(["personal-info", ...newItems]);
+      updateSectionOrder([CORE_SECTION_ID, ...newItems]);
     }
   };
 
@@ -211,7 +204,7 @@ export const SectionManagerModal: React.FC<{
                         <SortableSectionItem
                           key={id}
                           id={id}
-                          label={sectionDisplayNames[id] || id}
+                          label={getSectionLabelById(id)}
                           onRemove={removeSection}
                         />
                       ))

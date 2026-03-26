@@ -3,11 +3,6 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 
-import { PersonalInfoPreview } from "../../previews/PersonalInfoPreview";
-import { EducationPreview } from "../../previews/EducationPreview";
-import { TechnicalSkillsPreview } from "../../previews/TechnicalSkillsPreview";
-import { ProjectsPreview } from "../../previews/ProjectsPreview";
-import { ExperiencePreview } from "../../previews/ExperiencePreview";
 import { useResumeStore } from "../../../store/useResumeStore";
 import { useContentOverflow } from "../../../lib/hooks/useContentOverflow";
 import { OverflowWarningBadge } from "./OverflowWarningBadge";
@@ -16,6 +11,12 @@ import {
   resolvePdfMarginPaddingPx,
   toPreviewFontFamily,
 } from "@/lib/resume/pdfSettings";
+import {
+  CORE_SECTION_ID,
+  getSectionLabelById,
+  normalizeSectionId,
+} from "@/lib/resume/sections";
+import { getPreviewSectionComponent } from "@/lib/resume/sectionRuntimeRegistry";
 
 const BASE_PADDING_PERCENT = 100 / 595.28;
 const SECTION_GAP_MAP: Record<string, string> = {
@@ -35,17 +36,22 @@ export const ResumePreview = () => {
     contentRef,
   );
 
-  const sectionMap: Record<string, React.ComponentType> = {
-    "personal-info": PersonalInfoPreview,
-    education: EducationPreview,
-    "technical-skills": TechnicalSkillsPreview,
-    projects: ProjectsPreview,
-    experience: ExperiencePreview,
-  };
-
-  const reorderableSections = sectionOrder.filter(
-    (id) => id !== "personal-info",
+  const UnknownPreviewSection = ({ id }: { id: string }) => (
+    <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-amber-100">
+      <p className="font-semibold" style={{ fontSize: "var(--resume-heading-size)" }}>
+        {getSectionLabelById(id)}
+      </p>
+      <p style={{ fontSize: "var(--resume-body-size)" }}>
+        Section preview is not implemented yet.
+      </p>
+    </div>
   );
+
+  const normalizedSectionOrder = sectionOrder.map((id) => normalizeSectionId(id));
+  const reorderableSections = normalizedSectionOrder.filter(
+    (id) => id !== CORE_SECTION_ID,
+  );
+  const PersonalInfoPreviewComponent = getPreviewSectionComponent(CORE_SECTION_ID);
   const pagePaddingPercent = `${resolvePdfMarginPaddingPx(pdfSettings) * BASE_PADDING_PERCENT}%`;
   const sectionGap =
     SECTION_GAP_MAP[pdfSettings.sectionSpacingDensity] ?? "0.9em";
@@ -84,11 +90,13 @@ export const ResumePreview = () => {
               ),
             }}
           >
-            <PersonalInfoPreview />
+            {PersonalInfoPreviewComponent ? <PersonalInfoPreviewComponent /> : null}
 
             {reorderableSections.map((sectionId) => {
-              const SectionComponent = sectionMap[sectionId];
-              if (!SectionComponent) return null;
+              const SectionComponent = getPreviewSectionComponent(sectionId);
+              if (!SectionComponent) {
+                return <UnknownPreviewSection key={sectionId} id={sectionId} />;
+              }
               return <SectionComponent key={sectionId} />;
             })}
           </div>
