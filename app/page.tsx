@@ -50,24 +50,22 @@ const workflowSteps = [
     number: "01",
     icon: Sparkles,
     title: "Build",
-    description:
-      "Create the resume with prompts, structure, and stronger bullet writing.",
+    description: "Create the resume with prompts, structure, and stronger bullet writing.",
   },
   {
     number: "02",
     icon: FileText,
     title: "Submit",
-    description:
-      "Send the finished PDF with notes so the reviewer has context.",
+    description: "Send the finished PDF with notes so the reviewer has context.",
   },
   {
     number: "03",
     icon: ScanSearch,
     title: "Review",
-    description:
-      "Get comments directly on the PDF plus a final written summary.",
+    description: "Get comments directly on the PDF plus a final written summary.",
   },
 ] as const;
+
 
 export default function Home() {
   return (
