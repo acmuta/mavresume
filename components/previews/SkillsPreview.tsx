@@ -11,7 +11,9 @@ export const SkillsPreview = () => {
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <h1 className="border-b" style={headingStyle}>Skills</h1>
+      <h1 className="border-b" style={headingStyle}>
+        Skills
+      </h1>
       {resume.skillsSection.coreSkills.length > 0 && (
         <p style={{ fontSize: "var(--resume-body-size)" }}>
           {resume.skillsSection.coreSkills.join(", ")}

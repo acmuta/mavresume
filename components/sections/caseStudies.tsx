@@ -39,25 +39,33 @@ export function CaseStudiesSection() {
                 className="h-11 rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 text-sm text-white placeholder:text-[#6d7895]"
                 placeholder="Case Study Title"
                 value={entry.title}
-                onChange={(e) => updateCaseStudy(index, { title: e.target.value })}
+                onChange={(e) =>
+                  updateCaseStudy(index, { title: e.target.value })
+                }
               />
               <textarea
                 className="min-h-20 rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 py-3 text-sm text-white placeholder:text-[#6d7895]"
                 placeholder="Problem"
                 value={entry.problem}
-                onChange={(e) => updateCaseStudy(index, { problem: e.target.value })}
+                onChange={(e) =>
+                  updateCaseStudy(index, { problem: e.target.value })
+                }
               />
               <textarea
                 className="min-h-20 rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 py-3 text-sm text-white placeholder:text-[#6d7895]"
                 placeholder="Approach"
                 value={entry.approach}
-                onChange={(e) => updateCaseStudy(index, { approach: e.target.value })}
+                onChange={(e) =>
+                  updateCaseStudy(index, { approach: e.target.value })
+                }
               />
               <textarea
                 className="min-h-20 rounded-2xl border border-[#2b3242] bg-[#10121a]/88 px-4 py-3 text-sm text-white placeholder:text-[#6d7895]"
                 placeholder="Outcome"
                 value={entry.outcome}
-                onChange={(e) => updateCaseStudy(index, { outcome: e.target.value })}
+                onChange={(e) =>
+                  updateCaseStudy(index, { outcome: e.target.value })
+                }
               />
             </div>
           ))}
@@ -65,7 +73,12 @@ export function CaseStudiesSection() {
           <button
             type="button"
             onClick={() =>
-              addCaseStudy({ title: "", problem: "", approach: "", outcome: "" })
+              addCaseStudy({
+                title: "",
+                problem: "",
+                approach: "",
+                outcome: "",
+              })
             }
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a]/80 px-5 text-sm font-medium text-[#cfd3e1] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
           >

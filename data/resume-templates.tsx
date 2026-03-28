@@ -22,8 +22,19 @@ export interface ResumeTemplate {
  * Maps category keys to template IDs that belong to each category.
  */
 export const templateCategories = {
-  "tech-engineering": ["computer-science", "data-science", "cybersecurity", "mechanical-engineering"],
-  "business-analytics": ["finance", "marketing", "business-administration", "accounting"],
+  "tech-engineering": [
+    "computer-science",
+    "computer-engineering",
+    "data-science",
+    "cybersecurity",
+    "mechanical-engineering",
+  ],
+  "business-analytics": [
+    "finance",
+    "marketing",
+    "business-administration",
+    "accounting",
+  ],
   "design-media": ["graphic-design", "ux-ui-design"],
   "health-service": ["nursing", "pre-med", "education"],
 } as const;
@@ -55,7 +66,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "computer-science",
     name: "Computer Science Resume",
-    description: "Perfect for Computer Science and Computer Engineering majors focusing on software development, hardware projects, algorithms, and programming.",
+    description:
+      "Perfect for Computer Science majors focusing on software development, algorithms, data structures, and programming.",
     available: true,
     route: "computer-science",
     sectionIds: [
@@ -74,9 +86,32 @@ export const resumeTemplates: ResumeTemplate[] = [
     ],
   },
   {
+    id: "computer-engineering",
+    name: "Computer Engineering Resume",
+    description:
+      "Tailored for Computer Engineering majors focusing on embedded systems, digital logic, hardware-software integration, and systems programming.",
+    available: true,
+    route: "computer-engineering",
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "experience",
+      "coursework",
+    ],
+    roles: [
+      "Embedded Systems Engineer",
+      "Firmware Engineer",
+      "Hardware Engineer",
+      "Systems Engineer",
+    ],
+  },
+  {
     id: "data-science",
     name: "Data Science Resume",
-    description: "Optimized for Data Science, Statistics, Applied Mathematics, and Analytics-focused majors.",
+    description:
+      "Optimized for Data Science, Statistics, Applied Mathematics, and Analytics-focused majors.",
     available: true,
     route: "data-science",
     sectionIds: [
@@ -92,13 +127,13 @@ export const resumeTemplates: ResumeTemplate[] = [
       "Data Scientist",
       "Machine Learning Engineer",
       "Data Engineer",
-      "Business Intelligence Analyst",
     ],
   },
   {
     id: "cybersecurity",
     name: "Cybersecurity Resume",
-    description: "Tailored for Cybersecurity, Information Security, and Network Security majors.",
+    description:
+      "Tailored for Cybersecurity, Information Security, and Network Security majors.",
     available: true,
     route: "cybersecurity",
     sectionIds: [
@@ -114,13 +149,13 @@ export const resumeTemplates: ResumeTemplate[] = [
       "SOC Analyst",
       "Cybersecurity Engineer",
       "Network Security Analyst",
-      "Penetration Tester",
     ],
   },
   {
     id: "mechanical-engineering",
     name: "Mechanical Engineering Resume",
-    description: "Crafted for Mechanical Engineering majors focusing on design, manufacturing, and lab work.",
+    description:
+      "Crafted for Mechanical Engineering majors focusing on design, manufacturing, and lab work.",
     available: true,
     route: "mechanical-engineering",
     sectionIds: [
@@ -143,7 +178,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "finance",
     name: "Finance Resume",
-    description: "Perfect for Finance, Economics, and Investment-focused majors emphasizing financial analysis.",
+    description:
+      "Perfect for Finance, Economics, and Investment-focused majors emphasizing financial analysis.",
     available: true,
     route: "finance",
     sectionIds: [
@@ -165,7 +201,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "marketing",
     name: "Marketing Resume",
-    description: "Designed for Marketing, Communications, Advertising, and Public Relations majors.",
+    description:
+      "Designed for Marketing, Communications, Advertising, and Public Relations majors.",
     available: true,
     route: "marketing",
     sectionIds: [
@@ -187,7 +224,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "business-administration",
     name: "Business Administration Resume",
-    description: "Tailored for Business Administration, Management, and General Business majors.",
+    description:
+      "Tailored for Business Administration, Management, and General Business majors.",
     available: true,
     route: "business-administration",
     sectionIds: [
@@ -209,7 +247,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "accounting",
     name: "Accounting Resume",
-    description: "Crafted for Accounting majors focusing on financial reporting, auditing, and certifications.",
+    description:
+      "Crafted for Accounting majors focusing on financial reporting, auditing, and certifications.",
     available: true,
     route: "accounting",
     sectionIds: [
@@ -232,7 +271,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "graphic-design",
     name: "Graphic Design Resume",
-    description: "Perfect for Graphic Design, Visual Communication, and Creative Design majors.",
+    description:
+      "Perfect for Graphic Design, Visual Communication, and Creative Design majors.",
     available: true,
     route: "graphic-design",
     sectionIds: [
@@ -247,14 +287,13 @@ export const resumeTemplates: ResumeTemplate[] = [
       "Graphic Designer",
       "Brand Designer",
       "Visual Designer",
-      "Production Designer",
-      "Motion Graphics Designer",
     ],
   },
   {
     id: "ux-ui-design",
     name: "UX/UI Design Resume",
-    description: "Optimized for UX/UI Design, Human-Computer Interaction, and User Experience majors.",
+    description:
+      "Optimized for UX/UI Design, Human-Computer Interaction, and User Experience majors.",
     available: true,
     route: "ux-ui-design",
     sectionIds: [
@@ -268,15 +307,14 @@ export const resumeTemplates: ResumeTemplate[] = [
       "UX Designer",
       "Product Designer",
       "UI Designer",
-      "UX Researcher",
-      "Interaction Designer",
     ],
   },
   // Health & Service
   {
     id: "nursing",
     name: "Nursing Resume",
-    description: "Crafted for Nursing, Health Sciences, and other healthcare-focused majors pursuing clinical careers.",
+    description:
+      "Crafted for Nursing, Health Sciences, and other healthcare-focused majors pursuing clinical careers.",
     available: true,
     route: "nursing",
     sectionIds: [
@@ -298,7 +336,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "pre-med",
     name: "Pre-Med Resume",
-    description: "Tailored for Pre-Med, Biology, Chemistry, Biochemistry, and other pre-medical track students.",
+    description:
+      "Tailored for Pre-Med, Biology, Chemistry, Biochemistry, and other pre-medical track students.",
     available: true,
     route: "pre-med",
     sectionIds: [
@@ -320,7 +359,8 @@ export const resumeTemplates: ResumeTemplate[] = [
   {
     id: "education",
     name: "Education Resume",
-    description: "Designed for Education, Early Childhood Education, Special Education, and Teaching-focused majors.",
+    description:
+      "Designed for Education, Early Childhood Education, Special Education, and Teaching-focused majors.",
     available: true,
     route: "education",
     sectionIds: [
@@ -334,9 +374,6 @@ export const resumeTemplates: ResumeTemplate[] = [
     roles: [
       "Elementary School Teacher",
       "High School Teacher",
-      "Special Education Teacher",
-      "School Counselor",
-      "Instructional Coordinator",
     ],
   },
 ];

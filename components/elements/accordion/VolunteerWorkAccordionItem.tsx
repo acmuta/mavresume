@@ -44,7 +44,7 @@ export const VolunteerWorkAccordionItem: React.FC<
   const handleRefineAll = async () => {
     const entry = entries[index];
     const nonEmptyBullets = entry.bulletPoints.filter(
-      (bp) => bp && bp.trim().length > 0
+      (bp) => bp && bp.trim().length > 0,
     );
 
     if (nonEmptyBullets.length === 0) {
@@ -111,7 +111,9 @@ export const VolunteerWorkAccordionItem: React.FC<
       newBulletPoints[bulletIndex] = refinement.refined;
       updateVolunteerWork(index, { bulletPoints: newBulletPoints });
 
-      setBatchRefinements((prev) => prev.filter((r) => r.index !== bulletIndex));
+      setBatchRefinements((prev) =>
+        prev.filter((r) => r.index !== bulletIndex),
+      );
 
       if (batchRefinements.length === 1) {
         setShowRefineAllOverlay(false);
@@ -337,9 +339,13 @@ export const VolunteerWorkAccordionItem: React.FC<
                       placeholder={`Bullet Point #${bpIndex + 1}`}
                       value={bp}
                       onChange={(e) => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = e.target.value;
-                        updateVolunteerWork(index, { bulletPoints: newBulletPoints });
+                        updateVolunteerWork(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                       }}
                     />
                     <BulletRefinementButton
@@ -371,9 +377,13 @@ export const VolunteerWorkAccordionItem: React.FC<
                       refinedText={previewTexts[bpIndex]}
                       originalText={bp}
                       onAccept={() => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = previewTexts[bpIndex];
-                        updateVolunteerWork(index, { bulletPoints: newBulletPoints });
+                        updateVolunteerWork(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                         setPreviewTexts((prev) => {
                           const updated = { ...prev };
                           delete updated[bpIndex];

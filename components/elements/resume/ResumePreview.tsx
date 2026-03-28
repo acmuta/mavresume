@@ -38,7 +38,10 @@ export const ResumePreview = () => {
 
   const UnknownPreviewSection = ({ id }: { id: string }) => (
     <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-amber-100">
-      <p className="font-semibold" style={{ fontSize: "var(--resume-heading-size)" }}>
+      <p
+        className="font-semibold"
+        style={{ fontSize: "var(--resume-heading-size)" }}
+      >
         {getSectionLabelById(id)}
       </p>
       <p style={{ fontSize: "var(--resume-body-size)" }}>
@@ -47,11 +50,14 @@ export const ResumePreview = () => {
     </div>
   );
 
-  const normalizedSectionOrder = sectionOrder.map((id) => normalizeSectionId(id));
+  const normalizedSectionOrder = sectionOrder.map((id) =>
+    normalizeSectionId(id),
+  );
   const reorderableSections = normalizedSectionOrder.filter(
     (id) => id !== CORE_SECTION_ID,
   );
-  const PersonalInfoPreviewComponent = getPreviewSectionComponent(CORE_SECTION_ID);
+  const PersonalInfoPreviewComponent =
+    getPreviewSectionComponent(CORE_SECTION_ID);
   const pagePaddingPercent = `${resolvePdfMarginPaddingPx(pdfSettings) * BASE_PADDING_PERCENT}%`;
   const sectionGap =
     SECTION_GAP_MAP[pdfSettings.sectionSpacingDensity] ?? "0.9em";
@@ -90,7 +96,9 @@ export const ResumePreview = () => {
               ),
             }}
           >
-            {PersonalInfoPreviewComponent ? <PersonalInfoPreviewComponent /> : null}
+            {PersonalInfoPreviewComponent ? (
+              <PersonalInfoPreviewComponent />
+            ) : null}
 
             {reorderableSections.map((sectionId) => {
               const SectionComponent = getPreviewSectionComponent(sectionId);

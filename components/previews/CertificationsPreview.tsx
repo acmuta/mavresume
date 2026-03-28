@@ -11,9 +11,15 @@ export const CertificationsPreview = () => {
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <h1 className="border-b" style={headingStyle}>Certifications</h1>
+      <h1 className="border-b" style={headingStyle}>
+        Certifications
+      </h1>
       {resume.certifications.map((entry, index) => (
-        <p key={index} className="pl-1" style={{ fontSize: "var(--resume-body-size)" }}>
+        <p
+          key={index}
+          className="pl-1"
+          style={{ fontSize: "var(--resume-body-size)" }}
+        >
           • {entry.title || "Certification"}
           {entry.issuer ? `, ${entry.issuer}` : ""}
           {entry.date ? ` (${entry.date})` : ""}
@@ -21,4 +27,4 @@ export const CertificationsPreview = () => {
       ))}
     </div>
   );
-}
+};

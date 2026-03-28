@@ -41,7 +41,10 @@ import { assertTemplateSectionsRegistered } from "@/lib/resume/sectionRuntimeReg
 let hasValidatedTemplateSectionRegistry = false;
 
 function ensureTemplateSectionRegistryIsValid(): void {
-  if (process.env.NODE_ENV === "production" || hasValidatedTemplateSectionRegistry) {
+  if (
+    process.env.NODE_ENV === "production" ||
+    hasValidatedTemplateSectionRegistry
+  ) {
     return;
   }
 
@@ -57,7 +60,9 @@ function getSectionOrderForTemplate(templateType?: string): string[] {
     return [CORE_SECTION_ID];
   }
 
-  const template = resumeTemplates.find((candidate) => candidate.route === templateType);
+  const template = resumeTemplates.find(
+    (candidate) => candidate.route === templateType,
+  );
   if (template) {
     const uniqueKnownSectionIds = normalizeSectionOrder(template.sectionIds);
 
@@ -65,7 +70,9 @@ function getSectionOrderForTemplate(templateType?: string): string[] {
     return uniqueKnownSectionIds.includes(CORE_SECTION_ID)
       ? [
           CORE_SECTION_ID,
-          ...uniqueKnownSectionIds.filter((sectionId) => sectionId !== CORE_SECTION_ID),
+          ...uniqueKnownSectionIds.filter(
+            (sectionId) => sectionId !== CORE_SECTION_ID,
+          ),
         ]
       : [CORE_SECTION_ID, ...uniqueKnownSectionIds];
   }
@@ -95,6 +102,7 @@ export interface ResumeMetadata {
 export interface ResumeData {
   id: string;
   resume_id: string;
+  role?: string | null;
   personal_info: PersonalInfo;
   education: Education[];
   projects: Project[];
@@ -117,8 +125,13 @@ export type ResumeDataUpdate = Partial<
   Omit<ResumeData, "id" | "resume_id" | "updated_at">
 >;
 
-function hasMissingColumnError(error: { message?: string } | null, column: string): boolean {
-  return Boolean(error?.message?.includes(`'${column}'`) || error?.message?.includes(column));
+function hasMissingColumnError(
+  error: { message?: string } | null,
+  column: string,
+): boolean {
+  return Boolean(
+    error?.message?.includes(`'${column}'`) || error?.message?.includes(column),
+  );
 }
 
 /**
@@ -134,6 +147,7 @@ export async function createResume(
   userId: string,
   name: string = "Untitled Resume",
   templateType?: string,
+  role?: string,
 ): Promise<{ resume: ResumeMetadata; resumeData: ResumeData }> {
   const supabase = createClient();
 
@@ -294,6 +308,7 @@ export async function createResume(
 
   const insertPayload = {
     resume_id: resume.id,
+    role: role ?? null,
     personal_info: defaultPersonalInfo,
     education: defaultEducation,
     projects: defaultProjects,
@@ -319,7 +334,12 @@ export async function createResume(
     let shouldRetry = false;
 
     if (hasMissingColumnError(dataError, "leadership_activities")) {
-      delete (retryPayload as { leadership_activities?: unknown }).leadership_activities;
+      delete (retryPayload as { leadership_activities?: unknown })
+        .leadership_activities;
+      shouldRetry = true;
+    }
+    if (hasMissingColumnError(dataError, "role")) {
+      delete (retryPayload as { role?: unknown }).role;
       shouldRetry = true;
     }
     if (hasMissingColumnError(dataError, "section_data")) {
@@ -451,7 +471,12 @@ export async function updateResumeData(
     let shouldRetry = false;
 
     if (hasMissingColumnError(error, "leadership_activities")) {
-      delete (retryData as { leadership_activities?: unknown }).leadership_activities;
+      delete (retryData as { leadership_activities?: unknown })
+        .leadership_activities;
+      shouldRetry = true;
+    }
+    if (hasMissingColumnError(error, "role")) {
+      delete (retryData as { role?: unknown }).role;
       shouldRetry = true;
     }
     if (hasMissingColumnError(error, "section_data")) {

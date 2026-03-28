@@ -111,7 +111,8 @@ export const AVAILABLE_SECTIONS = SECTION_DEFINITIONS.filter(
   })
   .filter(
     (section, index, allSections) =>
-      allSections.findIndex((candidate) => candidate.id === section.id) === index,
+      allSections.findIndex((candidate) => candidate.id === section.id) ===
+      index,
   );
 
 // Section IDs type
@@ -119,6 +120,7 @@ export type SectionId = string;
 
 // Type for database resume data (used by setResumeFromDatabase)
 export interface DatabaseResumeData {
+  role?: string | null;
   personal_info?: PersonalInfo;
   education?: Education[];
   projects?: Project[];
@@ -232,9 +234,15 @@ export interface ResumeState {
   updateClinicalExperience: (index: number, entry: Partial<Experience>) => void;
   updateTeachingExperience: (index: number, entry: Partial<Experience>) => void;
   updateLeadershipActivity: (index: number, entry: Partial<Experience>) => void;
-  updateCertification: (index: number, entry: Partial<CompactListEntry>) => void;
+  updateCertification: (
+    index: number,
+    entry: Partial<CompactListEntry>,
+  ) => void;
   updateAward: (index: number, entry: Partial<CompactListEntry>) => void;
-  updateCourseworkCategory: (index: number, entry: Partial<CourseworkCategory>) => void;
+  updateCourseworkCategory: (
+    index: number,
+    entry: Partial<CourseworkCategory>,
+  ) => void;
   updateCaseStudy: (index: number, entry: Partial<CaseStudy>) => void;
   updateSkillsSection: (entry: Partial<SkillsSectionData>) => void;
   removeEducation: (index: number) => void;
@@ -445,7 +453,9 @@ export const useResumeStore = create<ResumeState>()((set) => ({
    */
   setResumeFromDatabase: (data) =>
     set(() => {
-      const sectionData = isRecord(data.section_data) ? data.section_data : null;
+      const sectionData = isRecord(data.section_data)
+        ? data.section_data
+        : null;
 
       const sectionPersonalInfo = sectionData?.["personal-info"];
       const sectionEducation = sectionData?.education;
@@ -460,13 +470,13 @@ export const useResumeStore = create<ResumeState>()((set) => ({
       const sectionVolunteerWork = sectionData?.["volunteer-work"];
       const sectionClinicalExperience = sectionData?.["clinical-experience"];
       const sectionTeachingExperience = sectionData?.["teaching-experience"];
-      const sectionLeadershipActivities = sectionData?.["leadership-activities"];
+      const sectionLeadershipActivities =
+        sectionData?.["leadership-activities"];
       const sectionSkills = sectionData?.["technical-skills"];
 
-      const personalInfo =
-        isRecord(sectionPersonalInfo)
-          ? (sectionPersonalInfo as unknown as PersonalInfo)
-          : (data.personal_info ?? initialResumeState.personalInfo);
+      const personalInfo = isRecord(sectionPersonalInfo)
+        ? (sectionPersonalInfo as unknown as PersonalInfo)
+        : (data.personal_info ?? initialResumeState.personalInfo);
 
       const education =
         Array.isArray(sectionEducation) && sectionEducation.length > 0
@@ -559,16 +569,15 @@ export const useResumeStore = create<ResumeState>()((set) => ({
             ? data.case_studies
             : initialResumeState.caseStudies;
 
-      const skillsSection =
-        isRecord(sectionSkillsModel)
-          ? {
-              coreSkills: Array.isArray(sectionSkillsModel.coreSkills)
-                ? (sectionSkillsModel.coreSkills as string[])
-                : [],
-            }
-          : {
-              coreSkills: [],
-            };
+      const skillsSection = isRecord(sectionSkillsModel)
+        ? {
+            coreSkills: Array.isArray(sectionSkillsModel.coreSkills)
+              ? (sectionSkillsModel.coreSkills as string[])
+              : [],
+          }
+        : {
+            coreSkills: [],
+          };
 
       const normalizedOrder = normalizeSectionOrder(
         data.section_order ?? initialResumeState.sectionOrder,
@@ -893,7 +902,9 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         return state;
       }
       return {
-        clinicalExperience: state.clinicalExperience.filter((_, i) => i !== index),
+        clinicalExperience: state.clinicalExperience.filter(
+          (_, i) => i !== index,
+        ),
       };
     }),
 
@@ -903,7 +914,9 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         return state;
       }
       return {
-        teachingExperience: state.teachingExperience.filter((_, i) => i !== index),
+        teachingExperience: state.teachingExperience.filter(
+          (_, i) => i !== index,
+        ),
       };
     }),
 
@@ -913,7 +926,9 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         return state; // Don't delete if only one item exists
       }
       return {
-        leadershipActivities: state.leadershipActivities.filter((_, i) => i !== index),
+        leadershipActivities: state.leadershipActivities.filter(
+          (_, i) => i !== index,
+        ),
       };
     }),
 
@@ -1003,7 +1018,9 @@ export const useResumeStore = create<ResumeState>()((set) => ({
         return state;
       }
       return {
-        sectionOrder: state.sectionOrder.filter((id) => id !== normalizedSectionId),
+        sectionOrder: state.sectionOrder.filter(
+          (id) => id !== normalizedSectionId,
+        ),
       };
     }),
 

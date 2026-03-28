@@ -20,9 +20,17 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, X } from "lucide-react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog";
 import { Button } from "../../ui/button";
-import { useResumeStore, AVAILABLE_SECTIONS } from "../../../store/useResumeStore";
+import {
+  useResumeStore,
+  AVAILABLE_SECTIONS,
+} from "../../../store/useResumeStore";
 import { CORE_SECTION_ID, getSectionLabelById } from "@/lib/resume/sections";
 
 interface SortableSectionItemProps {

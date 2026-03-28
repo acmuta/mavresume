@@ -63,7 +63,9 @@ export function AwardsSection() {
 
           <button
             type="button"
-            onClick={() => addAward({ title: "", issuer: "", date: "", link: "" })}
+            onClick={() =>
+              addAward({ title: "", issuer: "", date: "", link: "" })
+            }
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#2b3242] bg-[#10121a]/80 px-5 text-sm font-medium text-[#cfd3e1] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
           >
             <Plus className="h-4 w-4" />

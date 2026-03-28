@@ -143,7 +143,9 @@ export const ResumeDoc = () => {
     pdfSettings,
   } = useResumeStore();
   const styles = getStyles(pdfSettings);
-  const normalizedSectionOrder = sectionOrder.map((id) => normalizeSectionId(id));
+  const normalizedSectionOrder = sectionOrder.map((id) =>
+    normalizeSectionId(id),
+  );
   const reorderableSections = normalizedSectionOrder.filter(
     (id) => id !== CORE_SECTION_ID,
   );
@@ -176,8 +178,12 @@ export const ResumeDoc = () => {
           if (!renderSection) {
             return (
               <View key={sectionId} style={styles.section}>
-                <Text style={styles.sectionTitle}>{getSectionLabelById(sectionId)}</Text>
-                <Text style={styles.smallText}>Section content is not implemented yet.</Text>
+                <Text style={styles.sectionTitle}>
+                  {getSectionLabelById(sectionId)}
+                </Text>
+                <Text style={styles.smallText}>
+                  Section content is not implemented yet.
+                </Text>
               </View>
             );
           }

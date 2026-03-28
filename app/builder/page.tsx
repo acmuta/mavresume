@@ -13,7 +13,11 @@ import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
 import { ResumeSettingsModal } from "../../components/elements/resume/ResumeSettingsModal";
-import { CORE_SECTION_ID, getSectionLabelById, normalizeSectionId } from "@/lib/resume/sections";
+import {
+  CORE_SECTION_ID,
+  getSectionLabelById,
+  normalizeSectionId,
+} from "@/lib/resume/sections";
 import {
   getBuilderSectionComponent,
   getSectionRuntimeDefinition,
@@ -22,7 +26,8 @@ import {
 function SectionNotImplemented() {
   return (
     <div className="rounded-[1.5rem] border border-amber-500/35 bg-amber-500/10 p-6 text-sm text-amber-100 shadow-[0_16px_40px_rgba(0,0,0,0.25)]">
-      This section is part of the dynamic template system, but its form UI is not implemented yet.
+      This section is part of the dynamic template system, but its form UI is
+      not implemented yet.
     </div>
   );
 }
@@ -31,7 +36,8 @@ function BuilderPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const resumeId = searchParams.get("id");
-  const { setCurrentSection } = useGuideStore();
+  const { setCurrentSection, setCurrentTemplateType, setCurrentRole } =
+    useGuideStore();
   const {
     currentResumeId,
     setCurrentResumeId,
@@ -63,6 +69,8 @@ function BuilderPageContent() {
 
       setIsLoading(true);
       setLoadError(null);
+      setCurrentTemplateType(null);
+      setCurrentRole(null);
 
       try {
         const resumeWithData = await getResumeWithData(resumeId);
@@ -75,9 +83,12 @@ function BuilderPageContent() {
 
         setCurrentResumeId(resumeId);
         setResumeName(resumeWithData.name || "Resume");
+        setCurrentTemplateType(resumeWithData.template_type ?? null);
+        setCurrentRole(resumeWithData.resume_data?.role ?? null);
 
         if (resumeWithData.resume_data) {
           setResumeFromDatabase({
+            role: resumeWithData.resume_data.role,
             personal_info: resumeWithData.resume_data.personal_info,
             education: resumeWithData.resume_data.education,
             projects: resumeWithData.resume_data.projects,
@@ -103,14 +114,22 @@ function BuilderPageContent() {
     }
 
     loadResume();
-  }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
+  }, [
+    resumeId,
+    router,
+    setCurrentResumeId,
+    setCurrentRole,
+    setCurrentTemplateType,
+    setResumeFromDatabase,
+  ]);
 
   const sections = useMemo(() => {
     return sectionOrder.map((id) => {
       const normalizedId = normalizeSectionId(id);
       const runtimeDefinition = getSectionRuntimeDefinition(normalizedId);
       return {
-        Component: getBuilderSectionComponent(normalizedId) ?? SectionNotImplemented,
+        Component:
+          getBuilderSectionComponent(normalizedId) ?? SectionNotImplemented,
         id: normalizedId as SectionId,
         label: runtimeDefinition?.label ?? getSectionLabelById(normalizedId),
       };
@@ -146,7 +165,8 @@ function BuilderPageContent() {
   };
 
   const activeSection = sections[currentSectionIndex]?.id || CORE_SECTION_ID;
-  const CurrentSection = sections[currentSectionIndex]?.Component || SectionNotImplemented;
+  const CurrentSection =
+    sections[currentSectionIndex]?.Component || SectionNotImplemented;
   const builderFileName = `${resumeName || "Resume"}.pdf`;
 
   if (isLoading) {

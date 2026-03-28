@@ -45,7 +45,7 @@ export const LeadershipActivitiesAccordionItem: React.FC<
   const handleRefineAll = async () => {
     const entry = entries[index];
     const nonEmptyBullets = entry.bulletPoints.filter(
-      (bp) => bp && bp.trim().length > 0
+      (bp) => bp && bp.trim().length > 0,
     );
 
     if (nonEmptyBullets.length === 0) {
@@ -112,7 +112,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
       newBulletPoints[bulletIndex] = refinement.refined;
       updateLeadershipActivity(index, { bulletPoints: newBulletPoints });
 
-      setBatchRefinements((prev) => prev.filter((r) => r.index !== bulletIndex));
+      setBatchRefinements((prev) =>
+        prev.filter((r) => r.index !== bulletIndex),
+      );
 
       if (batchRefinements.length === 1) {
         setShowRefineAllOverlay(false);
@@ -154,7 +156,7 @@ export const LeadershipActivitiesAccordionItem: React.FC<
   const handleDeleteBulletPoint = (bpIndex: number) => {
     if (entries[index].bulletPoints.length <= 1) return;
     const newBulletPoints = entries[index].bulletPoints.filter(
-      (_, i) => i !== bpIndex
+      (_, i) => i !== bpIndex,
     );
     updateLeadershipActivity(index, { bulletPoints: newBulletPoints });
 
@@ -235,7 +237,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                   placeholder="Select month"
                   value={entries[index].startMonth}
                   onChange={(val) =>
-                    updateLeadershipActivity(index, { startMonth: val as string })
+                    updateLeadershipActivity(index, {
+                      startMonth: val as string,
+                    })
                   }
                 />
                 <Combobox
@@ -243,7 +247,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                   placeholder="Select year"
                   value={entries[index].startYear}
                   onChange={(val) =>
-                    updateLeadershipActivity(index, { startYear: val as string })
+                    updateLeadershipActivity(index, {
+                      startYear: val as string,
+                    })
                   }
                 />
               </div>
@@ -260,7 +266,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                     placeholder="Select month"
                     value={entries[index].endMonth}
                     onChange={(val) =>
-                      updateLeadershipActivity(index, { endMonth: val as string })
+                      updateLeadershipActivity(index, {
+                        endMonth: val as string,
+                      })
                     }
                   />
                   <Combobox
@@ -268,7 +276,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                     placeholder="Select year"
                     value={entries[index].endYear}
                     onChange={(val) =>
-                      updateLeadershipActivity(index, { endYear: val as string })
+                      updateLeadershipActivity(index, {
+                        endYear: val as string,
+                      })
                     }
                   />
                 </div>
@@ -284,7 +294,9 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                 type="checkbox"
                 checked={entries[index].isCurrent}
                 onChange={(e) => {
-                  updateLeadershipActivity(index, { isCurrent: e.target.checked });
+                  updateLeadershipActivity(index, {
+                    isCurrent: e.target.checked,
+                  });
                 }}
                 className="checkbox border border-[#6F748B] hover:border-white transition"
               />
@@ -308,7 +320,7 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                 disabled={
                   isRefiningAll ||
                   !entries[index].bulletPoints.some(
-                    (bp) => bp && bp.trim().length > 0
+                    (bp) => bp && bp.trim().length > 0,
                   )
                 }
                 className="inline-flex h-11 items-center gap-2 rounded-full border border-[#2b3242] bg-[#151923] px-4 text-sm text-[#89a5ff] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
@@ -338,9 +350,13 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                       placeholder={`Bullet Point #${bpIndex + 1}`}
                       value={bp}
                       onChange={(e) => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = e.target.value;
-                        updateLeadershipActivity(index, { bulletPoints: newBulletPoints });
+                        updateLeadershipActivity(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                       }}
                     />
                     <BulletRefinementButton
@@ -372,9 +388,13 @@ export const LeadershipActivitiesAccordionItem: React.FC<
                       refinedText={previewTexts[bpIndex]}
                       originalText={bp}
                       onAccept={() => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = previewTexts[bpIndex];
-                        updateLeadershipActivity(index, { bulletPoints: newBulletPoints });
+                        updateLeadershipActivity(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                         setPreviewTexts((prev) => {
                           const updated = { ...prev };
                           delete updated[bpIndex];

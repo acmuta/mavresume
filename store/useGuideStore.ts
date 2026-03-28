@@ -17,16 +17,20 @@ export type { SectionId };
 export interface GuideState {
   // Help widget state
   isWidgetExpanded: boolean;
-  activeWidgetTab: "tips" | "guide";
+  activeWidgetTab: "tips" | "guide" | "role";
 
   // Current section being edited (for contextual help)
   currentSection: SectionId;
+  currentTemplateType: string | null;
+  currentRole: string | null;
 
   // Actions
   setWidgetExpanded: (expanded: boolean) => void;
   toggleWidget: () => void;
-  setActiveWidgetTab: (tab: "tips" | "guide") => void;
+  setActiveWidgetTab: (tab: "tips" | "guide" | "role") => void;
   setCurrentSection: (section: SectionId) => void;
+  setCurrentTemplateType: (templateType: string | null) => void;
+  setCurrentRole: (role: string | null) => void;
 }
 
 export const useGuideStore = create<GuideState>()(
@@ -36,6 +40,8 @@ export const useGuideStore = create<GuideState>()(
       isWidgetExpanded: false,
       activeWidgetTab: "tips",
       currentSection: "personal-info",
+      currentTemplateType: null,
+      currentRole: null,
 
       // Widget actions
       setWidgetExpanded: (expanded) =>
@@ -57,6 +63,16 @@ export const useGuideStore = create<GuideState>()(
       setCurrentSection: (section) =>
         set(() => ({
           currentSection: section,
+        })),
+
+      setCurrentTemplateType: (templateType) =>
+        set(() => ({
+          currentTemplateType: templateType,
+        })),
+
+      setCurrentRole: (role) =>
+        set(() => ({
+          currentRole: role,
         })),
     }),
     {

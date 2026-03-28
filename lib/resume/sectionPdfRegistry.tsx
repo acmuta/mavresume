@@ -94,12 +94,17 @@ const renderEducationSection: PdfSectionRenderer = ({
   </View>
 );
 
-const renderTechnicalSkillsSection: PdfSectionRenderer = ({ styles, skills }) => (
+const renderTechnicalSkillsSection: PdfSectionRenderer = ({
+  styles,
+  skills,
+}) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>Technical Skills</Text>
     <Text style={styles.smallText}>
       <Text style={styles.bold}>Languages: </Text>
-      {skills.languagesList?.length ? skills.languagesList.join(", ") : "None added"}
+      {skills.languagesList?.length
+        ? skills.languagesList.join(", ")
+        : "None added"}
     </Text>
     <Text style={styles.smallText}>
       <Text style={styles.bold}>Frameworks: </Text>
@@ -120,7 +125,10 @@ const renderTechnicalSkillsSection: PdfSectionRenderer = ({ styles, skills }) =>
   </View>
 );
 
-const renderExperienceSection: PdfSectionRenderer = ({ styles, experience }) => (
+const renderExperienceSection: PdfSectionRenderer = ({
+  styles,
+  experience,
+}) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>Experience</Text>
     {experience.map((job, idx) => (
@@ -163,7 +171,9 @@ const renderLeadershipActivitiesSection: PdfSectionRenderer = ({
           </Text>
           <Text>
             {formatDate(entry.startMonth, entry.startYear)} –{" "}
-            {entry.isCurrent ? "Present" : formatDate(entry.endMonth, entry.endYear)}
+            {entry.isCurrent
+              ? "Present"
+              : formatDate(entry.endMonth, entry.endYear)}
           </Text>
         </View>
         <View style={styles.bullets}>
@@ -192,7 +202,9 @@ const renderResearchSection: PdfSectionRenderer = ({ styles, research }) => (
           </Text>
           <Text>
             {formatDate(entry.startMonth, entry.startYear)} –{" "}
-            {entry.isCurrent ? "Present" : formatDate(entry.endMonth, entry.endYear)}
+            {entry.isCurrent
+              ? "Present"
+              : formatDate(entry.endMonth, entry.endYear)}
           </Text>
         </View>
         <View style={styles.bullets}>
@@ -224,7 +236,9 @@ const renderVolunteerWorkSection: PdfSectionRenderer = ({
           </Text>
           <Text>
             {formatDate(entry.startMonth, entry.startYear)} –{" "}
-            {entry.isCurrent ? "Present" : formatDate(entry.endMonth, entry.endYear)}
+            {entry.isCurrent
+              ? "Present"
+              : formatDate(entry.endMonth, entry.endYear)}
           </Text>
         </View>
         <View style={styles.bullets}>
@@ -256,7 +270,9 @@ const renderClinicalExperienceSection: PdfSectionRenderer = ({
           </Text>
           <Text>
             {formatDate(entry.startMonth, entry.startYear)} –{" "}
-            {entry.isCurrent ? "Present" : formatDate(entry.endMonth, entry.endYear)}
+            {entry.isCurrent
+              ? "Present"
+              : formatDate(entry.endMonth, entry.endYear)}
           </Text>
         </View>
         <View style={styles.bullets}>
@@ -288,7 +304,9 @@ const renderTeachingExperienceSection: PdfSectionRenderer = ({
           </Text>
           <Text>
             {formatDate(entry.startMonth, entry.startYear)} –{" "}
-            {entry.isCurrent ? "Present" : formatDate(entry.endMonth, entry.endYear)}
+            {entry.isCurrent
+              ? "Present"
+              : formatDate(entry.endMonth, entry.endYear)}
           </Text>
         </View>
         <View style={styles.bullets}>
@@ -379,7 +397,10 @@ const renderAwardsSection: PdfSectionRenderer = ({ styles, awards }) => (
   </View>
 );
 
-const renderCourseworkSection: PdfSectionRenderer = ({ styles, coursework }) => (
+const renderCourseworkSection: PdfSectionRenderer = ({
+  styles,
+  coursework,
+}) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>Coursework</Text>
     {coursework.map((group, index) => (

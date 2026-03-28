@@ -45,7 +45,7 @@ export const ResearchAccordionItem: React.FC<ResearchAccordionItemProps> = ({
   const handleRefineAll = async () => {
     const entry = entries[index];
     const nonEmptyBullets = entry.bulletPoints.filter(
-      (bp) => bp && bp.trim().length > 0
+      (bp) => bp && bp.trim().length > 0,
     );
 
     if (nonEmptyBullets.length === 0) {
@@ -112,7 +112,9 @@ export const ResearchAccordionItem: React.FC<ResearchAccordionItemProps> = ({
       newBulletPoints[bulletIndex] = refinement.refined;
       updateResearch(index, { bulletPoints: newBulletPoints });
 
-      setBatchRefinements((prev) => prev.filter((r) => r.index !== bulletIndex));
+      setBatchRefinements((prev) =>
+        prev.filter((r) => r.index !== bulletIndex),
+      );
 
       if (batchRefinements.length === 1) {
         setShowRefineAllOverlay(false);
@@ -299,7 +301,8 @@ export const ResearchAccordionItem: React.FC<ResearchAccordionItemProps> = ({
                   Bullet points
                 </p>
                 <p className="mt-2 text-sm text-[#6d7895]">
-                  Highlight methodologies, findings, and measurable contributions.
+                  Highlight methodologies, findings, and measurable
+                  contributions.
                 </p>
               </div>
               <button
@@ -338,9 +341,13 @@ export const ResearchAccordionItem: React.FC<ResearchAccordionItemProps> = ({
                       placeholder={`Bullet Point #${bpIndex + 1}`}
                       value={bp}
                       onChange={(e) => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = e.target.value;
-                        updateResearch(index, { bulletPoints: newBulletPoints });
+                        updateResearch(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                       }}
                     />
                     <BulletRefinementButton
@@ -372,9 +379,13 @@ export const ResearchAccordionItem: React.FC<ResearchAccordionItemProps> = ({
                       refinedText={previewTexts[bpIndex]}
                       originalText={bp}
                       onAccept={() => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = previewTexts[bpIndex];
-                        updateResearch(index, { bulletPoints: newBulletPoints });
+                        updateResearch(index, {
+                          bulletPoints: newBulletPoints,
+                        });
                         setPreviewTexts((prev) => {
                           const updated = { ...prev };
                           delete updated[bpIndex];

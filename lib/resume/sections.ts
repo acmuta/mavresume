@@ -8,7 +8,12 @@ export interface SectionDefinition {
 export const CORE_SECTION_ID = "personal-info";
 
 export const SECTION_DEFINITIONS: SectionDefinition[] = [
-  { id: CORE_SECTION_ID, label: "Personal Info", locked: true, implemented: true },
+  {
+    id: CORE_SECTION_ID,
+    label: "Personal Info",
+    locked: true,
+    implemented: true,
+  },
   { id: "education", label: "Education", implemented: true },
   { id: "technical-skills", label: "Technical Skills", implemented: true },
   { id: "projects", label: "Projects", implemented: true },
@@ -17,14 +22,26 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
   { id: "research", label: "Research", implemented: true },
   { id: "certifications", label: "Certifications", implemented: true },
   { id: "coursework", label: "Coursework", implemented: true },
-  { id: "leadership-activities", label: "Leadership & Activities", implemented: true },
+  {
+    id: "leadership-activities",
+    label: "Leadership & Activities",
+    implemented: true,
+  },
   { id: "leadership", label: "Leadership", implemented: false },
   { id: "awards", label: "Awards", implemented: true },
   { id: "case-studies", label: "Case Studies", implemented: true },
   { id: "tools", label: "Tools", implemented: true },
-  { id: "clinical-experience", label: "Clinical Experience", implemented: true },
+  {
+    id: "clinical-experience",
+    label: "Clinical Experience",
+    implemented: true,
+  },
   { id: "volunteer-work", label: "Volunteer Work", implemented: true },
-  { id: "teaching-experience", label: "Teaching Experience", implemented: true },
+  {
+    id: "teaching-experience",
+    label: "Teaching Experience",
+    implemented: true,
+  },
 ];
 
 // Legacy and template aliases that should resolve to canonical runtime section IDs.
@@ -37,7 +54,9 @@ const sectionLabelMap = new Map(
   SECTION_DEFINITIONS.map((section) => [section.id, section.label]),
 );
 
-const knownSectionIds = new Set(SECTION_DEFINITIONS.map((section) => section.id));
+const knownSectionIds = new Set(
+  SECTION_DEFINITIONS.map((section) => section.id),
+);
 
 export const ADDABLE_SECTION_IDS = Array.from(
   new Set(

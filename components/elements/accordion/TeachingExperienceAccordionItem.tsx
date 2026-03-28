@@ -31,7 +31,8 @@ interface TeachingExperienceAccordionItemProps {
 export const TeachingExperienceAccordionItem: React.FC<
   TeachingExperienceAccordionItemProps
 > = ({ index, entries }) => {
-  const { updateTeachingExperience, removeTeachingExperience } = useResumeStore();
+  const { updateTeachingExperience, removeTeachingExperience } =
+    useResumeStore();
   const [isRefiningAll, setIsRefiningAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -44,7 +45,7 @@ export const TeachingExperienceAccordionItem: React.FC<
   const handleRefineAll = async () => {
     const entry = entries[index];
     const nonEmptyBullets = entry.bulletPoints.filter(
-      (bp) => bp && bp.trim().length > 0
+      (bp) => bp && bp.trim().length > 0,
     );
 
     if (nonEmptyBullets.length === 0) {
@@ -111,7 +112,9 @@ export const TeachingExperienceAccordionItem: React.FC<
       newBulletPoints[bulletIndex] = refinement.refined;
       updateTeachingExperience(index, { bulletPoints: newBulletPoints });
 
-      setBatchRefinements((prev) => prev.filter((r) => r.index !== bulletIndex));
+      setBatchRefinements((prev) =>
+        prev.filter((r) => r.index !== bulletIndex),
+      );
 
       if (batchRefinements.length === 1) {
         setShowRefineAllOverlay(false);
@@ -234,7 +237,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                   placeholder="Select month"
                   value={entries[index].startMonth}
                   onChange={(val) =>
-                    updateTeachingExperience(index, { startMonth: val as string })
+                    updateTeachingExperience(index, {
+                      startMonth: val as string,
+                    })
                   }
                 />
                 <Combobox
@@ -242,7 +247,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                   placeholder="Select year"
                   value={entries[index].startYear}
                   onChange={(val) =>
-                    updateTeachingExperience(index, { startYear: val as string })
+                    updateTeachingExperience(index, {
+                      startYear: val as string,
+                    })
                   }
                 />
               </div>
@@ -259,7 +266,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                     placeholder="Select month"
                     value={entries[index].endMonth}
                     onChange={(val) =>
-                      updateTeachingExperience(index, { endMonth: val as string })
+                      updateTeachingExperience(index, {
+                        endMonth: val as string,
+                      })
                     }
                   />
                   <Combobox
@@ -267,7 +276,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                     placeholder="Select year"
                     value={entries[index].endYear}
                     onChange={(val) =>
-                      updateTeachingExperience(index, { endYear: val as string })
+                      updateTeachingExperience(index, {
+                        endYear: val as string,
+                      })
                     }
                   />
                 </div>
@@ -283,7 +294,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                 type="checkbox"
                 checked={entries[index].isCurrent}
                 onChange={(e) => {
-                  updateTeachingExperience(index, { isCurrent: e.target.checked });
+                  updateTeachingExperience(index, {
+                    isCurrent: e.target.checked,
+                  });
                 }}
                 className="checkbox border border-[#6F748B] hover:border-white transition"
               />
@@ -337,7 +350,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                       placeholder={`Bullet Point #${bpIndex + 1}`}
                       value={bp}
                       onChange={(e) => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = e.target.value;
                         updateTeachingExperience(index, {
                           bulletPoints: newBulletPoints,
@@ -373,7 +388,9 @@ export const TeachingExperienceAccordionItem: React.FC<
                       refinedText={previewTexts[bpIndex]}
                       originalText={bp}
                       onAccept={() => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = previewTexts[bpIndex];
                         updateTeachingExperience(index, {
                           bulletPoints: newBulletPoints,

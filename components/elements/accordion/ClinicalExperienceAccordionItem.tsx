@@ -31,7 +31,8 @@ interface ClinicalExperienceAccordionItemProps {
 export const ClinicalExperienceAccordionItem: React.FC<
   ClinicalExperienceAccordionItemProps
 > = ({ index, entries }) => {
-  const { updateClinicalExperience, removeClinicalExperience } = useResumeStore();
+  const { updateClinicalExperience, removeClinicalExperience } =
+    useResumeStore();
   const [isRefiningAll, setIsRefiningAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -44,7 +45,7 @@ export const ClinicalExperienceAccordionItem: React.FC<
   const handleRefineAll = async () => {
     const entry = entries[index];
     const nonEmptyBullets = entry.bulletPoints.filter(
-      (bp) => bp && bp.trim().length > 0
+      (bp) => bp && bp.trim().length > 0,
     );
 
     if (nonEmptyBullets.length === 0) {
@@ -111,7 +112,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
       newBulletPoints[bulletIndex] = refinement.refined;
       updateClinicalExperience(index, { bulletPoints: newBulletPoints });
 
-      setBatchRefinements((prev) => prev.filter((r) => r.index !== bulletIndex));
+      setBatchRefinements((prev) =>
+        prev.filter((r) => r.index !== bulletIndex),
+      );
 
       if (batchRefinements.length === 1) {
         setShowRefineAllOverlay(false);
@@ -234,7 +237,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                   placeholder="Select month"
                   value={entries[index].startMonth}
                   onChange={(val) =>
-                    updateClinicalExperience(index, { startMonth: val as string })
+                    updateClinicalExperience(index, {
+                      startMonth: val as string,
+                    })
                   }
                 />
                 <Combobox
@@ -242,7 +247,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                   placeholder="Select year"
                   value={entries[index].startYear}
                   onChange={(val) =>
-                    updateClinicalExperience(index, { startYear: val as string })
+                    updateClinicalExperience(index, {
+                      startYear: val as string,
+                    })
                   }
                 />
               </div>
@@ -259,7 +266,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                     placeholder="Select month"
                     value={entries[index].endMonth}
                     onChange={(val) =>
-                      updateClinicalExperience(index, { endMonth: val as string })
+                      updateClinicalExperience(index, {
+                        endMonth: val as string,
+                      })
                     }
                   />
                   <Combobox
@@ -267,7 +276,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                     placeholder="Select year"
                     value={entries[index].endYear}
                     onChange={(val) =>
-                      updateClinicalExperience(index, { endYear: val as string })
+                      updateClinicalExperience(index, {
+                        endYear: val as string,
+                      })
                     }
                   />
                 </div>
@@ -283,7 +294,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                 type="checkbox"
                 checked={entries[index].isCurrent}
                 onChange={(e) => {
-                  updateClinicalExperience(index, { isCurrent: e.target.checked });
+                  updateClinicalExperience(index, {
+                    isCurrent: e.target.checked,
+                  });
                 }}
                 className="checkbox border border-[#6F748B] hover:border-white transition"
               />
@@ -298,7 +311,8 @@ export const ClinicalExperienceAccordionItem: React.FC<
                   Bullet points
                 </p>
                 <p className="mt-2 text-sm text-[#6d7895]">
-                  Focus on clinical duties, patient care, and quantifiable outcomes.
+                  Focus on clinical duties, patient care, and quantifiable
+                  outcomes.
                 </p>
               </div>
               <button
@@ -337,7 +351,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                       placeholder={`Bullet Point #${bpIndex + 1}`}
                       value={bp}
                       onChange={(e) => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = e.target.value;
                         updateClinicalExperience(index, {
                           bulletPoints: newBulletPoints,
@@ -373,7 +389,9 @@ export const ClinicalExperienceAccordionItem: React.FC<
                       refinedText={previewTexts[bpIndex]}
                       originalText={bp}
                       onAccept={() => {
-                        const newBulletPoints = [...entries[index].bulletPoints];
+                        const newBulletPoints = [
+                          ...entries[index].bulletPoints,
+                        ];
                         newBulletPoints[bpIndex] = previewTexts[bpIndex];
                         updateClinicalExperience(index, {
                           bulletPoints: newBulletPoints,

@@ -32,9 +32,7 @@ export const TechnicalSkillsAccordion = () => {
       frameworks: allTechnologies.filter(
         (tech) => !skills.frameworksList.includes(tech),
       ),
-      tools: allTechnologies.filter(
-        (tech) => !skills.toolsList.includes(tech),
-      ),
+      tools: allTechnologies.filter((tech) => !skills.toolsList.includes(tech)),
       platforms: allTechnologies.filter(
         (tech) => !skills.platformsList.includes(tech),
       ),
@@ -417,7 +415,9 @@ export const TechnicalSkillsAccordion = () => {
               }}
               onRemove={(platform) =>
                 addSkills({
-                  platformsList: skills.platformsList.filter((p) => p !== platform),
+                  platformsList: skills.platformsList.filter(
+                    (p) => p !== platform,
+                  ),
                   languagesList: skills.languagesList,
                   frameworksList: skills.frameworksList,
                   toolsList: skills.toolsList,
@@ -470,7 +470,9 @@ function SkillBlock({
             </button>
           ))
         ) : (
-          <p className="text-sm text-[#6d7895]">No recommendations right now.</p>
+          <p className="text-sm text-[#6d7895]">
+            No recommendations right now.
+          </p>
         )}
       </div>
     </div>
