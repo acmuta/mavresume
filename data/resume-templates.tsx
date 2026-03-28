@@ -13,7 +13,8 @@ export interface ResumeTemplate {
   description?: string;
   available: boolean;
   route?: string; // e.g., "computer-science" for /builder?type=computer-science
-  sections: string[]; // Sections included in this template (e.g., ["Education", "Technical Skills", "Software Projects", "Experience"])
+  sectionIds: string[]; // Canonical section IDs used by builder/runtime (e.g., ["personal-info", "education", "projects"])
+  roles: string[]; // Common roles for this major (e.g., ["Software Engineer", "Data Scientist", "Product Manager"])
 }
 
 /**
@@ -21,8 +22,19 @@ export interface ResumeTemplate {
  * Maps category keys to template IDs that belong to each category.
  */
 export const templateCategories = {
-  "tech-engineering": ["computer-science", "data-science", "cybersecurity", "mechanical-engineering"],
-  "business-analytics": ["finance", "marketing", "business-administration", "accounting"],
+  "tech-engineering": [
+    "computer-science",
+    "computer-engineering",
+    "data-science",
+    "cybersecurity",
+    "mechanical-engineering",
+  ],
+  "business-analytics": [
+    "finance",
+    "marketing",
+    "business-administration",
+    "accounting",
+  ],
   "design-media": ["graphic-design", "ux-ui-design"],
   "health-service": ["nursing", "pre-med", "education"],
 } as const;
@@ -53,109 +65,315 @@ export const resumeTemplates: ResumeTemplate[] = [
   // Tech & Engineering
   {
     id: "computer-science",
-    name: "CS/CE Resume",
-    description: "Perfect for Computer Science and Computer Engineering majors focusing on software development, hardware projects, algorithms, and programming.",
+    name: "Computer Science Resume",
+    description:
+      "Perfect for Computer Science majors focusing on software development, algorithms, data structures, and programming.",
     available: true,
     route: "computer-science",
-    sections: ["Education", "Technical Skills", "Projects", "Experience"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "experience",
+    ],
+    roles: [
+      "Software Engineer",
+      "Frontend Engineer",
+      "Backend Engineer",
+      "Full Stack Engineer",
+      "DevOps Engineer",
+    ],
+  },
+  {
+    id: "computer-engineering",
+    name: "Computer Engineering Resume",
+    description:
+      "Tailored for Computer Engineering majors focusing on embedded systems, digital logic, hardware-software integration, and systems programming.",
+    available: true,
+    route: "computer-engineering",
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "experience",
+      "coursework",
+    ],
+    roles: [
+      "Embedded Systems Engineer",
+      "Firmware Engineer",
+      "Hardware Engineer",
+      "Systems Engineer",
+    ],
   },
   {
     id: "data-science",
     name: "Data Science Resume",
-    description: "Optimized for Data Science, Statistics, Applied Mathematics, and Analytics-focused majors.",
-    available: false,
+    description:
+      "Optimized for Data Science, Statistics, Applied Mathematics, and Analytics-focused majors.",
+    available: true,
     route: "data-science",
-    sections: ["Education", "Technical Skills", "Projects", "Research", "Experience"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "research",
+      "experience",
+    ],
+    roles: [
+      "Data Analyst",
+      "Data Scientist",
+      "Machine Learning Engineer",
+      "Data Engineer",
+    ],
   },
   {
     id: "cybersecurity",
     name: "Cybersecurity Resume",
-    description: "Tailored for Cybersecurity, Information Security, and Network Security majors.",
-    available: false,
+    description:
+      "Tailored for Cybersecurity, Information Security, and Network Security majors.",
+    available: true,
     route: "cybersecurity",
-    sections: ["Education", "Technical Skills", "Projects", "Certifications", "Experience"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "certifications",
+      "experience",
+    ],
+    roles: [
+      "Information Security Analyst",
+      "SOC Analyst",
+      "Cybersecurity Engineer",
+      "Network Security Analyst",
+    ],
   },
   {
     id: "mechanical-engineering",
     name: "Mechanical Engineering Resume",
-    description: "Crafted for Mechanical Engineering majors focusing on design, manufacturing, and lab work.",
-    available: false,
+    description:
+      "Crafted for Mechanical Engineering majors focusing on design, manufacturing, and lab work.",
+    available: true,
     route: "mechanical-engineering",
-    sections: ["Education", "Technical Skills", "Design Projects", "Lab Experience", "Experience"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "technical-skills",
+      "projects",
+      "experience",
+      "coursework",
+    ],
+    roles: [
+      "Mechanical Engineer",
+      "Design Engineer",
+      "Manufacturing Engineer",
+      "Aerospace Engineer",
+      "Product Development Engineer",
+    ],
   },
   // Business & Analytics
   {
     id: "finance",
     name: "Finance Resume",
-    description: "Perfect for Finance, Economics, and Investment-focused majors emphasizing financial analysis.",
-    available: false,
+    description:
+      "Perfect for Finance, Economics, and Investment-focused majors emphasizing financial analysis.",
+    available: true,
     route: "finance",
-    sections: ["Education", "Experience", "Projects", "Certifications", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "projects",
+      "skills",
+      "leadership-activities",
+    ],
+    roles: [
+      "Financial Analyst",
+      "Investment Banking Analyst",
+      "Risk Analyst",
+      "Corporate Finance Analyst",
+      "Financial Advisor",
+    ],
   },
   {
     id: "marketing",
     name: "Marketing Resume",
-    description: "Designed for Marketing, Communications, Advertising, and Public Relations majors.",
-    available: false,
+    description:
+      "Designed for Marketing, Communications, Advertising, and Public Relations majors.",
+    available: true,
     route: "marketing",
-    sections: ["Education", "Experience", "Campaigns", "Portfolio", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "projects",
+      "skills",
+      "leadership-activities",
+    ],
+    roles: [
+      "Marketing Coordinator",
+      "Digital Marketing Specialist",
+      "Social Media Coordinator",
+      "Content Marketing Specialist",
+      "Marketing Analyst",
+    ],
   },
   {
     id: "business-administration",
     name: "Business Administration Resume",
-    description: "Tailored for Business Administration, Management, and General Business majors.",
-    available: false,
+    description:
+      "Tailored for Business Administration, Management, and General Business majors.",
+    available: true,
     route: "business-administration",
-    sections: ["Education", "Experience", "Leadership", "Projects", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "leadership",
+      "projects",
+      "skills",
+    ],
+    roles: [
+      "Business Analyst",
+      "Operations Analyst",
+      "Human Resources Specialist",
+      "Sales Representative",
+      "Management Trainee",
+    ],
   },
   {
     id: "accounting",
     name: "Accounting Resume",
-    description: "Crafted for Accounting majors focusing on financial reporting, auditing, and certifications.",
-    available: false,
+    description:
+      "Crafted for Accounting majors focusing on financial reporting, auditing, and certifications.",
+    available: true,
     route: "accounting",
-    sections: ["Education", "Experience", "Projects", "Certifications", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "skills",
+      "certifications",
+      "leadership-activities",
+    ],
+    roles: [
+      "Staff Accountant",
+      "Audit Associate",
+      "Tax Associate",
+      "Accounts Payable Analyst",
+      "Financial Analyst",
+    ],
   },
   // Design & Media
   {
     id: "graphic-design",
     name: "Graphic Design Resume",
-    description: "Perfect for Graphic Design, Visual Communication, and Creative Design majors.",
-    available: false,
+    description:
+      "Perfect for Graphic Design, Visual Communication, and Creative Design majors.",
+    available: true,
     route: "graphic-design",
-    sections: ["Education", "Portfolio", "Projects", "Skills", "Experience"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "projects",
+      "skills",
+      "awards",
+    ],
+    roles: [
+      "Graphic Designer",
+      "Brand Designer",
+      "Visual Designer",
+    ],
   },
   {
     id: "ux-ui-design",
     name: "UX/UI Design Resume",
-    description: "Optimized for UX/UI Design, Human-Computer Interaction, and User Experience majors.",
-    available: false,
+    description:
+      "Optimized for UX/UI Design, Human-Computer Interaction, and User Experience majors.",
+    available: true,
     route: "ux-ui-design",
-    sections: ["Education", "Portfolio", "Projects", "Case Studies", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "experience",
+      "case-studies",
+      "skills",
+    ],
+    roles: [
+      "UX Designer",
+      "Product Designer",
+      "UI Designer",
+    ],
   },
   // Health & Service
   {
     id: "nursing",
     name: "Nursing Resume",
-    description: "Crafted for Nursing, Health Sciences, and other healthcare-focused majors pursuing clinical careers.",
-    available: false,
+    description:
+      "Crafted for Nursing, Health Sciences, and other healthcare-focused majors pursuing clinical careers.",
+    available: true,
     route: "nursing",
-    sections: ["Education", "Clinical Experience", "Certifications", "Volunteer Work", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "clinical-experience",
+      "certifications",
+      "volunteer-work",
+      "skills",
+    ],
+    roles: [
+      "Registered Nurse",
+      "Medical-Surgical Nurse",
+      "Critical Care Nurse",
+      "Emergency Department Nurse",
+      "Pediatric Nurse",
+    ],
   },
   {
     id: "pre-med",
     name: "Pre-Med Resume",
-    description: "Tailored for Pre-Med, Biology, Chemistry, Biochemistry, and other pre-medical track students.",
-    available: false,
+    description:
+      "Tailored for Pre-Med, Biology, Chemistry, Biochemistry, and other pre-medical track students.",
+    available: true,
     route: "pre-med",
-    sections: ["Education", "Clinical Experience", "Research", "Volunteer Work", "Certifications"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "clinical-experience",
+      "research",
+      "volunteer-work",
+      "leadership-activities",
+    ],
+    roles: [
+      "Medical Scribe",
+      "Clinical Research Coordinator",
+      "Research Assistant",
+      "Emergency Medical Technician",
+      "Patient Care Technician",
+    ],
   },
   {
     id: "education",
     name: "Education Resume",
-    description: "Designed for Education, Early Childhood Education, Special Education, and Teaching-focused majors.",
-    available: false,
+    description:
+      "Designed for Education, Early Childhood Education, Special Education, and Teaching-focused majors.",
+    available: true,
     route: "education",
-    sections: ["Education", "Teaching Experience", "Certifications", "Volunteer Work", "Skills"],
+    sectionIds: [
+      "personal-info",
+      "education",
+      "teaching-experience",
+      "certifications",
+      "volunteer-work",
+      "skills",
+    ],
+    roles: [
+      "Elementary School Teacher",
+      "High School Teacher",
+    ],
   },
 ];

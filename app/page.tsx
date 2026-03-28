@@ -50,19 +50,22 @@ const workflowSteps = [
     number: "01",
     icon: Sparkles,
     title: "Build",
-    description: "Create the resume with prompts, structure, and stronger bullet writing.",
+    description:
+      "Create the resume with prompts, structure, and stronger bullet writing.",
   },
   {
     number: "02",
     icon: FileText,
     title: "Submit",
-    description: "Send the finished PDF with notes so the reviewer has context.",
+    description:
+      "Send the finished PDF with notes so the reviewer has context.",
   },
   {
     number: "03",
     icon: ScanSearch,
     title: "Review",
-    description: "Get comments directly on the PDF plus a final written summary.",
+    description:
+      "Get comments directly on the PDF plus a final written summary.",
   },
 ] as const;
 
@@ -83,16 +86,26 @@ export default function Home() {
               </p>
             </div>
 
-            <Button
-              asChild
-              size="sm"
-              className="rounded-full bg-[#274cbc] px-4 text-sm font-semibold text-white hover:bg-[#315be1]"
-            >
-              <Link href="/login">
-                Login
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full border-[#2b3242] bg-[#10121a]/70 px-4 text-sm font-semibold text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+              >
+                <Link href="/features">Features</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full bg-[#274cbc] px-4 text-sm font-semibold text-white hover:bg-[#315be1]"
+              >
+                <Link href="/login">
+                  Login
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="grid gap-10 pb-12 pt-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(460px,1.05fr)] lg:items-center lg:gap-6 lg:pb-16 lg:pt-14">
@@ -184,13 +197,21 @@ export default function Home() {
                 aria-hidden="true"
                 className="h-full w-px bg-[linear-gradient(180deg,rgba(39,76,188,0),rgba(39,76,188,0.9),rgba(25,200,255,0.35),rgba(39,76,188,0))]"
                 animate={{ opacity: [0.45, 0.9, 0.45] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               />
               <motion.div
                 aria-hidden="true"
                 className="absolute flex size-14 items-center justify-center rounded-full border border-[#2b3242] bg-[#12151d]/90 text-[#8fa5ff] shadow-[0_0_40px_rgba(39,76,188,0.18)] backdrop-blur-sm"
                 animate={{ y: [-120, 120, -120] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 7,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <Layers3 className="size-5" />
               </motion.div>
@@ -210,9 +231,15 @@ export default function Home() {
           />
 
           <div className="mt-10">
-            <div className="relative hidden lg:block">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
+              className="relative hidden lg:block"
+            >
               <div className="absolute left-0 right-0 top-6 h-px bg-[linear-gradient(90deg,rgba(39,76,188,0),rgba(39,76,188,0.85),rgba(25,200,255,0.35),rgba(39,76,188,0))]" />
-            </div>
+            </motion.div>
 
             <div className="grid gap-8 lg:grid-cols-3 lg:gap-6">
               {workflowSteps.map((step, index) => (
@@ -374,7 +401,9 @@ function HeroSystemVisual() {
             </div>
             <motion.div
               className="flex size-11 items-center justify-center rounded-2xl border border-[#2b3242] bg-[#12151d] text-[#8fa5ff]"
-              animate={prefersReducedMotion ? undefined : { rotate: [0, 10, -10, 0] }}
+              animate={
+                prefersReducedMotion ? undefined : { rotate: [0, 10, -10, 0] }
+              }
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             >
               <Layers3 className="size-5" />
@@ -433,7 +462,7 @@ function FloatingChip({
 
   return (
     <motion.div
-      className={`absolute hidden w-[156px] rounded-2xl border border-[#2b3242] bg-[#10121a]/90 px-3 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-md sm:block ${className}`}
+      className={`absolute hidden w-[156px_56px] rounded-2xl border border-[#2b3242] bg-[#10121a]/90 px-3 py-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-md sm:block ${className}`}
       animate={
         prefersReducedMotion
           ? undefined
@@ -453,12 +482,10 @@ function FloatingChip({
           <Icon className="size-4" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-[#cfd3e1]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#cfd3e1]">
             {title}
           </p>
-          <p className="mt-1 truncate text-[11px] text-[#6d7895]">
-            {subtitle}
-          </p>
+          <p className="mt-1 text-[11px] text-[#6d7895]">{subtitle}</p>
         </div>
       </div>
     </motion.div>
