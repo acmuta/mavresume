@@ -5,11 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardCheck, Edit3, Loader2, Plus, Settings2 } from "lucide-react";
 
-import { PersonalInfoSection } from "../../components/sections/personalInfo";
-import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
-import { EducationSection } from "../../components/sections/education";
-import { ExperienceSection } from "../../components/sections/experience";
-import { ProjectsSection } from "../../components/sections/projects";
 import { Button } from "../../components/ui/button";
 import { SubmitReviewModal } from "../../components/elements/resume/SubmitReviewModal";
 import { useGuideStore } from "../../store/useGuideStore";
@@ -18,20 +13,31 @@ import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
 import { ResumeSettingsModal } from "../../components/elements/resume/ResumeSettingsModal";
+import {
+  CORE_SECTION_ID,
+  getSectionLabelById,
+  normalizeSectionId,
+} from "@/lib/resume/sections";
+import {
+  getBuilderSectionComponent,
+  getSectionRuntimeDefinition,
+} from "@/lib/resume/sectionRuntimeRegistry";
 
-const SECTION_CONFIG: Record<string, { Component: React.FC; label: string }> = {
-  "personal-info": { Component: PersonalInfoSection, label: "Personal Info" },
-  education: { Component: EducationSection, label: "Education" },
-  "technical-skills": { Component: TechnicalSkillsSection, label: "Skills" },
-  projects: { Component: ProjectsSection, label: "Projects" },
-  experience: { Component: ExperienceSection, label: "Experience" },
-};
+function SectionNotImplemented() {
+  return (
+    <div className="rounded-[1.5rem] border border-amber-500/35 bg-amber-500/10 p-6 text-sm text-amber-100 shadow-[0_16px_40px_rgba(0,0,0,0.25)]">
+      This section is part of the dynamic template system, but its form UI is
+      not implemented yet.
+    </div>
+  );
+}
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const resumeId = searchParams.get("id");
-  const { setCurrentSection } = useGuideStore();
+  const { setCurrentSection, setCurrentTemplateType, setCurrentRole } =
+    useGuideStore();
   const {
     currentResumeId,
     setCurrentResumeId,
@@ -63,6 +69,8 @@ function BuilderPageContent() {
 
       setIsLoading(true);
       setLoadError(null);
+      setCurrentTemplateType(null);
+      setCurrentRole(null);
 
       try {
         const resumeWithData = await getResumeWithData(resumeId);
@@ -75,15 +83,22 @@ function BuilderPageContent() {
 
         setCurrentResumeId(resumeId);
         setResumeName(resumeWithData.name || "Resume");
+        setCurrentTemplateType(resumeWithData.template_type ?? null);
+        setCurrentRole(resumeWithData.resume_data?.role ?? null);
 
         if (resumeWithData.resume_data) {
           setResumeFromDatabase({
+            role: resumeWithData.resume_data.role,
             personal_info: resumeWithData.resume_data.personal_info,
             education: resumeWithData.resume_data.education,
             projects: resumeWithData.resume_data.projects,
             experience: resumeWithData.resume_data.experience,
+            leadership_activities:
+              resumeWithData.resume_data.leadership_activities,
             skills: resumeWithData.resume_data.skills,
             section_order: resumeWithData.resume_data.section_order,
+            section_data: resumeWithData.resume_data.section_data,
+            schema_version: resumeWithData.resume_data.schema_version,
             pdf_settings: resumeWithData.resume_data.pdf_settings,
           });
         }
@@ -99,16 +114,26 @@ function BuilderPageContent() {
     }
 
     loadResume();
-  }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
+  }, [
+    resumeId,
+    router,
+    setCurrentResumeId,
+    setCurrentRole,
+    setCurrentTemplateType,
+    setResumeFromDatabase,
+  ]);
 
   const sections = useMemo(() => {
-    return sectionOrder
-      .filter((id) => SECTION_CONFIG[id])
-      .map((id) => ({
-        Component: SECTION_CONFIG[id].Component,
-        id: id as SectionId,
-        label: SECTION_CONFIG[id].label,
-      }));
+    return sectionOrder.map((id) => {
+      const normalizedId = normalizeSectionId(id);
+      const runtimeDefinition = getSectionRuntimeDefinition(normalizedId);
+      return {
+        Component:
+          getBuilderSectionComponent(normalizedId) ?? SectionNotImplemented,
+        id: normalizedId as SectionId,
+        label: runtimeDefinition?.label ?? getSectionLabelById(normalizedId),
+      };
+    });
   }, [sectionOrder]);
 
   useEffect(() => {
@@ -139,9 +164,9 @@ function BuilderPageContent() {
     }
   };
 
-  const activeSection = sections[currentSectionIndex]?.id || "personal-info";
+  const activeSection = sections[currentSectionIndex]?.id || CORE_SECTION_ID;
   const CurrentSection =
-    sections[currentSectionIndex]?.Component || PersonalInfoSection;
+    sections[currentSectionIndex]?.Component || SectionNotImplemented;
   const builderFileName = `${resumeName || "Resume"}.pdf`;
 
   if (isLoading) {
