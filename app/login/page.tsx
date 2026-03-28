@@ -73,6 +73,7 @@ const resumeTips = [
 function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const authError = searchParams.get("error");
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -99,6 +100,12 @@ function LoginPageContent() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   // Validation
   const validateEmail = (email: string): boolean => {
