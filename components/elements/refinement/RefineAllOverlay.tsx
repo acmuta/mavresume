@@ -47,7 +47,7 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[82vh] max-w-4xl overflow-hidden border-[#2b3242] bg-[#10121a]/96 text-white ring-1 ring-inset ring-[#24304c]/70">
+      <DialogContent className="max-h-[82vh] max-w-4xl overflow-y-auto border-[#2b3242] bg-[#10121a]/96 text-white ring-1 ring-inset ring-[#24304c]/70">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold tracking-tight text-white">
             Review Refined Bullet Points
@@ -58,7 +58,7 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+        <div className="space-y-3 pr-1">
           {refinements.map((item) => (
             <div
               key={item.index}
@@ -90,7 +90,7 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
                 </div>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-[1rem] bg-[#0f1117]/58 p-3 ring-1 ring-inset ring-[#24304c]/70">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6d7895]">
                     Original
@@ -101,7 +101,7 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
                 </div>
                 <div className="rounded-[1rem] bg-[#11172a]/55 p-3 ring-1 ring-inset ring-[#2f5bf2]/35">
                   <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
-                    <Sparkles className="size-3.5 text-[#58f5c3]" />
+                    <Sparkles className="size-3.5 text-[#89a5ff]" />
                     AI Refined
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-[#d6def3]">
