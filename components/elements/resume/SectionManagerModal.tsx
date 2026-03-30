@@ -148,24 +148,24 @@ export const SectionManagerModal: React.FC<{
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[94vw] max-w-4xl rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_40%),linear-gradient(180deg,_rgba(17,19,25,0.96),_rgba(11,12,16,0.98))] text-white shadow-[0_30px_80px_rgba(3,4,7,0.45)]">
+      <DialogContent className="flex h-[80vh] max-h-[80vh] w-[94vw] max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_40%),linear-gradient(180deg,_rgba(17,19,25,0.96),_rgba(11,12,16,0.98))] text-white shadow-[0_30px_80px_rgba(3,4,7,0.45)]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-tight text-white">
             Manage resume sections
           </DialogTitle>
         </DialogHeader>
 
-        <div className="py-2">
+        <div className="flex min-h-0 flex-1 flex-col py-2">
           <p className="max-w-2xl text-sm leading-relaxed text-[#a4a7b5]">
             Add, remove, and reorder sections. Personal Info always stays first.
           </p>
 
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
+          <div className="mt-6 grid min-h-0 flex-1 gap-6 md:grid-cols-2">
+            <div className="flex min-h-0 flex-col rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
                 Available sections
               </p>
-              <div className="mt-4 flex flex-col gap-3">
+              <div className="mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
                 {availableSections.length > 0 ? (
                   availableSections.map((section) => (
                     <AvailableSectionItem
@@ -183,7 +183,7 @@ export const SectionManagerModal: React.FC<{
               </div>
             </div>
 
-            <div className="rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
+            <div className="flex min-h-0 flex-col rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
                 Current section order
               </p>
@@ -206,7 +206,7 @@ export const SectionManagerModal: React.FC<{
                   items={items}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="mt-3 flex flex-col gap-3">
+                  <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
                     {items.length > 0 ? (
                       items.map((id) => (
                         <SortableSectionItem

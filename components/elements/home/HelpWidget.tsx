@@ -98,7 +98,7 @@ export function HelpWidget() {
     <>
       <motion.button
         onClick={toggleWidget}
-        className={`fixed bottom-6 right-6 z-40 flex h-12 items-center gap-2 rounded-full border border-[#2b3242] bg-[#0f1117]/90 px-4 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-[#4b5a82] hover:bg-[#151923] hover:shadow-[0_24px_55px_rgba(0,0,0,0.38)] ${isWidgetExpanded ? "pointer-events-none scale-95 opacity-0" : "opacity-100"}`}
+        className={`fixed bottom-6 right-6 z-40 flex h-12 items-center gap-2 rounded-full border border-[#2b3242] bg-[#0f1117]/90 px-2 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-all duration-300 ease-out hover:border-[#4b5a82] hover:bg-[#151923] hover:shadow-[0_24px_55px_rgba(0,0,0,0.38)] ${isWidgetExpanded ? "pointer-events-none scale-95 opacity-0" : "opacity-100"}`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Open builder help"

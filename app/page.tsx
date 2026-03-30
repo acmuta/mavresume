@@ -50,22 +50,24 @@ const workflowSteps = [
     number: "01",
     icon: Sparkles,
     title: "Build",
-    description: "Create the resume with prompts, structure, and stronger bullet writing.",
+    description:
+      "Create the resume with prompts, structure, and stronger bullet writing.",
   },
   {
     number: "02",
     icon: FileText,
     title: "Submit",
-    description: "Send the finished PDF with notes so the reviewer has context.",
+    description:
+      "Send the finished PDF with notes so the reviewer has context.",
   },
   {
     number: "03",
     icon: ScanSearch,
     title: "Review",
-    description: "Get comments directly on the PDF plus a final written summary.",
+    description:
+      "Get comments directly on the PDF plus a final written summary.",
   },
 ] as const;
-
 
 export default function Home() {
   return (
@@ -89,17 +91,67 @@ export default function Home() {
                 asChild
                 variant="outline"
                 size="sm"
-                className="rounded-full border-[#2b3242] bg-[#10121a]/70 px-4 text-sm font-semibold text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                className="group/nav rounded-full border-transparent bg-transparent px-4 text-sm font-semibold uppercase tracking-[0.28em] text-[#cfd3e1] hover:bg-transparent hover:text-white"
               >
-                <Link href="/features">Features</Link>
+                <Link href="/features">
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover/nav:after:scale-x-100">
+                    Features
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="group/nav rounded-full border-transparent bg-transparent px-4 text-sm font-semibold uppercase tracking-[0.28em] text-[#cfd3e1] hover:bg-transparent hover:text-white"
+              >
+                <Link href="/faqs">
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover/nav:after:scale-x-100">
+                    FAQs
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="group/nav rounded-full border-transparent bg-transparent px-4 text-sm font-semibold uppercase tracking-[0.28em] text-[#cfd3e1] hover:bg-transparent hover:text-white"
+              >
+                <Link
+                  href="https://github.com/acmuta/mavresume#readme"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover/nav:after:scale-x-100">
+                    Help
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="group/nav rounded-full border-transparent bg-transparent px-4 text-sm font-semibold uppercase tracking-[0.28em] text-[#cfd3e1] hover:bg-transparent hover:text-white"
+              >
+                <Link
+                  href="https://www.acmuta.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover/nav:after:scale-x-100">
+                    ACM @ UTA
+                  </span>
+                </Link>
               </Button>
               <Button
                 asChild
                 size="sm"
-                className="rounded-full bg-[#274cbc] px-4 text-sm font-semibold text-white hover:bg-[#315be1]"
+                className="group/nav rounded-full border-transparent bg-transparent px-4 text-sm font-semibold uppercase tracking-[0.28em] text-[#cfd3e1] hover:bg-transparent hover:text-white"
               >
                 <Link href="/login">
-                  Login
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover/nav:after:scale-x-100">
+                    Login
+                  </span>
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
