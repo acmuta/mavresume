@@ -185,7 +185,10 @@ export const TechnicalSkillsAccordion = () => {
 
   const getLineItems = (line: StandardSkillLine) => {
     const customValues = getCustomValues(line);
-    return [...Technologies, ...customValues.filter((value) => !Technologies.includes(value))];
+    return [
+      ...Technologies,
+      ...customValues.filter((value) => !Technologies.includes(value)),
+    ];
   };
 
   const hiddenStandardLines = STANDARD_LINE_ORDER.filter(
@@ -209,7 +212,9 @@ export const TechnicalSkillsAccordion = () => {
 
   const orderedVisibleLines = [
     ...STANDARD_LINE_ORDER.filter((line) => visibleSkillLines.includes(line)),
-    ...(visibleSkillLines.includes("custom") ? (["custom"] as SkillLineKey[]) : []),
+    ...(visibleSkillLines.includes("custom")
+      ? (["custom"] as SkillLineKey[])
+      : []),
   ];
 
   return (
@@ -224,7 +229,9 @@ export const TechnicalSkillsAccordion = () => {
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {hiddenStandardLines.map((line) => {
-            const config = SKILL_LINE_CONFIG.find((entry) => entry.key === line);
+            const config = SKILL_LINE_CONFIG.find(
+              (entry) => entry.key === line,
+            );
             if (!config) return null;
 
             return (
@@ -312,7 +319,8 @@ export const TechnicalSkillsAccordion = () => {
                         })
                       }
                       onCreateItem={(value) => {
-                        const currentCustomValues = customSkillEntry.customValues || [];
+                        const currentCustomValues =
+                          customSkillEntry.customValues || [];
                         if (currentCustomValues.includes(value)) return;
 
                         updateSkills({
@@ -400,7 +408,10 @@ export const TechnicalSkillsAccordion = () => {
                       const currentCustom = getCustomValues(line);
                       if (currentCustom.includes(value)) return;
                       updateSkills(
-                        buildCustomPartialUpdate(line, [...currentCustom, value]),
+                        buildCustomPartialUpdate(line, [
+                          ...currentCustom,
+                          value,
+                        ]),
                       );
                     }}
                     onRemove={(value) =>
