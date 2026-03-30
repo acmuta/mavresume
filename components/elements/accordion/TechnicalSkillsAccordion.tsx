@@ -100,12 +100,8 @@ export const TechnicalSkillsAccordion = () => {
       languages: allLanguages.filter(
         (lang) => !skills.languagesList.includes(lang),
       ),
-      frameworks: allTechnologies.filter(
-        (tech) => !skills.frameworksList.includes(tech),
-      ),
-      tools: allTechnologies.filter((tech) => !skills.toolsList.includes(tech)),
-      platforms: allTechnologies.filter(
-        (tech) => !skills.platformsList.includes(tech),
+      technologies: allTechnologies.filter(
+        (tech) => !skills.technologiesList.includes(tech),
       ),
       frameworks: allTechnologies.filter(
         (tech) => !skills.frameworksList.includes(tech),
