@@ -97,33 +97,45 @@ const renderEducationSection: PdfSectionRenderer = ({
 const renderTechnicalSkillsSection: PdfSectionRenderer = ({
   styles,
   skills,
-}) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>Technical Skills</Text>
-    <Text style={styles.smallText}>
-      <Text style={styles.bold}>Languages: </Text>
-      {skills.languagesList?.length
-        ? skills.languagesList.join(", ")
-        : "None added"}
-    </Text>
-    <Text style={styles.smallText}>
-      <Text style={styles.bold}>Frameworks: </Text>
-      {skills.frameworksList?.length
-        ? skills.frameworksList.join(", ")
-        : "None added"}
-    </Text>
-    <Text style={styles.smallText}>
-      <Text style={styles.bold}>Tools: </Text>
-      {skills.toolsList?.length ? skills.toolsList.join(", ") : "None added"}
-    </Text>
-    <Text style={styles.smallText}>
-      <Text style={styles.bold}>Platforms: </Text>
-      {skills.platformsList?.length
-        ? skills.platformsList.join(", ")
-        : "None added"}
-    </Text>
-  </View>
-);
+}) => {
+  const visibleLines =
+    skills.visibleSkillLines && skills.visibleSkillLines.length > 0
+      ? skills.visibleSkillLines
+      : ["languages", "technologies"];
+  const customEntry = skills.customSkillEntry;
+
+  const groups = [
+    { key: "languages", label: "Languages", values: skills.languagesList },
+    {
+      key: "technologies",
+      label: "Technologies",
+      values: skills.technologiesList,
+    },
+    {
+      key: "frameworks",
+      label: "Frameworks",
+      values: skills.frameworksList,
+    },
+    { key: "platforms", label: "Platforms", values: skills.platformsList },
+    {
+      key: "custom",
+      label: customEntry?.title?.trim() || "Custom Entry",
+      values: customEntry?.values ?? [],
+    },
+  ].filter((group) => visibleLines.includes(group.key));
+
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Technical Skills</Text>
+      {groups.map((group) => (
+        <Text key={group.key} style={styles.smallText}>
+          <Text style={styles.bold}>{group.label}: </Text>
+          {group.values?.length ? group.values.join(", ") : "None added"}
+        </Text>
+      ))}
+    </View>
+  );
+};
 
 const renderExperienceSection: PdfSectionRenderer = ({
   styles,

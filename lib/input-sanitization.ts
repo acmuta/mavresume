@@ -5,6 +5,7 @@
 
 const MAX_BULLET_LENGTH = 500;
 const MAX_TITLE_LENGTH = 100;
+const MAX_TARGET_ROLE_LENGTH = 120;
 const MAX_TECHNOLOGY_LENGTH = 50;
 const MAX_TECHNOLOGIES_COUNT = 20;
 
@@ -29,6 +30,7 @@ export interface SanitizedBulletInput {
   bulletText: string;
   context?: {
     title?: string;
+    targetRole?: string;
     technologies?: string[];
   };
 }
@@ -70,13 +72,19 @@ export function sanitizeBulletText(
  */
 export function sanitizeContext(
   context: unknown
-): { context: { title?: string; technologies?: string[] } } | { error: string } {
+): {
+  context: { title?: string; targetRole?: string; technologies?: string[] };
+} | { error: string } {
   if (!context || typeof context !== "object") {
     return { context: {} };
   }
 
   const ctx = context as Record<string, unknown>;
-  const sanitized: { title?: string; technologies?: string[] } = {};
+  const sanitized: {
+    title?: string;
+    targetRole?: string;
+    technologies?: string[];
+  } = {};
 
   if (ctx.title !== undefined && ctx.title !== null) {
     if (typeof ctx.title !== "string") {
@@ -90,6 +98,21 @@ export function sanitizeContext(
     }
     if (title.length > 0) {
       sanitized.title = title;
+    }
+  }
+
+  if (ctx.targetRole !== undefined && ctx.targetRole !== null) {
+    if (typeof ctx.targetRole !== "string") {
+      return { error: "context.targetRole must be a string" };
+    }
+    const targetRole = stripControlCharacters(ctx.targetRole.trim());
+    if (targetRole.length > MAX_TARGET_ROLE_LENGTH) {
+      return {
+        error: `context.targetRole exceeds maximum length of ${MAX_TARGET_ROLE_LENGTH} characters`,
+      };
+    }
+    if (targetRole.length > 0) {
+      sanitized.targetRole = targetRole;
     }
   }
 
@@ -289,35 +312,52 @@ export function isValidBulletOutput(text: string): boolean {
  */
 export function buildSafePrompt(
   bulletText: string,
-  context?: { title?: string; technologies?: string[] }
+  context?: { title?: string; targetRole?: string; technologies?: string[] }
 ): string {
   let contextBlock = "";
   if (context) {
     if (context.title) {
       contextBlock += `<context_title>${context.title}</context_title>\n`;
     }
+    if (context.targetRole) {
+      contextBlock += `<target_role>${context.targetRole}</target_role>\n`;
+    }
     if (context.technologies && context.technologies.length > 0) {
       contextBlock += `<context_technologies>${context.technologies.join(", ")}</context_technologies>\n`;
     }
   }
 
+  const roleTailoringInstruction = context?.targetRole
+    ? "Use <target_role> to tailor wording and role-relevant keywords while staying truthful to the original achievement."
+    : "";
+
   return `${contextBlock ? `Context:\n${contextBlock}\n` : ""}Original bullet point:
 <user_input>${bulletText}</user_input>
 
-Refine this bullet point and return ONLY the refined text.`;
+Refine this bullet point and return ONLY the refined text.${roleTailoringInstruction ? `\n${roleTailoringInstruction}` : ""}`;
 }
 
 /**
  * Builds the batch prompt with XML delimiters for multiple bullets.
  */
 export function buildSafeBatchPrompt(
-  bullets: Array<{ text: string; context?: { title?: string; technologies?: string[] } }>,
-  sharedContext?: { title?: string; technologies?: string[] }
+  bullets: Array<{
+    text: string;
+    context?: { title?: string; targetRole?: string; technologies?: string[] };
+  }>,
+  sharedContext?: {
+    title?: string;
+    targetRole?: string;
+    technologies?: string[];
+  }
 ): string {
   let contextBlock = "";
   if (sharedContext) {
     if (sharedContext.title) {
       contextBlock += `<context_title>${sharedContext.title}</context_title>\n`;
+    }
+    if (sharedContext.targetRole) {
+      contextBlock += `<target_role>${sharedContext.targetRole}</target_role>\n`;
     }
     if (sharedContext.technologies && sharedContext.technologies.length > 0) {
       contextBlock += `<context_technologies>${sharedContext.technologies.join(", ")}</context_technologies>\n`;
@@ -328,10 +368,14 @@ export function buildSafeBatchPrompt(
     .map((b, idx) => `${idx + 1}. <user_input>${b.text}</user_input>`)
     .join("\n");
 
+  const roleTailoringInstruction = sharedContext?.targetRole
+    ? "Use <target_role> to tailor wording and role-relevant keywords for each bullet while staying truthful to the provided accomplishments."
+    : "";
+
   return `Refine these resume bullet points to be more impactful and professional.
 
 ${contextBlock ? `Context:\n${contextBlock}\n` : ""}Input bullet points:
 ${bulletList}
 
-Return a JSON object with a "results" key containing an array of exactly ${bullets.length} refined bullet strings.`;
+Return a JSON object with a "results" key containing an array of exactly ${bullets.length} refined bullet strings.${roleTailoringInstruction ? `\n${roleTailoringInstruction}` : ""}`;
 }

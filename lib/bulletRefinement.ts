@@ -1,4 +1,5 @@
 import { useRateLimitStore } from "@/store/useRateLimitStore";
+import { useGuideStore } from "@/store/useGuideStore";
 
 /**
  * Context passed to AI refinement to improve relevance of generated text.
@@ -6,7 +7,21 @@ import { useRateLimitStore } from "@/store/useRateLimitStore";
  */
 interface RefinementContext {
   title?: string;
+  targetRole?: string;
   technologies?: string[];
+}
+
+function withTargetRole(context?: RefinementContext): RefinementContext {
+  const currentRole = useGuideStore.getState().currentRole?.trim();
+
+  if (!currentRole) {
+    return context || {};
+  }
+
+  return {
+    ...(context || {}),
+    targetRole: currentRole,
+  };
 }
 
 /**
@@ -36,6 +51,8 @@ export async function refineBulletPoint(
   }
 
   try {
+    const requestContext = withTargetRole(context);
+
     // Call Next.js API route which proxies to OpenAI
     const response = await fetch("/api/refine-bullet", {
       method: "POST",
@@ -44,7 +61,7 @@ export async function refineBulletPoint(
       },
       body: JSON.stringify({
         bulletText: bulletText.trim(),
-        context: context || {},
+        context: requestContext,
       }),
     });
 
@@ -137,9 +154,10 @@ export async function refineBulletPointsBatch(
   }
 
   // Filter out empty bullets but track their positions
+  const requestContext = withTargetRole(context);
   const bulletInputs = bulletPoints.map((text) => ({
     text: text || "",
-    context,
+    context: requestContext,
   }));
 
   try {
