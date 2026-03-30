@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, FileText } from "lucide-react";
+import { Loader2, FileText, BriefcaseBusiness, CheckCircle2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSessionStore } from "@/store/useSessionStore";
 import { createResume } from "@/lib/resumeService";
+import { resumeTemplates } from "@/data/resume-templates";
 
 interface CreateResumeModalProps {
   open: boolean;
@@ -43,14 +44,36 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
   const { user, isAuthenticated } = useSessionStore();
 
   const [resumeName, setResumeName] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedTemplate = useMemo(() => {
+    if (!templateType || templateType === "custom") {
+      return null;
+    }
+
+    return resumeTemplates.find((template) => template.route === templateType) ?? null;
+  }, [templateType]);
+
+  const availableRoles = selectedTemplate?.roles ?? [];
+  const requiresRole = availableRoles.length > 0;
 
   const handleCreate = async () => {
     // Validate input
     const trimmedName = resumeName.trim();
     if (!trimmedName) {
       setError("Please enter a name for your resume");
+      return;
+    }
+
+    if (requiresRole && !selectedRole) {
+      setError("Please choose the role this resume is targeting");
+      return;
+    }
+
+    if (requiresRole && selectedRole && !availableRoles.includes(selectedRole)) {
+      setError("Please choose a valid role for this template");
       return;
     }
 
@@ -69,7 +92,8 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
       const { resume } = await createResume(
         user.id,
         trimmedName,
-        templateType ?? undefined
+        templateType ?? undefined,
+        selectedRole ?? undefined,
       );
 
       // Close modal and navigate to builder
@@ -96,6 +120,7 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       setResumeName("");
+      setSelectedRole(null);
       setError(null);
       setIsCreating(false);
     }
@@ -104,7 +129,7 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-[#15171c] border-[#2d313a] text-white">
+      <DialogContent className="w-[94vw] max-w-2xl rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_42%),linear-gradient(180deg,_rgba(18,20,27,0.96),_rgba(11,12,16,0.98))] text-white shadow-[0_30px_80px_rgba(3,4,7,0.45)]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <FileText className="w-5 h-5 text-[#274cbc]" />
@@ -117,34 +142,79 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Resume Name Section */}
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="resume-name" className="text-[#cfd3e1]">
-              Resume Name
-            </Label>
-            <Input
-              id="resume-name"
-              placeholder="e.g., Software Engineer Resume"
-              value={resumeName}
-              onChange={(e) => setResumeName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isCreating}
-              className="bg-[#1a1c22]/50 border-[#2d313a] text-white placeholder:text-[#6d7895] focus-visible:border-[#274cbc] focus-visible:ring-[#274cbc]/20"
-              autoFocus
-            />
-            <p className="text-xs text-[#6d7895]">
-              Give your resume a memorable name to find it later
-            </p>
+        <div className="space-y-5 py-4">
+          <div className="rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
+            <div className="space-y-2">
+              <Label htmlFor="resume-name" className="text-[#cfd3e1]">
+                Resume Name
+              </Label>
+              <Input
+                id="resume-name"
+                placeholder="e.g., Software Engineer Resume"
+                value={resumeName}
+                onChange={(e) => setResumeName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isCreating}
+                className="border-[#2d313a] bg-[#1a1c22]/50 text-white placeholder:text-[#6d7895] focus-visible:border-[#274cbc] focus-visible:ring-[#274cbc]/20"
+                autoFocus
+              />
+              <p className="text-xs text-[#6d7895]">
+                Give your resume a memorable name to find it later
+              </p>
+            </div>
           </div>
 
-          {/* Error Message */}
+          {requiresRole && (
+            <div className="rounded-[1.5rem] border border-[#2b3242] bg-[#10121a]/65 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#274cbc]/30 bg-[#274cbc]/14 text-[#9fb3ff]">
+                  <BriefcaseBusiness className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <Label className="text-sm font-semibold text-white">
+                    Target Role
+                  </Label>
+                  <p className="mt-1 text-sm leading-relaxed text-[#a4a7b5]">
+                    Choose the role this resume is optimized for. We&apos;ll use it
+                    to tailor the builder help experience with role-specific
+                    qualifications.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                {availableRoles.map((role) => {
+                  const isSelected = selectedRole === role;
+
+                  return (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => {
+                        setSelectedRole(role);
+                        setError(null);
+                      }}
+                      disabled={isCreating}
+                      className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                        isSelected
+                          ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
+                          : "border-[#2b3242] bg-[#10121a]/80 text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                      } disabled:cursor-not-allowed disabled:opacity-60`}
+                    >
+                      {isSelected && <CheckCircle2 className="h-4 w-4" />}
+                      <span>{role}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="rounded-md bg-red-500/10 border border-red-500/30 px-3 py-2">
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
-
         </div>
 
         <DialogFooter>
@@ -158,7 +228,7 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
           </Button>
           <Button
             onClick={handleCreate}
-            disabled={isCreating || !resumeName.trim()}
+            disabled={isCreating || !resumeName.trim() || (requiresRole && !selectedRole)}
             className="bg-[#274cbc] text-white hover:bg-[#315be1]"
           >
             {isCreating ? (

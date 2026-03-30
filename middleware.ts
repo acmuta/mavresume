@@ -1,13 +1,43 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
+const DEFAULT_AUTH_REDIRECT = "/dashboard";
+
+/**
+ * Validates internal redirect paths used after auth checks.
+ * Rejects external URLs, path traversal, and login-loop targets.
+ */
+function getSafeAuthRedirectPath(redirectTo: string | null): string {
+  if (!redirectTo) return DEFAULT_AUTH_REDIRECT;
+
+  if (
+    redirectTo.startsWith("//") ||
+    redirectTo.startsWith("http") ||
+    redirectTo.includes("..") ||
+    redirectTo.includes(":\\") ||
+    redirectTo.toLowerCase().startsWith("javascript:")
+  ) {
+    return DEFAULT_AUTH_REDIRECT;
+  }
+
+  if (!redirectTo.startsWith("/")) {
+    return DEFAULT_AUTH_REDIRECT;
+  }
+
+  if (redirectTo === "/login" || redirectTo.startsWith("/login?")) {
+    return DEFAULT_AUTH_REDIRECT;
+  }
+
+  return redirectTo;
+}
+
 /**
  * Next.js middleware for route protection.
  *
  * This middleware:
  * - Runs on every request before the page/API route is accessed
  * - Refreshes Supabase session and checks authentication
- * - Allows public routes: `/`, `/login`, `/auth/callback`
+ * - Allows public routes: `/`, `/login`, `/auth/callback`, `/faqs`, `/features`
  * - Protects all other routes by redirecting unauthenticated users to login
  * - Preserves the original destination in the redirect URL
  * - Handles API routes separately (returns 401 instead of redirect)
@@ -16,19 +46,39 @@ import { updateSession } from "@/lib/supabase/middleware";
 export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
+    const isLoginRoute = pathname === "/login";
 
     // Define public routes that don't require authentication
-    const publicRoutes = ["/", "/login", "/auth/callback"];
+    const publicRoutes = [
+      "/",
+      "/login",
+      "/auth/callback",
+      "/faqs",
+      "/features",
+    ];
     const isPublicRoute = publicRoutes.includes(pathname);
 
     // Skip updateSession for public routes to avoid Supabase RTT before document (improves FCP/TTFB).
-    // Session refresh runs on first protected request or /auth/callback.
-    if (isPublicRoute) {
+    // Session refresh runs on first protected request, /auth/callback, or /login.
+    if (isPublicRoute && !isLoginRoute) {
       return NextResponse.next({ request });
     }
 
-    // For protected routes, check authentication
+    // For protected routes and /login, check authentication
     const { response, user, session } = await updateSession(request);
+
+    // Prevent authenticated users from landing on login
+    if (isLoginRoute) {
+      if (user) {
+        const redirectTarget =
+          request.nextUrl.searchParams.get("redirect") ||
+          request.nextUrl.searchParams.get("next");
+        const safeTarget = getSafeAuthRedirectPath(redirectTarget);
+        return NextResponse.redirect(new URL(safeTarget, request.url));
+      }
+
+      return response;
+    }
 
     // If user is not authenticated, redirect to login
     if (!user) {
@@ -78,7 +128,13 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Allow public routes even on error
-    const publicRoutes = ["/", "/login", "/auth/callback"];
+    const publicRoutes = [
+      "/",
+      "/login",
+      "/auth/callback",
+      "/faqs",
+      "/features",
+    ];
     if (publicRoutes.includes(pathname)) {
       return NextResponse.next({ request });
     }

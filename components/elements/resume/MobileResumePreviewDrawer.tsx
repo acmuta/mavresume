@@ -3,19 +3,18 @@
 import React from "react";
 import { EyeIcon } from "lucide-react";
 
-import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from "../../ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "../../ui/drawer";
 import { ResumePreview } from "./ResumePreview";
-import { ResumeDocPreview } from "./ResumeDocPreview";
-import { ResumeDocDownloadButton } from "./ResumeDocDownloadButton";
-import { SectionReorderButton } from "./SectionReorderButton";
-import { ResumeBorderToggleButton } from "./ResumeBorderToggleButton";
+import { ResumePreviewControls } from "./ResumePreviewControls";
 import { TooltipProvider } from "../../ui/tooltip";
 import { Button } from "../../ui/button";
-import { useResumeStore } from "../../../store/useResumeStore";
 
 export const MobileResumePreviewDrawer = () => {
-  const { showBorder = false, setShowBorder } = useResumeStore();
-
   return (
     <Drawer direction="bottom">
       <DrawerTrigger asChild>
@@ -42,13 +41,7 @@ export const MobileResumePreviewDrawer = () => {
             </div>
             <TooltipProvider>
               <div className="flex items-center gap-1 rounded-full border border-[#2b3242] bg-[#0f1117]/78 p-1.5">
-                <SectionReorderButton />
-                <ResumeBorderToggleButton
-                  showBorder={showBorder}
-                  onToggle={() => setShowBorder?.(!showBorder)}
-                />
-                <ResumeDocPreview />
-                <ResumeDocDownloadButton />
+                <ResumePreviewControls />
               </div>
             </TooltipProvider>
           </div>

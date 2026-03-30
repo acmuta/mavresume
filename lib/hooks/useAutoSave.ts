@@ -1,6 +1,10 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/useResumeStore";
 import { updateResumeData } from "@/lib/resumeService";
+import {
+  buildSectionData,
+  RESUME_SCHEMA_VERSION,
+} from "@/lib/resume/sectionData";
 
 /**
  * Auto-save hook for persisting resume changes to Supabase.
@@ -17,7 +21,7 @@ import { updateResumeData } from "@/lib/resumeService";
  */
 export function useAutoSave(
   enabled: boolean = true,
-  debounceMs: number = 2000
+  debounceMs: number = 2000,
 ): void {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);
@@ -28,9 +32,20 @@ export function useAutoSave(
     personalInfo,
     education,
     projects,
+    certifications,
+    awards,
+    coursework,
+    caseStudies,
     experience,
+    research,
+    volunteerWork,
+    clinicalExperience,
+    teachingExperience,
     skills,
+    skillsSection,
     sectionOrder,
+    pdfSettings,
+    leadershipActivities,
     setSaveStatus,
     setLastSavedAt,
   } = useResumeStore();
@@ -48,8 +63,28 @@ export function useAutoSave(
         education,
         projects,
         experience,
+        leadership_activities: leadershipActivities,
         skills,
         section_order: sectionOrder,
+        section_data: buildSectionData({
+          personalInfo,
+          education,
+          skills,
+          projects,
+          certifications,
+          awards,
+          coursework,
+          caseStudies,
+          experience,
+          research,
+          volunteerWork,
+          clinicalExperience,
+          teachingExperience,
+          leadershipActivities,
+          skillsSection,
+        }),
+        schema_version: RESUME_SCHEMA_VERSION,
+        pdf_settings: pdfSettings,
       });
 
       // Only update status if component is still mounted
@@ -83,9 +118,20 @@ export function useAutoSave(
     personalInfo,
     education,
     projects,
+    certifications,
+    awards,
+    coursework,
+    caseStudies,
     experience,
+    research,
+    volunteerWork,
+    clinicalExperience,
+    teachingExperience,
     skills,
+    skillsSection,
+    leadershipActivities,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   ]);
@@ -119,9 +165,20 @@ export function useAutoSave(
     personalInfo,
     education,
     projects,
+    certifications,
+    awards,
+    coursework,
+    caseStudies,
     experience,
+    research,
+    volunteerWork,
+    clinicalExperience,
+    teachingExperience,
     skills,
+    skillsSection,
+    leadershipActivities,
     sectionOrder,
+    pdfSettings,
     debounceMs,
     saveToDatabase,
   ]);
@@ -148,9 +205,20 @@ export function useManualSave(): () => Promise<void> {
     personalInfo,
     education,
     projects,
+    certifications,
+    awards,
+    coursework,
+    caseStudies,
     experience,
+    research,
+    volunteerWork,
+    clinicalExperience,
+    teachingExperience,
     skills,
+    skillsSection,
     sectionOrder,
+    pdfSettings,
+    leadershipActivities,
     setSaveStatus,
     setLastSavedAt,
   } = useResumeStore();
@@ -169,8 +237,28 @@ export function useManualSave(): () => Promise<void> {
         education,
         projects,
         experience,
+        leadership_activities: leadershipActivities,
         skills,
         section_order: sectionOrder,
+        section_data: buildSectionData({
+          personalInfo,
+          education,
+          skills,
+          projects,
+          certifications,
+          awards,
+          coursework,
+          caseStudies,
+          experience,
+          research,
+          volunteerWork,
+          clinicalExperience,
+          teachingExperience,
+          leadershipActivities,
+          skillsSection,
+        }),
+        schema_version: RESUME_SCHEMA_VERSION,
+        pdf_settings: pdfSettings,
       });
 
       setSaveStatus("saved");
@@ -196,9 +284,20 @@ export function useManualSave(): () => Promise<void> {
     personalInfo,
     education,
     projects,
+    certifications,
+    awards,
+    coursework,
+    caseStudies,
     experience,
+    research,
+    volunteerWork,
+    clinicalExperience,
+    teachingExperience,
     skills,
+    skillsSection,
+    leadershipActivities,
     sectionOrder,
+    pdfSettings,
     setSaveStatus,
     setLastSavedAt,
   ]);

@@ -5,7 +5,14 @@ import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaGithub, FaDiscord, FaGraduationCap } from "react-icons/fa";
-import { ClipboardCheck, FileText, Menu, X } from "lucide-react";
+import {
+  BookOpenText,
+  ClipboardCheck,
+  FileText,
+  LayoutGrid,
+  Menu,
+  X,
+} from "lucide-react";
 import { IoMdHelpCircle } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
 
@@ -30,7 +37,7 @@ interface SidebarLink {
   external?: boolean;
 }
 
-const sidebarLinks: SidebarLink[] = [
+const appRouteLinks: SidebarLink[] = [
   {
     href: "/templates",
     label: "Templates",
@@ -38,6 +45,23 @@ const sidebarLinks: SidebarLink[] = [
     ariaLabel: "Choose resume template",
     external: false,
   },
+  {
+    href: "/features",
+    label: "Features",
+    icon: LayoutGrid,
+    ariaLabel: "View product features",
+    external: false,
+  },
+  {
+    href: "/faqs",
+    label: "FAQs",
+    icon: BookOpenText,
+    ariaLabel: "Open frequently asked questions",
+    external: false,
+  },
+];
+
+const externalLinks: SidebarLink[] = [
   {
     href: "https://github.com/acmuta/mavresume",
     label: "GitHub",
@@ -88,7 +112,9 @@ function canAccessReviewerDashboard(user: User | null): boolean {
   return role === "reviewer" || role === "admin";
 }
 
-function getRoleFromAccessToken(accessToken: string | undefined): string | null {
+function getRoleFromAccessToken(
+  accessToken: string | undefined,
+): string | null {
   if (!accessToken) return null;
 
   try {
@@ -147,9 +173,9 @@ export const MobileSidebar = () => {
     };
   }, [user]);
 
-  const visibleLinks = hasReviewerAccess
+  const visibleAppRoutes = hasReviewerAccess
     ? [
-        ...sidebarLinks.slice(0, 1),
+        ...appRouteLinks,
         {
           href: "/reviewer/dashboard",
           label: "Reviewer Queue",
@@ -157,9 +183,8 @@ export const MobileSidebar = () => {
           ariaLabel: "Open reviewer dashboard",
           external: false,
         },
-        ...sidebarLinks.slice(1),
       ]
-    : sidebarLinks;
+    : appRouteLinks;
 
   return (
     <Drawer direction="left" open={isOpen} onOpenChange={setIsOpen}>
@@ -198,7 +223,11 @@ export const MobileSidebar = () => {
 
         {/* Navigation Links */}
         <div className="flex-1 flex flex-col gap-2 px-4 py-4 overflow-y-auto">
-          {visibleLinks.map((link) => {
+          <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6d7895] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+            Navigation
+          </p>
+
+          {visibleAppRoutes.map((link) => {
             const IconComponent = link.icon;
             return (
               <Link
@@ -207,14 +236,43 @@ export const MobileSidebar = () => {
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noreferrer" : undefined}
                 onClick={() => !link.external && setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-3
+                className="group flex items-center gap-3 px-4 py-3
                            rounded-xl border border-[#2b3242] bg-[#10121a]
-                           text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white
-                           transition-all duration-200"
+                           text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white hover:-translate-y-0.5
+                           transition-[transform,border-color,color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 aria-label={link.ariaLabel}
               >
-                <IconComponent className="w-5 h-5 shrink-0" />
-                <span className="text-sm font-medium">{link.label}</span>
+                <IconComponent className="w-5 h-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <span className="text-sm font-medium transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
+                  {link.label}
+                </span>
+              </Link>
+            );
+          })}
+
+          <p className="mt-3 px-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6d7895] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+            Resources
+          </p>
+
+          {externalLinks.map((link) => {
+            const IconComponent = link.icon;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noreferrer" : undefined}
+                onClick={() => !link.external && setIsOpen(false)}
+                className="group flex items-center gap-3 px-4 py-3
+                           rounded-xl border border-[#2b3242] bg-[#10121a]
+                           text-[#cfd3e1] hover:border-[#3f4a67] hover:text-white hover:-translate-y-0.5
+                           transition-[transform,border-color,color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                aria-label={link.ariaLabel}
+              >
+                <IconComponent className="w-5 h-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <span className="text-sm font-medium transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
+                  {link.label}
+                </span>
               </Link>
             );
           })}
@@ -234,7 +292,9 @@ export const MobileSidebar = () => {
                       user.email?.split("@")[0] ||
                       "User"}
                   </p>
-                  <p className="text-xs text-[#a4a7b5] truncate">{user.email}</p>
+                  <p className="text-xs text-[#a4a7b5] truncate">
+                    {user.email}
+                  </p>
                 </div>
               </div>
               <button

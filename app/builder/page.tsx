@@ -3,39 +3,47 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardCheck, Edit3, Loader2, Plus, Settings2 } from "lucide-react";
+import { Loader2, Plus, Settings2 } from "lucide-react";
 
-import { PersonalInfoSection } from "../../components/sections/personalInfo";
-import { TechnicalSkillsSection } from "../../components/sections/technicalSkills";
-import { EducationSection } from "../../components/sections/education";
-import { ExperienceSection } from "../../components/sections/experience";
-import { ProjectsSection } from "../../components/sections/projects";
 import { Button } from "../../components/ui/button";
-import { SubmitReviewModal } from "../../components/elements/resume/SubmitReviewModal";
 import { useGuideStore } from "../../store/useGuideStore";
 import { useResumeStore, type SectionId } from "../../store/useResumeStore";
 import { getResumeWithData } from "../../lib/resumeService";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import { SectionManagerModal } from "../../components/elements/resume/SectionManagerModal";
+import { ResumeSettingsModal } from "../../components/elements/resume/ResumeSettingsModal";
+import {
+  CORE_SECTION_ID,
+  getSectionLabelById,
+  normalizeSectionId,
+} from "@/lib/resume/sections";
+import {
+  getBuilderSectionComponent,
+  getSectionRuntimeDefinition,
+} from "@/lib/resume/sectionRuntimeRegistry";
 
-const SECTION_CONFIG: Record<string, { Component: React.FC; label: string }> = {
-  "personal-info": { Component: PersonalInfoSection, label: "Personal Info" },
-  education: { Component: EducationSection, label: "Education" },
-  "technical-skills": { Component: TechnicalSkillsSection, label: "Skills" },
-  projects: { Component: ProjectsSection, label: "Projects" },
-  experience: { Component: ExperienceSection, label: "Experience" },
-};
+function SectionNotImplemented() {
+  return (
+    <div className="rounded-[1.5rem] border border-amber-500/35 bg-amber-500/10 p-6 text-sm text-amber-100 shadow-[0_16px_40px_rgba(0,0,0,0.25)]">
+      This section is part of the dynamic template system, but its form UI is
+      not implemented yet.
+    </div>
+  );
+}
 
 function BuilderPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const resumeId = searchParams.get("id");
-  const { setCurrentSection } = useGuideStore();
+  const { setCurrentSection, setCurrentTemplateType, setCurrentRole } =
+    useGuideStore();
   const {
     currentResumeId,
     setCurrentResumeId,
     setResumeFromDatabase,
     sectionOrder,
+    isResumeSettingsOpen,
+    setIsResumeSettingsOpen,
   } = useResumeStore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -43,11 +51,6 @@ function BuilderPageContent() {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isSectionManagerOpen, setIsSectionManagerOpen] = useState(false);
-  const [resumeName, setResumeName] = useState("Resume");
-  const [showSubmitReviewModal, setShowSubmitReviewModal] = useState(false);
-  const [submitSuccessMessage, setSubmitSuccessMessage] = useState<
-    string | null
-  >(null);
 
   useAutoSave(!!currentResumeId);
 
@@ -60,6 +63,8 @@ function BuilderPageContent() {
 
       setIsLoading(true);
       setLoadError(null);
+      setCurrentTemplateType(null);
+      setCurrentRole(null);
 
       try {
         const resumeWithData = await getResumeWithData(resumeId);
@@ -71,16 +76,23 @@ function BuilderPageContent() {
         }
 
         setCurrentResumeId(resumeId);
-        setResumeName(resumeWithData.name || "Resume");
+        setCurrentTemplateType(resumeWithData.template_type ?? null);
+        setCurrentRole(resumeWithData.resume_data?.role ?? null);
 
         if (resumeWithData.resume_data) {
           setResumeFromDatabase({
+            role: resumeWithData.resume_data.role,
             personal_info: resumeWithData.resume_data.personal_info,
             education: resumeWithData.resume_data.education,
             projects: resumeWithData.resume_data.projects,
             experience: resumeWithData.resume_data.experience,
+            leadership_activities:
+              resumeWithData.resume_data.leadership_activities,
             skills: resumeWithData.resume_data.skills,
             section_order: resumeWithData.resume_data.section_order,
+            section_data: resumeWithData.resume_data.section_data,
+            schema_version: resumeWithData.resume_data.schema_version,
+            pdf_settings: resumeWithData.resume_data.pdf_settings,
           });
         }
 
@@ -95,16 +107,26 @@ function BuilderPageContent() {
     }
 
     loadResume();
-  }, [resumeId, router, setCurrentResumeId, setResumeFromDatabase]);
+  }, [
+    resumeId,
+    router,
+    setCurrentResumeId,
+    setCurrentRole,
+    setCurrentTemplateType,
+    setResumeFromDatabase,
+  ]);
 
   const sections = useMemo(() => {
-    return sectionOrder
-      .filter((id) => SECTION_CONFIG[id])
-      .map((id) => ({
-        Component: SECTION_CONFIG[id].Component,
-        id: id as SectionId,
-        label: SECTION_CONFIG[id].label,
-      }));
+    return sectionOrder.map((id) => {
+      const normalizedId = normalizeSectionId(id);
+      const runtimeDefinition = getSectionRuntimeDefinition(normalizedId);
+      return {
+        Component:
+          getBuilderSectionComponent(normalizedId) ?? SectionNotImplemented,
+        id: normalizedId as SectionId,
+        label: runtimeDefinition?.label ?? getSectionLabelById(normalizedId),
+      };
+    });
   }, [sectionOrder]);
 
   useEffect(() => {
@@ -135,10 +157,9 @@ function BuilderPageContent() {
     }
   };
 
-  const activeSection = sections[currentSectionIndex]?.id || "personal-info";
+  const activeSection = sections[currentSectionIndex]?.id || CORE_SECTION_ID;
   const CurrentSection =
-    sections[currentSectionIndex]?.Component || PersonalInfoSection;
-  const builderFileName = `${resumeName || "Resume"}.pdf`;
+    sections[currentSectionIndex]?.Component || SectionNotImplemented;
 
   if (isLoading) {
     return (
@@ -204,81 +225,47 @@ function BuilderPageContent() {
 
   return (
     <main className="relative z-10 px-1 py-2 md:px-2">
-      <div className="mx-auto flex max-w-[980px] flex-col gap-5">
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-          className="relative overflow-hidden rounded-[1.6rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top_left,_rgba(39,76,188,0.16),_transparent_42%),linear-gradient(180deg,_rgba(18,20,27,0.92),_rgba(11,12,16,0.96))] px-3 py-3 shadow-[0_24px_60px_rgba(3,4,7,0.34)] sm:px-4"
-        >
-          <div className="absolute inset-0 opacity-65">
-            <div className="absolute left-0 top-0 h-24 w-24 rounded-full bg-[#274cbc]/18 blur-[65px]" />
-            <div className="absolute bottom-0 right-0 h-20 w-20 rounded-full bg-[#19c8ff]/10 blur-[55px]" />
-          </div>
-
-          <div className="relative flex w-full flex-col gap-3 px-3 py-3 sm:px-4 sm:py-3.5">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-col gap-1.5 xl:flex-row xl:items-center xl:gap-3">
-                  <h1 className="text-[1.45rem] font-semibold tracking-tight text-white sm:text-[1.7rem]">
-                    {sections[currentSectionIndex]?.label}
-                  </h1>
-                </div>
-                <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[#cfd3e1]">
-                  Edit this section and watch the final document update beside
-                  the form.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 xl:justify-end">
-                <Button
-                  onClick={() => {
-                    setSubmitSuccessMessage(null);
-                    setShowSubmitReviewModal(true);
-                  }}
-                  className="h-10 rounded-full bg-[#274cbc] px-4 text-sm font-semibold text-white hover:bg-[#315be1]"
-                >
-                  <ClipboardCheck className="mr-2 h-4 w-4" />
-                  Submit for Review
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsSectionManagerOpen(true)}
-                  className="h-10 rounded-full border-[#2b3242] bg-[#10121a]/70 px-4 text-sm text-[#cfd3e1] shadow-none hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
-                >
-                  <Edit3 className="mr-2 h-4 w-4" />
-                  Manage Sections
-                </Button>
-              </div>
-            </div>
-
-            {submitSuccessMessage && (
-              <div className="inline-flex w-fit items-center rounded-full border border-[#58f5c3]/30 bg-[#58f5c3]/12 px-3 py-1.5 text-sm text-[#c8ffe7]">
-                {submitSuccessMessage}
-              </div>
-            )}
-
-            <div className="flex flex-wrap gap-2">
-              {sections.map((section, index) => (
+      <div className="mx-auto flex max-w-[980px] flex-col gap-5">  
+        <div className="w-full flex-1">
+           <div className="flex w-full justify-center text-center my-3">
+              <div className="min-w-0">
                 <button
-                  key={section.id}
-                  onClick={() => goToSection(index)}
-                  disabled={isTransitioning || currentSectionIndex === index}
-                  className={`inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium transition-all ${
-                    activeSection === section.id
-                      ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
-                      : "border-[#2b3242] bg-[#10121a]/70 text-[#a4a7b5] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
-                  } disabled:cursor-not-allowed`}
+                  type="button"
+                  onClick={() => setIsSectionManagerOpen(true)}
+                  className="group relative text-[11px] font-semibold uppercase tracking-[0.24em] text-[#89a5ff] transition hover:text-[#b3c2ff]"
+                  aria-label="Open section manager"
                 >
-                  <span className="mr-2 text-[11px] uppercase tracking-[0.18em] opacity-70">
-                    {String(index + 1).padStart(2, "0")}
+                  <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#89a5ff] after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                    Manage Sections
                   </span>
-                  {section.label}
                 </button>
-              ))}
+              </div>
+            </div>
+          <div className=" pb-0.5 overflow-x-auto ">
+
+            <div className="mx-auto flex w-max min-w-full justify-center px-4 ">
+              <div className="inline-flex px-15 py-1.5  min-w-max items-center gap-1.5 rounded-2xl border border-[#2b3242] bg-[#0f141f]/80 [mask-image:linear-gradient(to_right,transparent_0%,transparent_3%,black_12%,black_88%,transparent_97%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,transparent_3%,black_12%,black_88%,transparent_97%,transparent_100%)]">
+                {sections.map((section, index) => (
+                  <button
+                    key={section.id}
+                    onClick={() => goToSection(index)}
+                    disabled={isTransitioning || currentSectionIndex === index}
+                    className={`inline-flex h-9 items-center rounded-xl border px-3.5 text-sm font-medium whitespace-nowrap transition-all ${
+                      activeSection === section.id
+                        ? "border-[#4f66a6] bg-[#274cbc]/85 text-white shadow-[0_8px_20px_rgba(39,76,188,0.28)]"
+                        : "border-transparent bg-transparent text-[#a4a7b5] hover:border-[#3e4a67] hover:bg-[#161e30] hover:text-white"
+                    } disabled:cursor-not-allowed`}
+                    aria-current={
+                      activeSection === section.id ? "page" : undefined
+                    }
+                  >
+                    {section.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </motion.section>
+        </div>
 
         <AnimatePresence mode="wait">
           <motion.section
@@ -298,20 +285,10 @@ function BuilderPageContent() {
         open={isSectionManagerOpen}
         onOpenChange={setIsSectionManagerOpen}
       />
-      {showSubmitReviewModal && (
-        <SubmitReviewModal
-          mode="builder"
-          builderLabel={resumeName}
-          builderFileName={builderFileName}
-          onClose={() => setShowSubmitReviewModal(false)}
-          onSubmitted={() => {
-            setShowSubmitReviewModal(false);
-            setSubmitSuccessMessage(
-              "Review request submitted from your current builder resume.",
-            );
-          }}
-        />
-      )}
+      <ResumeSettingsModal
+        open={isResumeSettingsOpen}
+        onOpenChange={(open) => setIsResumeSettingsOpen(open)}
+      />
     </main>
   );
 }

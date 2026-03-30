@@ -5,7 +5,12 @@ import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaGithub, FaDiscord, FaGraduationCap } from "react-icons/fa";
-import { ClipboardCheck, FileText } from "lucide-react";
+import {
+  BookOpenText,
+  ClipboardCheck,
+  FileText,
+  LayoutGrid,
+} from "lucide-react";
 import { IoMdHelpCircle } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
 
@@ -22,7 +27,7 @@ interface SidebarLink {
   external?: boolean;
 }
 
-const sidebarLinks: SidebarLink[] = [
+const appRouteLinks: SidebarLink[] = [
   {
     href: "/templates",
     label: "Templates",
@@ -30,6 +35,23 @@ const sidebarLinks: SidebarLink[] = [
     ariaLabel: "Choose resume template",
     external: false,
   },
+  {
+    href: "/features",
+    label: "Features",
+    icon: LayoutGrid,
+    ariaLabel: "View product features",
+    external: false,
+  },
+  {
+    href: "/faqs",
+    label: "FAQs",
+    icon: BookOpenText,
+    ariaLabel: "Open frequently asked questions",
+    external: false,
+  },
+];
+
+const externalLinks: SidebarLink[] = [
   {
     href: "https://github.com/acmuta/mavresume",
     label: "GitHub",
@@ -81,7 +103,9 @@ function canAccessReviewerDashboard(user: User | null): boolean {
   return role === "reviewer" || role === "admin";
 }
 
-function getRoleFromAccessToken(accessToken: string | undefined): string | null {
+function getRoleFromAccessToken(
+  accessToken: string | undefined,
+): string | null {
   if (!accessToken) return null;
 
   try {
@@ -136,9 +160,9 @@ export const BuilderSidebar = () => {
     };
   }, [user]);
 
-  const visibleLinks = hasReviewerAccess
+  const visibleAppRoutes = hasReviewerAccess
     ? [
-        ...sidebarLinks.slice(0, 1),
+        ...appRouteLinks,
         {
           href: "/reviewer/dashboard",
           label: "Reviewer Queue",
@@ -146,13 +170,12 @@ export const BuilderSidebar = () => {
           ariaLabel: "Open reviewer dashboard",
           external: false,
         },
-        ...sidebarLinks.slice(1),
       ]
-    : sidebarLinks;
+    : appRouteLinks;
 
   return (
     <aside
-      className={`fixed bottom-5 left-4 top-22 z-20 hidden overflow-hidden rounded-[2rem] border border-[#2b3242] bg-[#0f1117]/82 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-in-out md:flex ${
+      className={`group fixed bottom-5 left-4 top-22 z-20 hidden overflow-hidden rounded-[2rem] border border-[#2b3242] bg-[#0f1117]/82 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-[width,box-shadow,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${
         isExpanded ? "w-64" : "w-20"
       }`}
       role="navigation"
@@ -194,36 +217,105 @@ export const BuilderSidebar = () => {
             isExpanded ? "items-stretch" : "items-center"
           }`}
         >
-          {visibleLinks.map((link, index) => {
-            const IconComponent = link.icon;
-            const labelDelay = isExpanded ? 100 + index * 25 : 0;
+          <div
+            className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              isExpanded
+                ? "max-h-8 translate-y-0 opacity-100"
+                : "max-h-0 -translate-y-1 opacity-0"
+            }`}
+          >
+            <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6d7895] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
+              Navigation
+            </p>
+          </div>
 
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noreferrer" : undefined}
-                className={`group relative flex h-12 items-center overflow-hidden rounded-2xl border border-[#2b3242] bg-[#10121a]/82 text-[#cfd3e1] transition-all duration-300 hover:border-[#3f4a67] hover:text-white ${
-                  isExpanded ? "w-full gap-3 px-3" : "w-12 justify-center"
-                }`}
-                aria-label={link.ariaLabel}
-              >
-                <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_left,_rgba(39,76,188,0.22),_transparent_50%)]" />
-                <IconComponent className="relative z-10 h-5 w-5 shrink-0" />
-                <span
-                  className={`relative z-10 whitespace-nowrap text-sm font-medium transition-all duration-300 ${
-                    isExpanded
-                      ? "max-w-full translate-x-0 opacity-100"
-                      : "w-0 -translate-x-1 overflow-hidden opacity-0"
+          <div
+            className={`flex flex-col gap-3 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              isExpanded ? "translate-y-1.5" : "translate-y-0"
+            }`}
+          >
+            {visibleAppRoutes.map((link, index) => {
+              const IconComponent = link.icon;
+              const labelDelay = isExpanded ? 100 + index * 25 : 0;
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noreferrer" : undefined}
+                  className={`group relative flex h-12 items-center overflow-hidden rounded-2xl border border-[#2b3242] bg-[#10121a]/82 text-[#cfd3e1] transition-[transform,border-color,color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[#3f4a67] hover:text-white ${
+                    isExpanded ? "w-full gap-3 px-3" : "w-12 justify-center"
                   }`}
-                  style={{ transitionDelay: `${labelDelay}ms` }}
+                  aria-label={link.ariaLabel}
                 >
-                  {link.label}
-                </span>
-              </Link>
-            );
-          })}
+                  <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_left,_rgba(39,76,188,0.22),_transparent_50%)]" />
+                  <IconComponent className="relative z-10 h-5 w-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span
+                    className={`relative z-10 whitespace-nowrap text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 ${
+                      isExpanded
+                        ? "max-w-full translate-x-0 opacity-100"
+                        : "w-0 -translate-x-1 overflow-hidden opacity-0"
+                    }`}
+                    style={{ transitionDelay: `${labelDelay}ms` }}
+                  >
+                    {link.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div
+            className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              isExpanded
+                ? "mt-2 max-h-8 translate-y-0 opacity-100"
+                : "mt-0 max-h-0 -translate-y-1 opacity-0"
+            }`}
+          >
+            <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6d7895] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
+              Resources
+            </p>
+          </div>
+
+          <div
+            className={`flex flex-col gap-3 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              isExpanded ? "translate-y-1.5" : "translate-y-0"
+            }`}
+          >
+            {externalLinks.map((link, index) => {
+              const IconComponent = link.icon;
+              const labelDelay = isExpanded
+                ? 100 + (visibleAppRoutes.length + index) * 25
+                : 0;
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noreferrer" : undefined}
+                  className={`group relative flex h-12 items-center overflow-hidden rounded-2xl border border-[#2b3242] bg-[#10121a]/82 text-[#cfd3e1] transition-[transform,border-color,color,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[#3f4a67] hover:text-white ${
+                    isExpanded ? "w-full gap-3 px-3" : "w-12 justify-center"
+                  }`}
+                  aria-label={link.ariaLabel}
+                >
+                  <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_left,_rgba(39,76,188,0.22),_transparent_50%)]" />
+                  <IconComponent className="relative z-10 h-5 w-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span
+                    className={`relative z-10 whitespace-nowrap text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 ${
+                      isExpanded
+                        ? "max-w-full translate-x-0 opacity-100"
+                        : "w-0 -translate-x-1 overflow-hidden opacity-0"
+                    }`}
+                    style={{ transitionDelay: `${labelDelay}ms` }}
+                  >
+                    {link.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         <div className="border-t border-[#242a37] px-3 py-4">
@@ -244,7 +336,9 @@ export const BuilderSidebar = () => {
                         user.email?.split("@")[0] ||
                         "User"}
                     </p>
-                    <p className="truncate text-xs text-[#6d7895]">{user.email}</p>
+                    <p className="truncate text-xs text-[#6d7895]">
+                      {user.email}
+                    </p>
                   </div>
                 </div>
 

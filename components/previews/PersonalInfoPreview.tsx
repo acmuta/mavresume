@@ -15,9 +15,9 @@ export const PersonalInfoPreview = () => {
     : null;
 
   const customContacts = (personalInfo.customContacts || []).filter(
-    (contact) => contact.trim() !== ""
+    (contact) => contact.trim() !== "",
   );
-  
+
   const contactMethods = [
     { value: personalInfo.email, width: "w-22" },
     { value: personalInfo.phone, width: "w-20" },
@@ -41,11 +41,19 @@ export const PersonalInfoPreview = () => {
   return (
     <div className="w-full text-center mt-2">
       {personalInfo.name ? (
-        <p className="text-[2.5em] font-bold">{personalInfo.name}</p>
+        <p
+          className="font-bold"
+          style={{ fontSize: "var(--resume-name-size)" }}
+        >
+          {personalInfo.name}
+        </p>
       ) : (
         <Skeleton className="h-[3.5em] w-3/5 mx-auto mb-3" />
       )}
-      <div className="text-[1.2em] flex flex-wrap items-center justify-center gap-1">
+      <div
+        className="flex flex-wrap items-center justify-center gap-1"
+        style={{ fontSize: "var(--resume-body-size)" }}
+      >
         {contactItems.map((item, index) => (
           <React.Fragment key={index}>
             {index > 0 && <span className="mx-1">•</span>}
