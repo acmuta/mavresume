@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -10,12 +11,14 @@ import {
   Clock3,
   FileText,
   Loader2,
+  Menu,
   MessageSquareText,
   ScanSearch,
   Settings2,
   Sparkles,
   UploadCloud,
   Wand2,
+  X,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -110,6 +113,8 @@ const proofBlocks = [
 
 
 export default function FeaturesPage() {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#101113] text-white">
       <BackgroundAtmosphere />
@@ -129,7 +134,47 @@ export default function FeaturesPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative">
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={() => setMobileNavOpen((prev) => !prev)}
+                aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileNavOpen}
+                className="h-10 w-10 rounded-full border-[#2b3242] bg-[#10121a]/75 text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white md:hidden"
+              >
+                {mobileNavOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+              </Button>
+
+              {mobileNavOpen && (
+                <div className="absolute right-0 top-full z-40 mt-3 w-[min(85vw,17rem)] rounded-2xl border border-[#2b3242] bg-[#10121a]/95 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-md md:hidden">
+                  <Link
+                    href="/"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="block rounded-xl px-3 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#cfd3e1] transition-colors hover:bg-[#161b25] hover:text-white"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/faqs"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="block rounded-xl px-3 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#cfd3e1] transition-colors hover:bg-[#161b25] hover:text-white"
+                  >
+                    FAQs
+                  </Link>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="mt-1 flex items-center justify-between rounded-xl bg-[#274cbc]/18 px-3 py-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#cfd3e1] transition-colors hover:bg-[#274cbc]/28 hover:text-white"
+                  >
+                    <span>Login</span>
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </div>
+              )}
+
+              <div className="hidden items-center gap-2 sm:gap-3 md:flex">
               <Button
                 asChild
                 variant="outline"
@@ -166,6 +211,7 @@ export default function FeaturesPage() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
+              </div>
             </div>
           </div>
         </div>

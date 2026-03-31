@@ -385,9 +385,9 @@ export default function DashboardPage() {
                 and keep your review workflow moving in one place.
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <div className="mt-6 flex flex-col items-stretch gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                 <Link href="/templates">
-                  <Button className="h-10 rounded-full bg-[#274cbc] px-5 text-sm font-semibold text-white hover:bg-[#315be1]">
+                  <Button className="h-10 w-full rounded-full bg-[#274cbc] px-5 text-sm font-semibold text-white hover:bg-[#315be1] sm:w-auto">
                     <Plus className="mr-1.5 h-4 w-4" />
                     New Resume
                   </Button>
@@ -395,14 +395,14 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   onClick={() => setShowSubmitReviewModal(true)}
-                  className="h-10 rounded-full border-[#2f3d64] bg-[#121722]/80 px-5 text-sm font-semibold text-[#d5dcf4] hover:border-[#4c5f94] hover:bg-[#171f2f] hover:text-white"
+                  className="h-10 w-full rounded-full border-[#2f3d64] bg-[#121722]/80 px-5 text-sm font-semibold text-[#d5dcf4] hover:border-[#4c5f94] hover:bg-[#171f2f] hover:text-white sm:w-auto"
                 >
                   <ClipboardCheck className="mr-1.5 h-4 w-4" />
                   New Review
                 </Button>
                 <Link
                   href="/features"
-                  className="inline-flex h-10 items-center rounded-full border border-[#2b3242] bg-[#10131b]/65 px-4 text-sm font-medium text-[#cfd3e1] transition-colors hover:border-[#3d4353] hover:text-white"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-full border border-[#2b3242] bg-[#10131b]/65 px-4 text-sm font-medium text-[#cfd3e1] transition-colors hover:border-[#3d4353] hover:text-white sm:w-auto sm:justify-start"
                 >
                   Explore Features
                   <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -488,7 +488,103 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="space-y-3 p-4 md:hidden">
+              {isLoadingResumes && (
+                <>
+                  <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4">
+                    <Skeleton className="h-5 w-40 bg-[#2d313a]" />
+                    <Skeleton className="mt-3 h-4 w-24 bg-[#2d313a]" />
+                    <Skeleton className="mt-2 h-4 w-20 bg-[#2d313a]" />
+                  </div>
+                  <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4">
+                    <Skeleton className="h-5 w-36 bg-[#2d313a]" />
+                    <Skeleton className="mt-3 h-4 w-24 bg-[#2d313a]" />
+                    <Skeleton className="mt-2 h-4 w-20 bg-[#2d313a]" />
+                  </div>
+                </>
+              )}
+
+              {loadError && !isLoadingResumes && (
+                <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 px-4 py-10 text-center">
+                  <p className="mb-2 text-red-400">{loadError}</p>
+                  <Button
+                    variant="ghost"
+                    onClick={() => window.location.reload()}
+                    className="text-sm text-[#6d7895] hover:text-white"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              )}
+
+              {!isLoadingResumes && !loadError && resumes.length === 0 && (
+                <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 px-4 py-10 text-center">
+                  <FileText className="mx-auto mb-3 h-10 w-10 text-[#3d4353]" />
+                  <p className="mb-4 text-[#6d7895]">No resumes yet</p>
+                  <Link href="/templates">
+                    <Button className="h-9 rounded-lg bg-[#274cbc] px-4 text-sm text-white hover:bg-[#315be1]">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create your first resume
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {!isLoadingResumes &&
+                !loadError &&
+                sortedResumes.map((resume) => (
+                  <article
+                    key={resume.id}
+                    onClick={() => handleRowClick(resume.id)}
+                    className="cursor-pointer rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4 transition-colors hover:bg-[#1a1c22]/60"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-white">
+                          {resume.name}
+                        </p>
+                        <p className="mt-2 text-xs uppercase tracking-[0.18em] text-[#6d7895]">
+                          {formatTemplateType(resume.template_type)}
+                        </p>
+                        <p className="mt-1 text-sm text-[#6d7895]">
+                          Updated {formatDate(resume.updated_at)}
+                        </p>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/builder?id=${resume.id}`);
+                          }}
+                          className="h-8 w-8 text-[#6d7895] hover:bg-[#2d313a]/50 hover:text-white"
+                          aria-label="Edit resume"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleDeleteResume(e, resume.id)}
+                          disabled={deletingId === resume.id}
+                          className="h-8 w-8 text-[#6d7895] hover:bg-red-400/10 hover:text-red-400"
+                          aria-label="Delete resume"
+                        >
+                          {deletingId === resume.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
               <table className="min-w-162.5 w-full">
                 <thead className="border-b border-[#2d313a] bg-[#141822]/80">
                   <tr>
@@ -702,8 +798,106 @@ export default function DashboardPage() {
                 </Button>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full table-fixed">
+                <div className="space-y-3 p-4 md:hidden">
+                  {isLoadingReviews && (
+                    <>
+                      <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4">
+                        <Skeleton className="h-5 w-40 bg-[#2d313a]" />
+                        <Skeleton className="mt-3 h-6 w-28 rounded-full bg-[#2d313a]" />
+                        <Skeleton className="mt-3 h-4 w-24 bg-[#2d313a]" />
+                      </div>
+                      <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4">
+                        <Skeleton className="h-5 w-36 bg-[#2d313a]" />
+                        <Skeleton className="mt-3 h-6 w-28 rounded-full bg-[#2d313a]" />
+                        <Skeleton className="mt-3 h-4 w-24 bg-[#2d313a]" />
+                      </div>
+                    </>
+                  )}
+
+                  {loadReviewsError && !isLoadingReviews && (
+                    <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 px-4 py-10 text-center">
+                      <p className="mb-2 text-red-400">{loadReviewsError}</p>
+                      <Button
+                        variant="ghost"
+                        onClick={() => fetchReviews()}
+                        className="text-sm text-[#6d7895] hover:text-white"
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  )}
+
+                  {!isLoadingReviews && !loadReviewsError && reviews.length === 0 && (
+                    <div className="rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 px-4 py-10 text-center">
+                      <div className="mx-auto flex max-w-md flex-col items-center justify-center text-center">
+                        <ClipboardCheck className="mb-3 h-10 w-10 text-[#3d4353]" />
+                        <p className="font-medium text-white">No reviews yet</p>
+                        <p className="mt-2 text-sm text-[#6d7895]">
+                          Submit a resume when you want reviewer feedback.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isLoadingReviews &&
+                    !loadReviewsError &&
+                    reviews.map((request) => {
+                      const version = Array.isArray(request.resume_versions)
+                        ? request.resume_versions[0]
+                        : request.resume_versions;
+                      const reviewDisplayName =
+                        version?.label ?? version?.file_name ?? "Untitled";
+                      const statusConfig =
+                        statusLabels[request.status] ?? statusLabels.pending;
+
+                      return (
+                        <article
+                          key={request.id}
+                          className={`rounded-2xl border border-[#2d313a]/60 bg-[#111319]/75 p-4 transition-colors ${
+                            request.status === "completed"
+                              ? "cursor-pointer hover:bg-[#1a1c22]/60"
+                              : ""
+                          }`}
+                          onClick={
+                            request.status === "completed"
+                              ? () => router.push(`/review/${request.id}`)
+                              : undefined
+                          }
+                        >
+                          <p className="truncate text-sm font-semibold text-white">
+                            {reviewDisplayName}
+                          </p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <span
+                              className={`inline-flex whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${statusConfig.color}`}
+                            >
+                              {statusConfig.label}
+                            </span>
+                            <span className="text-sm text-[#6d7895]">
+                              Submitted {formatDate(request.created_at)}
+                            </span>
+                          </div>
+
+                          <div className="mt-3">
+                            {request.status === "completed" ? (
+                              <a
+                                href={`/review/${request.id}`}
+                                className="text-sm font-medium text-[#89a5ff] hover:text-white hover:underline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                View Feedback
+                              </a>
+                            ) : (
+                              <span className="text-sm text-[#4d5363]">Awaiting reviewer assignment</span>
+                            )}
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="w-full table-fixed">
                   <thead className="border-b border-[#2d313a] bg-[#141822]/80">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-[#6d7895]">
