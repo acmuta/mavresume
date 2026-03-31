@@ -14,6 +14,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useSessionStore } from "@/store/useSessionStore";
 import { createResume } from "@/lib/resumeService";
 import { resumeTemplates } from "@/data/resume-templates";
@@ -56,7 +62,46 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
     return resumeTemplates.find((template) => template.route === templateType) ?? null;
   }, [templateType]);
 
-  const availableRoles = selectedTemplate?.roles ?? [];
+  const isCustomTemplate = templateType === "custom";
+
+  const customRoleGroups = useMemo(
+    () =>
+      resumeTemplates.map((template) => ({
+        id: template.id,
+        label: template.name,
+        roles: Array.from(new Set(template.roles)),
+      })),
+    [],
+  );
+
+  const availableRoleGroups = useMemo(() => {
+    if (isCustomTemplate) {
+      return customRoleGroups;
+    }
+
+    if (!selectedTemplate) {
+      return [];
+    }
+
+    return [
+      {
+        id: selectedTemplate.id,
+        label: selectedTemplate.name,
+        roles: selectedTemplate.roles,
+      },
+    ];
+  }, [customRoleGroups, isCustomTemplate, selectedTemplate]);
+
+  const availableRoles = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          availableRoleGroups.flatMap((roleGroup) => roleGroup.roles),
+        ),
+      ),
+    [availableRoleGroups],
+  );
+
   const requiresRole = availableRoles.length > 0;
 
   const handleCreate = async () => {
@@ -129,7 +174,7 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[94vw] max-w-2xl rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_42%),linear-gradient(180deg,_rgba(18,20,27,0.96),_rgba(11,12,16,0.98))] text-white shadow-[0_30px_80px_rgba(3,4,7,0.45)]">
+      <DialogContent className="max-h-[90vh] w-[94vw] max-w-2xl overflow-y-auto rounded-[2rem] border border-[#2b3242] bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_42%),linear-gradient(180deg,_rgba(18,20,27,0.96),_rgba(11,12,16,0.98))] text-white shadow-[0_30px_80px_rgba(3,4,7,0.45)]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <FileText className="w-5 h-5 text-[#274cbc]" />
@@ -182,31 +227,89 @@ export const CreateResumeModal: React.FC<CreateResumeModalProps> = ({
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                {availableRoles.map((role) => {
-                  const isSelected = selectedRole === role;
-
-                  return (
-                    <button
-                      key={role}
-                      type="button"
-                      onClick={() => {
-                        setSelectedRole(role);
-                        setError(null);
-                      }}
-                      disabled={isCreating}
-                      className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
-                        isSelected
-                          ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
-                          : "border-[#2b3242] bg-[#10121a]/80 text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
-                      } disabled:cursor-not-allowed disabled:opacity-60`}
+              {isCustomTemplate ? (
+                <Accordion
+                  type="multiple"
+                  defaultValue={availableRoleGroups
+                    .slice(0, 2)
+                    .map((roleGroup) => roleGroup.id)}
+                  className="mt-4 gap-2"
+                >
+                  {availableRoleGroups.map((roleGroup) => (
+                    <AccordionItem
+                      key={roleGroup.id}
+                      value={roleGroup.id}
+                      className="rounded-2xl border border-[#2b3242] bg-[#11131b]/65 shadow-none"
                     >
-                      {isSelected && <CheckCircle2 className="h-4 w-4" />}
-                      <span>{role}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                      <AccordionTrigger className="px-4 py-3.5 hover:no-underline sm:px-4">
+                        <div className="space-y-1">
+                          <p className="text-sm font-semibold text-white">
+                            {roleGroup.label}
+                          </p>
+                          <p className="text-xs text-[#8f9abb]">
+                            {roleGroup.roles.length} roles
+                          </p>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4 sm:px-4">
+                        <div className="flex flex-wrap gap-2.5">
+                          {roleGroup.roles.map((role) => {
+                            const isSelected = selectedRole === role;
+
+                            return (
+                              <button
+                                key={`${roleGroup.id}-${role}`}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedRole(role);
+                                  setError(null);
+                                }}
+                                disabled={isCreating}
+                                className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition-all sm:text-sm ${
+                                  isSelected
+                                    ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
+                                    : "border-[#2b3242] bg-[#10121a]/80 text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                                } disabled:cursor-not-allowed disabled:opacity-60`}
+                              >
+                                {isSelected && (
+                                  <CheckCircle2 className="h-4 w-4" />
+                                )}
+                                <span>{role}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              ) : (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {availableRoles.map((role) => {
+                    const isSelected = selectedRole === role;
+
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => {
+                          setSelectedRole(role);
+                          setError(null);
+                        }}
+                        disabled={isCreating}
+                        className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                          isSelected
+                            ? "border-[#4b5a82] bg-[#274cbc] text-white shadow-[0_12px_30px_rgba(39,76,188,0.25)]"
+                            : "border-[#2b3242] bg-[#10121a]/80 text-[#cfd3e1] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
+                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                      >
+                        {isSelected && <CheckCircle2 className="h-4 w-4" />}
+                        <span>{role}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 

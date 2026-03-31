@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check, X } from "lucide-react";
+import { Check, Sparkles, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -47,63 +47,64 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#151618] border-[#1c1d21] text-white max-w-4xl max-h-[80vh] flex flex-col">
+      <DialogContent className="max-h-[82vh] max-w-4xl overflow-y-auto border-[#2b3242] bg-[#10121a]/96 text-white ring-1 ring-inset ring-[#24304c]/70">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
+          <DialogTitle className="text-xl font-semibold tracking-tight text-white">
             Review Refined Bullet Points
           </DialogTitle>
-          <DialogDescription className="text-[#a4a7b5]">
+          <DialogDescription className="text-sm leading-relaxed text-[#7f8cab]">
             Compare the original and AI-refined versions. Accept or decline each
             refinement individually, or use the bulk actions below.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+        <div className="space-y-3 pr-1">
           {refinements.map((item) => (
             <div
               key={item.index}
-              className="rounded-2xl border-[2px] border-[#313339] border-dashed bg-[#1a1d24]/80 p-4"
+              className="rounded-[1.25rem] bg-[#10121a]/62 p-3 ring-1 ring-inset ring-[#2b3242]"
             >
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-[0.1em] text-[#89a5ff]">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
                   Bullet Point #{item.index + 1}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => onAccept(item.index)}
-                    className="inline-flex items-center justify-center rounded-xl border border-[#274CBC] bg-[#274CBC] px-3 py-1.5 text-sm text-white transition hover:bg-[#315be1] hover:border-[#315be1]"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#2f5bf2] bg-[#2f5bf2] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-white transition hover:border-[#3d68ff] hover:bg-[#3d68ff]"
                     title="Accept this refinement"
                   >
-                    <Check className="mr-1 size-4" />
+                    <Check className="size-3.5" />
                     Accept
                   </button>
                   <button
                     type="button"
                     onClick={() => onDecline(item.index)}
-                    className="inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#2A2C31] px-3 py-1.5 text-sm text-[#a4a7b5] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#2b3242] bg-[#151923] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-[#c4cbdd] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
                     title="Decline this refinement"
                   >
-                    <X className="mr-1 size-4" />
+                    <X className="size-3.5" />
                     Decline
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-[0.1em] text-[#6d7895]">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-[1rem] bg-[#0f1117]/58 p-3 ring-1 ring-inset ring-[#24304c]/70">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6d7895]">
                     Original
                   </p>
-                  <p className="text-sm text-[#a4a7b5] leading-relaxed">
+                  <p className="mt-2 text-sm leading-relaxed text-[#a4a7b5]">
                     {item.original}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-xs font-medium uppercase tracking-[0.1em] text-[#89a5ff]">
+                <div className="rounded-[1rem] bg-[#11172a]/55 p-3 ring-1 ring-inset ring-[#2f5bf2]/35">
+                  <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
+                    <Sparkles className="size-3.5 text-[#89a5ff]" />
                     AI Refined
                   </p>
-                  <p className="text-sm text-[#cfd3e1] leading-relaxed">
+                  <p className="mt-2 text-sm leading-relaxed text-[#d6def3]">
                     {item.refined}
                   </p>
                 </div>
@@ -112,18 +113,20 @@ export const RefineAllOverlay: React.FC<RefineAllOverlayProps> = ({
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-4 pt-4 border-t border-[#313339]">
+        <div className="flex items-center justify-between gap-3 border-t border-[#2b3242] pt-3">
           <Button
             onClick={onDeclineAll}
             variant="outline"
-            className="border-[#2b3242] bg-[#2A2C31] text-[#a4a7b5] hover:bg-[#1f2330] hover:text-white"
+            className="rounded-full border-[#2b3242] bg-[#151923] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#c4cbdd] hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
           >
+            <X className="mr-1 size-3.5" />
             Decline All
           </Button>
           <Button
             onClick={onAcceptAll}
-            className="bg-[#274CBC] hover:bg-[#315be1]"
+            className="rounded-full bg-[#2f5bf2] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white hover:bg-[#3d68ff]"
           >
+            <Check className="mr-1 size-3.5 text-[#58f5c3]" />
             Accept All
           </Button>
         </div>

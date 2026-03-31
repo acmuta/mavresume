@@ -97,8 +97,8 @@ export function SubmitReviewModal({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[92vw] max-w-xl rounded-3xl border-2 border-dashed border-[#2d313a] bg-[#1c1d21] p-0 text-white shadow-[0_25px_60px_rgba(3,4,7,0.55)]">
-        <div className="rounded-3xl border border-white/5 bg-[radial-gradient(circle_at_top,_rgba(39,76,188,0.16),_transparent_55%),linear-gradient(180deg,_rgba(21,23,28,0.96),_rgba(13,14,18,0.96))] p-6">
+      <DialogContent className="w-[92vw] max-w-xl rounded-3xl border-2 border-dashed border-[#2d313a] bg-[#1c1d21] p-0 text-white shadow-[0_25px_60px_rgba(3,4,7,0.55)] max-h-[90dvh] overflow-y-auto sm:max-h-none sm:overflow-visible">
+        <div className="rounded-3xl border border-white/5 bg-[radial-gradient(circle_at_top,rgba(39,76,188,0.16),transparent_55%),linear-gradient(180deg,rgba(21,23,28,0.96),rgba(13,14,18,0.96))] p-4 sm:p-6">
           <DialogHeader className="text-left">
             <span className="inline-flex w-fit items-center rounded-full border border-[#2b3242] bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#89a5ff]">
               Resume review
@@ -155,7 +155,7 @@ export function SubmitReviewModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Applying for SWE internships, please focus on my projects and skills sections."
-              className="h-28 w-full resize-none rounded-2xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-4 py-3 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#274cbc]"
+              className="h-24 w-full resize-none rounded-2xl border border-dashed border-[#3d4353] bg-[#1a1d24] px-4 py-3 text-sm text-white placeholder:text-[#6d7895] outline-none transition focus:border-[#274cbc] sm:h-28"
             />
           </div>
 

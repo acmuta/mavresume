@@ -244,7 +244,7 @@ function BuilderPageContent() {
           <div className=" pb-0.5 overflow-x-auto ">
 
             <div className="mx-auto flex w-max min-w-full justify-center px-4 ">
-              <div className="inline-flex px-15 py-1.5  min-w-max items-center gap-1.5 rounded-2xl border border-[#2b3242] bg-[#0f141f]/80 [mask-image:linear-gradient(to_right,transparent_0%,transparent_3%,black_12%,black_88%,transparent_97%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,transparent_3%,black_12%,black_88%,transparent_97%,transparent_100%)]">
+              <div className="inline-flex px-1.5 py-1.5  min-w-max items-center gap-1.5 rounded-2xl border border-[#2b3242] bg-[#0f141f]/80 ">
                 {sections.map((section, index) => (
                   <button
                     key={section.id}

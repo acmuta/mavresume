@@ -264,13 +264,13 @@ export async function createResume(
     languagesList: [],
     technologiesList: [],
     frameworksList: [],
-    toolsList: [],
     platformsList: [],
     customLanguages: [],
     customTechnologies: [],
     customFrameworks: [],
-    customTools: [],
     customPlatforms: [],
+    visibleSkillLines: ["languages", "technologies"],
+    customSkillEntry: null,
   };
   const defaultSkillsSection: SkillsSectionData = {
     coreSkills: [],

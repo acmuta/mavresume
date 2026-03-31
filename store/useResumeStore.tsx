@@ -39,13 +39,36 @@ export interface Skills {
   languagesList: string[];
   technologiesList: string[];
   frameworksList: string[];
-  toolsList: string[];
   platformsList: string[];
   customLanguages?: string[];
   customTechnologies?: string[];
   customFrameworks?: string[];
-  customTools?: string[];
   customPlatforms?: string[];
+  visibleSkillLines?: SkillLineKey[];
+  customSkillEntry?: CustomSkillEntry | null;
+}
+
+export type SkillLineKey =
+  | "languages"
+  | "technologies"
+  | "frameworks"
+  | "platforms"
+  | "custom";
+
+export interface CustomSkillEntry {
+  title: string;
+  values: string[];
+  customValues?: string[];
+}
+
+function isSkillLineKey(value: unknown): value is SkillLineKey {
+  return (
+    value === "languages" ||
+    value === "technologies" ||
+    value === "frameworks" ||
+    value === "platforms" ||
+    value === "custom"
+  );
 }
 
 export interface CompactListEntry {
@@ -147,19 +170,40 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function normalizeSkills(skills: Partial<Skills> | undefined): Skills {
   const safeSkills = skills ?? {};
-  const technologiesList = safeSkills.technologiesList ?? [];
+  const legacySkills = safeSkills as Partial<Skills> & {
+    toolsList?: string[];
+    customTools?: string[];
+  };
+  const technologiesList = safeSkills.technologiesList ?? legacySkills.toolsList ?? [];
+  const visibleSkillLines: SkillLineKey[] = Array.isArray(
+    safeSkills.visibleSkillLines,
+  )
+    ? safeSkills.visibleSkillLines.filter(isSkillLineKey)
+    : ["languages", "technologies"];
+
+  const normalizedCustomSkillEntry = safeSkills.customSkillEntry
+    ? {
+        title: safeSkills.customSkillEntry.title?.trim() || "Custom Entry",
+        values: Array.isArray(safeSkills.customSkillEntry.values)
+          ? safeSkills.customSkillEntry.values
+          : [],
+        customValues: Array.isArray(safeSkills.customSkillEntry.customValues)
+          ? safeSkills.customSkillEntry.customValues
+          : [],
+      }
+    : null;
 
   return {
     languagesList: safeSkills.languagesList ?? [],
     technologiesList,
     frameworksList: safeSkills.frameworksList ?? [],
-    toolsList: safeSkills.toolsList ?? technologiesList,
     platformsList: safeSkills.platformsList ?? [],
     customLanguages: safeSkills.customLanguages ?? [],
-    customTechnologies: safeSkills.customTechnologies ?? [],
+    customTechnologies: safeSkills.customTechnologies ?? legacySkills.customTools ?? [],
     customFrameworks: safeSkills.customFrameworks ?? [],
-    customTools: safeSkills.customTools ?? [],
     customPlatforms: safeSkills.customPlatforms ?? [],
+    visibleSkillLines,
+    customSkillEntry: normalizedCustomSkillEntry,
   };
 }
 
@@ -214,7 +258,7 @@ export interface ResumeState {
   // Resume data actions
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   addEducation: (edu: Education) => void;
-  addSkills: (skills: Skills) => void;
+  addSkills: (skills: Partial<Skills>) => void;
   addProject: (proj: Project) => void;
   addExperience: (exp: Experience) => void;
   addResearch: (entry: Experience) => void;
@@ -286,13 +330,13 @@ const initialResumeState = {
     languagesList: [],
     technologiesList: [],
     frameworksList: [],
-    toolsList: [],
     platformsList: [],
     customLanguages: [],
     customTechnologies: [],
     customFrameworks: [],
-    customTools: [],
     customPlatforms: [],
+    visibleSkillLines: ["languages", "technologies"],
+    customSkillEntry: null,
   } as Skills,
   skillsSection: {
     coreSkills: [],

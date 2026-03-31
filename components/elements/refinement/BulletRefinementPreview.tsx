@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check, X } from "lucide-react";
+import { Check, Sparkles, X } from "lucide-react";
 
 interface BulletRefinementPreviewProps {
   refinedText: string;
@@ -18,36 +18,38 @@ interface BulletRefinementPreviewProps {
  */
 export const BulletRefinementPreview: React.FC<
   BulletRefinementPreviewProps
-> = ({ refinedText, originalText, onAccept, onDecline }) => {
+> = ({ refinedText, onAccept, onDecline }) => {
   return (
-    <div className="mt-2 rounded-2xl border-[2px] border-[#313339] border-dashed bg-[#1a1d24]/80 p-3 animate-in fade-in duration-200">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="text-xs font-medium uppercase tracking-[0.1em] text-[#89a5ff]">
-              AI Refined
-            </span>
-          </div>
-          <p className="text-sm text-[#cfd3e1] leading-relaxed">
+    <div className="mt-2 rounded-[1.25rem] bg-[#10121a]/62 p-3 ring-1 ring-inset ring-[#2b3242] animate-in fade-in duration-200">
+      <div className="flex flex-col gap-3">
+        <div className="rounded-[1rem] bg-[#11172a]/55 p-3 ring-1 ring-inset ring-[#2f5bf2]/35">
+          <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#89a5ff]">
+            <Sparkles className="size-3.5 text-[#58f5c3]" />
+            AI Refined
+          </span>
+          <p className="mt-2 text-sm leading-relaxed text-[#d6def3]">
             {refinedText}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={onAccept}
-            className="inline-flex items-center justify-center rounded-xl border border-[#274CBC] bg-[#274CBC] px-3 py-1.5 text-white transition hover:bg-[#315be1] hover:border-[#315be1]"
+            className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#2f5bf2] bg-[#2f5bf2] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-white transition hover:border-[#3d68ff] hover:bg-[#3d68ff]"
             title="Accept refined text"
           >
-            <Check className="size-4" />
+            <Check className="size-3.5 text-[#89a5ff]" />
+            Accept
           </button>
           <button
             type="button"
             onClick={onDecline}
-            className="inline-flex items-center justify-center rounded-xl border border-[#2b3242] bg-[#2A2C31] px-3 py-1.5 text-[#a4a7b5] transition hover:border-[#3f4a67] hover:bg-[#1f2330] hover:text-white"
+            className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#2b3242] bg-[#151923] px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-[#c4cbdd] transition hover:border-[#4b5a82] hover:bg-[#161b25] hover:text-white"
             title="Decline refined text"
           >
-            <X className="size-4" />
+            <X className="size-3.5" />
+            Decline
           </button>
         </div>
       </div>

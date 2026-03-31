@@ -70,8 +70,8 @@ export function PersonalInfoSection() {
             />
             <CustomTextField
               id="linkedin"
-              label="LinkedIn"
-              placeholder="linkedin.com/in/johndoe"
+              label="LinkedIn Handle"
+              placeholder="johndoe"
               value={personalInfo.linkedin || ""}
               onChange={(e) => updatePersonalInfo({ linkedin: e.target.value })}
               required
@@ -81,7 +81,7 @@ export function PersonalInfoSection() {
           <div className="grid gap-4 md:grid-cols-2">
             <CustomTextField
               id="github"
-              label="GitHub"
+              label="GitHub Handle"
               placeholder="github.com/johndoe"
               value={personalInfo.github || ""}
               onChange={(e) => updatePersonalInfo({ github: e.target.value })}
